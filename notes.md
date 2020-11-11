@@ -19,5 +19,7 @@ python scripts/run_policy.py data/<path>/params.pkl
 ______
 
 TODO:
-    Get urdf for Franka + Barret
-    (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)
+    - Work on env eg. reward function
+    - Work on human control to gather data
+    - Get urdf for Franka + Barret
+        (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)
