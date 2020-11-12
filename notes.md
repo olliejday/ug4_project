@@ -3,6 +3,9 @@ Installation required:
 
 gtimer
 torchvision (Cuda 10.2)
+tkinter
+pygame
+inputs
 pip install -e . // in CQL/d4rl and in d4rl repo itself
 
 ______

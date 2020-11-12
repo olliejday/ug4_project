@@ -8,4 +8,5 @@ if __name__ == "__main__":
     env.render()
     env.reset()
     while (not done):
-        _, _, done, _ = env.step(env.action_space.sample())
+        obs, _, done, _ = env.step(env.action_space.sample())
+        print(obs)
