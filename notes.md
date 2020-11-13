@@ -23,6 +23,6 @@ ______
 
 TODO:
     - Work on env eg. reward function
-    - Work on human control to gather data
+    - Work on human control / pd to gather data
     - Get urdf for Franka + Barret
         (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)

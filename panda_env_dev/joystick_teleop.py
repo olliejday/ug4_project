@@ -86,20 +86,15 @@ def get_action(js, scale=10):
 
 # -------- Main Program Loop -----------
 
-_plot = True
-env = gym.make("panda-v0")
-env.render()
-obs = env.reset()
+def run_episode(env):
+    obs = env.reset()
+    done = False
+    while not done:
+        # EVENT PROCESSING STEP
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
 
-done = False
-
-while not done:
-    # EVENT PROCESSING STEP
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-
-    if _plot:
         # DRAWING STEP
         # First, clear the screen to white. Don't put other drawing commands
         # above this, or they will be erased with this command.
@@ -109,21 +104,31 @@ while not done:
 
         plot_sticks(js, screen)
 
-    # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
+        # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
-    # ACTION SET
+        # ACTION SET
 
-    action = get_action(js)
-    obs, rew, done, _ = env.step(action)
+        action = get_action(js)
+        obs, rew, done, _ = env.step(action)
 
-    # Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
+        # Go ahead and update the screen with what we've drawn.
+        pygame.display.flip()
 
-    # Limit to 60 frames per second
-    clock.tick(60)
+        # Limit to 60 frames per second
+        clock.tick(60)
 
-# Close the window and quit.
-# If you forget this line, the program will 'hang'
-# on exit if running from IDLE.
-env.close()
-pygame.quit()
+
+def main(n_eps=10):
+    env = gym.make("panda-v0")
+    env.render()
+    for i in range(n_eps):
+        run_episode(env)
+    # Close the window and quit.
+    # If you forget this line, the program will 'hang'
+    # on exit if running from IDLE.
+    env.close()
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
