@@ -1,3 +1,4 @@
+import os
 
 import gym
 import pygame
@@ -8,8 +9,8 @@ Axis    Value                   Control
 0       Left stick up/down      End effector Y
 1       Left stick L/R          End effector X
 2       Left trigger            Gripper open
-3       Right stick up/down     End effector Z
-4       Right stick L/R
+3       Right stick L/R
+4       Right stick up/down     End effector Z
 5       Right trigger           Gripper close
 
 """
@@ -18,10 +19,14 @@ Axis    Value                   Control
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
+# place pygame window
+position = (0, 0)
+os.environ['SDL_VIDEO_WINDOW_POS'] = str(position[0]) + "," + str(position[1])
+
 pygame.init()
 
 # Set the width and height of the screen [width,height]
-size = [250, 500]
+size = [250, 250]
 screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("Joystick Teleop")
@@ -56,7 +61,7 @@ def plot_trigger(js, screen):
         pygame.draw.rect(screen, (0, 255, 0), [w/2, 0, w/2, h/2])
 
 
-def filter_stick(v, eps=1e-1):
+def filter_stick(v, eps=2e-1):
     # filters close to 0 stick values
     return v if abs(v) > eps else 0
 
@@ -67,11 +72,11 @@ def get_action(js, scale=10):
     """
     dx = - filter_stick(js.get_axis(1)) * scale
     dy = - filter_stick(js.get_axis(0)) * scale
-    dz = - filter_stick(js.get_axis(3)) * scale
+    dz = - filter_stick(js.get_axis(4)) * scale
     fingers = 0
-    if js.get_axis(5) > 0:
+    if js.get_axis(5) < 0:
         fingers = -js.get_axis(5)
-    elif js.get_axis(2) < 0:
+    elif js.get_axis(2) > 0:
         fingers = js.get_axis(2)
 
     action = [dx, dy, dz, fingers]
