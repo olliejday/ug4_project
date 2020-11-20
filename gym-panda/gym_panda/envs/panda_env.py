@@ -43,18 +43,14 @@ class PandaEnv(gym.Env):
 
         p.stepSimulation()
 
-        state_object, _ = p.getBasePositionAndOrientation(self.objectUid)
-        state_robot = p.getLinkState(self.pandaUid, 11)[0]
-        state_fingers = (p.getJointState(self.pandaUid,9)[0], p.getJointState(self.pandaUid, 10)[0])
+        self.observation, state_object, state_robot = self.get_obs()
 
-
-
+        done = False
+        reward = -0.1 * np.linalg.norm(state_robot - state_object)  # take hand to object
+        # task complete reward
         if state_object[2]>0.45:
-            reward = 1
+            reward += 10.
             done = True
-        else:
-            reward = 0
-            done = False
 
         self.step_counter += 1
 
@@ -63,8 +59,16 @@ class PandaEnv(gym.Env):
             done = True
 
         info = {'object_position': state_object}
-        self.observation = state_robot + state_fingers
-        return np.array(self.observation).astype(np.float32), reward, done, info
+        return self.observation.astype(np.float32), reward, done, info
+
+    def get_obs(self):
+        state_robot = np.array(p.getLinkState(self.pandaUid, 11)[0])
+        state_object, _ = p.getBasePositionAndOrientation(self.objectUid)
+        state_object = np.array(state_object)
+        obs_object = state_robot - state_object
+        state_fingers = np.array((p.getJointState(self.pandaUid, 9)[0], p.getJointState(self.pandaUid, 10)[0]))
+        observation = np.concatenate([state_robot, state_fingers, obs_object])
+        return observation, state_object, state_robot
 
     def reset(self):
         self.step_counter = 0
@@ -87,11 +91,10 @@ class PandaEnv(gym.Env):
 
         state_object= [random.uniform(0.5,0.8),random.uniform(-0.2,0.2),0.05]
         self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=state_object)
-        state_robot = p.getLinkState(self.pandaUid, 11)[0]
-        state_fingers = (p.getJointState(self.pandaUid,9)[0], p.getJointState(self.pandaUid, 10)[0])
-        self.observation = state_robot + state_fingers
+        
+        self.observation, _, _ = self.get_obs()
         p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
-        return np.array(self.observation).astype(np.float32)
+        return self.observation.astype(np.float32)
 
     def render(self, mode='human'):
         view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7,0,0.05],
