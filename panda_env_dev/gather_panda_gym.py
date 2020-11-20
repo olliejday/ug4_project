@@ -12,6 +12,9 @@ import os
 
 """
 Uses PDAgent in gym_panda to gather an offline RL dataset
+
+Saves relative to where run from to data/<exp_name>
+If videos they save to videos/<exp_name><episode number> 
 """
 
 
@@ -20,20 +23,16 @@ def reset_data():
             'actions': [],
             'terminals': [],
             'rewards': [],
-            'infos/goal': [],
-            'infos/qpos': [],
-            'infos/qvel': [],
+            'infos/obj_pos': [],
             }
 
 
-def append_data(data, s, a, r, tgt, done, env_data):
+def append_data(data, s, a, r, obj, done):
     data['observations'].append(s)
     data['actions'].append(a)
     data['rewards'].append(r)
     data['terminals'].append(done)
-    data['infos/goal'].append(tgt)
-    data['infos/qpos'].append(env_data.qpos.ravel().copy())
-    data['infos/qvel'].append(env_data.qvel.ravel().copy())
+    data['infos/obj_pos'].append(obj)
 
 
 def npify(data):
@@ -62,7 +61,12 @@ def main():
     parser.add_argument('--max_episode_steps', default=1000, type=int)
     parser.add_argument('--video', action='store_true')
     parser.add_argument('--render', action='store_true')
+    parser.add_argument('--noisy', action='store_true', help='Noisy actions')
     args = parser.parse_args()
+
+    exp_name = "gym_panda_pd_agent"
+    if not os.path.exists("data"):
+        os.makedirs("data")
 
     env = gym.make("panda-v0")
     s = env.reset()
@@ -93,7 +97,7 @@ def main():
         if ts >= args.max_episode_steps:
             done = True
 
-        append_data(data, s[:-2], act, r, env.target_goal, done, env.physics.data)
+        append_data(data, s, act, r, info["object_position"], done)
 
         if len(data['observations']) % 10000 == 0:
             print(len(data['observations']))
@@ -107,7 +111,7 @@ def main():
             pd.episode_start()
             if args.video:
                 frames = np.array(frames)
-                save_video('./videos/', args.env + '_navigation', frames, num_episodes)
+                save_video('./videos/', exp_name, frames, num_episodes)
 
             num_episodes += 1
             frames = []
@@ -120,8 +124,10 @@ def main():
         elif args.render:
             env.render()
 
-
-    fname = args.env + 'gym_panda_pd_agent.hdf5'
+    fname = exp_name + '.hdf5'
+    if args.noisy:
+        fname = exp_name + 'noisy.hdf5'
+    fname = os.path.join("data", fname)
     dataset = h5py.File(fname, 'w')
     npify(data)
     for k in data:
