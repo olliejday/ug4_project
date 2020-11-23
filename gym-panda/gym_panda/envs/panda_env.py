@@ -21,7 +21,8 @@ class PandaEnv(gym.Env):
         # p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=0, cameraPitch=-40, cameraTargetPosition=[0.55,-0.35,0.2])
         p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40, cameraTargetPosition=[.5, 0, .5])
         self.action_space = spaces.Box(np.array([-1]*4), np.array([1]*4))
-        self.observation_space = spaces.Box(np.array([-1]*5), np.array([1]*5))
+        self.observation_space = spaces.Box(np.array([-1]*8), np.array([1]*8))
+        self._max_episode_steps = MAX_EPISODE_LEN
 
     def step(self, action):
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
@@ -54,7 +55,7 @@ class PandaEnv(gym.Env):
 
         self.step_counter += 1
 
-        if self.step_counter > MAX_EPISODE_LEN:
+        if self.step_counter > self._max_episode_steps:
             reward = 0
             done = True
 
@@ -91,7 +92,7 @@ class PandaEnv(gym.Env):
 
         state_object= [random.uniform(0.5,0.8),random.uniform(-0.2,0.2),0.05]
         self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=state_object)
-        
+
         self.observation, _, _ = self.get_obs()
         p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
         return self.observation.astype(np.float32)

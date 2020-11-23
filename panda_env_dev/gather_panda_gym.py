@@ -1,5 +1,7 @@
 import gym
 import gym_panda
+from tqdm import tqdm
+
 from panda_env_dev.pd_agent import PDAgent
 import numpy as np
 import pickle
@@ -15,6 +17,9 @@ Uses PDAgent in gym_panda to gather an offline RL dataset
 
 Saves relative to where run from to data/<exp_name>
 If videos they save to videos/<exp_name><episode number> 
+
+Note on Ubuntu for some reason it stops when the screen turns off
+so disable automatic blank screen setting
 """
 
 
@@ -83,7 +88,7 @@ def main():
 
     ts = 0
     num_episodes = 0
-    for _ in range(args.num_samples):
+    for _ in tqdm(range(args.num_samples)):
         act = pd.get_action(s)
 
         if args.noisy:
@@ -98,9 +103,6 @@ def main():
             done = True
 
         append_data(data, s, act, r, info["object_position"], done)
-
-        if len(data['observations']) % 10000 == 0:
-            print(len(data['observations']))
 
         ts += 1
 

@@ -46,7 +46,7 @@ done: when obj z > 0.45
 
 
 TODO:
-    - Gather some PD data (see d4rl for format and saving)
-    - Train first CQL!!!!!
+    - Write a continue training from checkpoint
+    - Train CQL longer - ideally 1M training steps
     - Get urdf for Franka + Barret
         (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)
