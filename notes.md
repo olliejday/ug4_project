@@ -47,6 +47,7 @@ done: when obj z > 0.45
 
 TODO:
     - Write a continue training from checkpoint
+    - Panda Gym allows intersection of gripper with tray
     - Train CQL longer - ideally 1M training steps
     - Get urdf for Franka + Barret
         (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)
