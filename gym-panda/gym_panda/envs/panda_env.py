@@ -120,8 +120,8 @@ class PandaEnv(gym.Env):
         state_object= [random.uniform(0.5,0.8),random.uniform(-0.2,0.2),0.05]
         self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=state_object)
 
-        state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3)
-        secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)
+        # state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3) * np.random.choice([-1, 1])
+        # secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)
         self.observation, _, _ = self.get_obs()
         p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
         return self.observation.astype(np.float32)

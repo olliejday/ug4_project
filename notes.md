@@ -63,6 +63,7 @@ ____
 
 TODO:
     - Write a continue training from checkpoint
+        Seems to load ok, now make sure all logging etc timesteps are ok    
     - Train CQL longer - ideally 1M training steps
     - For more complex panda gym see https://github.com/quenting44/panda-gym
     

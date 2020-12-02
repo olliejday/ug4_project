@@ -5,6 +5,7 @@ import argparse
 import torch
 import uuid
 from rlkit.core import logger, eval_util
+import pybullet as p
 import gym_panda
 
 filename = str(uuid.uuid4())
@@ -13,7 +14,8 @@ filename = str(uuid.uuid4())
 def simulate_policy(args):
     data = torch.load(args.file)
     policy = data['evaluation/policy']
-    env = gym.make(args.env)
+    p.connect(p.GUI)
+    env = data["evaluation/env"]
     env.seed(args.seed)
     print("Policy loaded")
     if args.gpu:
