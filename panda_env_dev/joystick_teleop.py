@@ -66,9 +66,12 @@ def filter_stick(v, eps=2e-1):
     return v if abs(v) > eps else 0
 
 
-def get_action(js, scale=10):
+def get_action(js, scale=5):
     """
     Action is [dx, dy, dz, fingers]
+    scale: scales actions, [0,1] provided by pygame
+        Higher means quicker movement
+        Note that too high can mess with collisions and lead to penetration
     """
     dx = - filter_stick(js.get_axis(1)) * scale
     dy = - filter_stick(js.get_axis(0)) * scale
@@ -120,6 +123,7 @@ def run_episode(env):
 
 def main(n_eps=10):
     env = gym.make("panda-v0")
+    env.seed(1)
     env.render()
     for i in range(n_eps):
         run_episode(env)

@@ -16,6 +16,7 @@ import d4rl
 import gym
 import gym_panda
 
+
 def load_hdf5(dataset, replay_buffer):
     replay_buffer._observations = dataset['observations']
     replay_buffer._next_obs = dataset['next_observations']
@@ -55,6 +56,7 @@ def get_dataset(h5path, env):
 
 def experiment(variant):
     eval_env = gym.make(variant['env_name'])
+    eval_env.seed(variant['seed'])
     expl_env = eval_env
     
     obs_dim = expl_env.observation_space.low.size
@@ -131,10 +133,12 @@ def experiment(variant):
     algorithm.to(ptu.device)
     algorithm.train()
 
+
 def enable_gpus(gpu_str):
     if (gpu_str is not ""):
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_str
     return
+
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker

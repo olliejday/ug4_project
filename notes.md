@@ -44,10 +44,28 @@ note that sparse reward corresponds to the "done" signal here
 info: obj pos     
 done: when obj z > 0.45
 
+*Note: not using Barrett hand at the moment
+
+______
+
+Penetration
+Fixed by:
+    Think changing sim timestep
+    and setting forces in setJointMotorControlArray() in step()
+    
+Tried some other sim params didn't seem to help
+
+Be careful setting actions (dx,dy,dz) too high as this can lead to penetration
+Set action bounds: currently -5 to 5 as found this ok on the joystick controller 
+but if have issues change sim params or reduce these bounds.
+____
+
 
 TODO:
     - Write a continue training from checkpoint
-    - Panda Gym allows intersection of gripper with tray
     - Train CQL longer - ideally 1M training steps
-    - Get urdf for Franka + Barret
-        (bh_alone.urdf problems with pybullet? Perhaps bc no inertial)
+    - For more complex panda gym see https://github.com/quenting44/panda-gym
+    
+Keep an eye on:
+    - Panda Gym allows intersection of gripper with tray
+    - Check action bounds
