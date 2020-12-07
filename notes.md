@@ -61,13 +61,13 @@ Set action bounds: currently -5 to 5 as found this ok on the joystick controller
 but if have issues change sim params or reduce these bounds.
 ____
 
+- For more alt panda gym see https://github.com/quenting44/panda-gym
 
 TODO:
-    - Write a continue training from checkpoint
-        Seems to load ok, now make sure all logging etc timesteps are ok    
     - Train CQL longer - ideally 1M training steps
-    - For more complex panda gym see https://github.com/quenting44/panda-gym
-    
+    - More complex env - randomness, peturbation
+    - Human data?
+
 Keep an eye on:
     - Panda Gym allows intersection of gripper with tray
     - Check action bounds
