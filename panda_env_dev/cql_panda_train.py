@@ -1,6 +1,7 @@
 import time
 
 import rlkit.torch.pytorch_util as ptu
+import torch
 from d4rl import get_keys
 from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
 from rlkit.launchers.launcher_util import setup_logger
@@ -133,7 +134,9 @@ def experiment(variant):
         **variant['algorithm_kwargs']
     )
     algorithm.to(ptu.device)
-    algorithm.train()
+    # TODO: remove with, once figured out the issue!
+    with torch.autograd.set_detect_anomaly(True):
+        algorithm.train()
 
 
 def enable_gpus(gpu_str):
@@ -202,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument('--min_q_version', default=3, type=int)               # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho)) 
     parser.add_argument('--lagrange_thresh', default=5.0, type=float)         # the value of tau, corresponds to the CQL(lagrange) version
     parser.add_argument('--seed', default=10, type=int)
-    parser.add_argument('--headless', action='store_true')
+    parser.add_argument('--gui', action='store_true')
 
     args = parser.parse_args()
     # enable_gpus(args.gpu)
@@ -222,7 +225,7 @@ if __name__ == "__main__":
     variant['load_buffer'] = True
     variant['env_name'] = args.env
     variant['seed'] = args.seed
-    variant['headless'] = args.headless
+    variant['headless'] = not args.gui
 
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),

@@ -70,19 +70,11 @@ def get_dataset(h5path, env):
 
 
 def experiment(variant, data):
-    eval_env = data['evaluation/env']
+    # make new env, reloading with data['evaluation/env'] seems to make bug
+    eval_env = gym.make("panda-v0", **{"headless": args["headless"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
-    # conenct to pyBullet
-    if variant["headless"]:
-        p.connect(p.DIRECT)
-    else:
-        p.connect(p.GUI)
 
-    obs_dim = expl_env.observation_space.low.size
-    action_dim = eval_env.action_space.low.size
-
-    M = variant['layer_size']
     qf1 = data['trainer/qf1']
     qf2 = data['trainer/qf2']
     target_qf1 = data['trainer/target_qf1']
@@ -152,13 +144,13 @@ if __name__ == "__main__":
     parser.add_argument("exp_dir", type=str, help="Experiment directory to load params and append logs")
     parser.add_argument('start_epoch', type=int, help="Start epoch for continue training logs")
     parser.add_argument("--params_fname", default="params.pkl", type=str)
-    parser.add_argument('--headless', action='store_true')
+    parser.add_argument('--gui', action='store_true')
 
     args = parser.parse_args()
 
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
-    variant['headless'] = args.headless
+    variant['headless'] = not args.gui
 
     params_data = load_params(os.path.join(args.exp_dir, args.params_fname))
     setup_logger(log_dir=args.exp_dir,

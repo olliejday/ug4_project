@@ -53,6 +53,10 @@ Tried some other sim params didn't seem to help
 Be careful setting actions (dx,dy,dz) too high as this can lead to penetration
 Set action bounds: currently -5 to 5 as found this ok on the joystick controller 
 but if have issues change sim params or reduce these bounds.
+
+Bug seems to return if load env using 
+ data['evaluation/env'] 
+But not if make new env with gym.make("panda-v0")
 ____
 
 - For more alt panda gym see https://github.com/quenting44/panda-gym

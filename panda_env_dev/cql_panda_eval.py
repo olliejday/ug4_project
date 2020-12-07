@@ -14,14 +14,9 @@ filename = str(uuid.uuid4())
 def simulate_policy(args):
     data = torch.load(args.file)
     policy = data['evaluation/policy']
-    # conenct to pyBullet
-    env = data['evaluation/env']
-    env.seed(args['seed'])
-    # conenct to pyBullet
-    if args["headless"]:
-        p.connect(p.DIRECT)
-    else:
-        p.connect(p.GUI)
+    # make new env, reloading with data['evaluation/env'] seems to make bug
+    env = gym.make("panda-v0", **{"headless": args["headless"]})
+    env.seed(args.seed)
     print("Policy loaded")
     if args.gpu:
         set_gpu_mode(True)
@@ -32,7 +27,7 @@ def simulate_policy(args):
             env,
             policy,
             max_path_length=args.H,
-            render=True,
+            render=False,  # we use p.conenct(p.GUI) to visualise, render makes slower
         )
         paths.append(path)
         if hasattr(env, "log_diagnostics"):
@@ -56,7 +51,7 @@ if __name__ == "__main__":
                         help='Max length of rollout')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
-    parser.add_argument('--gpu', action='store_true')
+    parser.add_argument('--gpu', type=bool, default=True)
     parser.add_argument('--seed', default=10, type=int)
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
