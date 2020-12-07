@@ -1,11 +1,5 @@
 
-Installation required:
-
-gtimer
-torchvision (Cuda 10.2)
-tkinter
-pygame
-inputs
+Install requirements.txt
 
 pip install -e . // in gym-panda, CQL/d4rl and in d4rl repo itself
 

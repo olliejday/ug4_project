@@ -155,7 +155,7 @@ if __name__ == "__main__":
         sparse_reward=False,
         h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
-            num_epochs=150,
+            num_epochs=100,
             num_eval_steps_per_epoch=1000,
             num_trains_per_train_loop=1000,  
             num_expl_steps_per_train_loop=1000,

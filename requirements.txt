@@ -1,0 +1,12 @@
+
+gtimer
+
+torchvision # Cuda 10.2
+
+# For human control
+# tkinter
+pygame
+inputs
+
+gym
+pybullet
