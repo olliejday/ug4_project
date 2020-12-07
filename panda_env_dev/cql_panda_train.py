@@ -155,7 +155,7 @@ if __name__ == "__main__":
         sparse_reward=False,
         h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
-            num_epochs=3000,
+            num_epochs=150,
             num_eval_steps_per_epoch=1000,
             num_trains_per_train_loop=1000,  
             num_expl_steps_per_train_loop=1000,
@@ -223,6 +223,7 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
 
     rnd = np.random.randint(0, 1000000)
-    setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]), variant=variant, base_log_dir='./data')
+    setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
+                 variant=variant, base_log_dir='./data')
     # ptu.set_gpu_mode(True)
     experiment(variant)
