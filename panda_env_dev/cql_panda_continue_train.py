@@ -74,7 +74,10 @@ def experiment(variant, data):
     eval_env.seed(variant['seed'])
     expl_env = eval_env
     # conenct to pyBullet
-    p.connect(p.GUI)
+    if variant["headless"]:
+        p.connect(p.DIRECT)
+    else:
+        p.connect(p.GUI)
 
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
@@ -149,11 +152,14 @@ if __name__ == "__main__":
     parser.add_argument("exp_dir", type=str, help="Experiment directory to load params and append logs")
     parser.add_argument('start_epoch', type=int, help="Start epoch for continue training logs")
     parser.add_argument("--params_fname", default="params.pkl", type=str)
+    parser.add_argument('--headless', action='store_true')
 
     args = parser.parse_args()
 
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
+    variant['headless'] = args.headless
+
     params_data = load_params(os.path.join(args.exp_dir, args.params_fname))
     setup_logger(log_dir=args.exp_dir,
                  variant=variant)

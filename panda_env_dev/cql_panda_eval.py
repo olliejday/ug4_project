@@ -14,9 +14,14 @@ filename = str(uuid.uuid4())
 def simulate_policy(args):
     data = torch.load(args.file)
     policy = data['evaluation/policy']
-    p.connect(p.GUI)
-    env = data["evaluation/env"]
-    env.seed(args.seed)
+    # conenct to pyBullet
+    env = data['evaluation/env']
+    env.seed(args['seed'])
+    # conenct to pyBullet
+    if args["headless"]:
+        p.connect(p.DIRECT)
+    else:
+        p.connect(p.GUI)
     print("Policy loaded")
     if args.gpu:
         set_gpu_mode(True)
@@ -53,6 +58,7 @@ if __name__ == "__main__":
                         help='Gym env name')
     parser.add_argument('--gpu', action='store_true')
     parser.add_argument('--seed', default=10, type=int)
+    parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
 
     simulate_policy(args)

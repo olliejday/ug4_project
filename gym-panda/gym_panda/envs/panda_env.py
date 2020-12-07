@@ -31,9 +31,12 @@ MAX_EPISODE_LEN = 20*100
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, headless):
         self.step_counter = 0
-        p.connect(p.GUI)
+        if headless:
+            p.connect(p.DIRECT)
+        else:
+            p.connect(p.GUI)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         timeStep = 1. / 60.
         p.setTimeStep(timeStep)

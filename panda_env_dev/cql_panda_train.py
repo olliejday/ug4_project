@@ -57,7 +57,7 @@ def get_dataset(h5path, env):
 
 
 def experiment(variant):
-    eval_env = gym.make(variant['env_name'])
+    eval_env = gym.make(variant['env_name'], **{"headless": variant["headless"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
     
@@ -202,6 +202,7 @@ if __name__ == "__main__":
     parser.add_argument('--min_q_version', default=3, type=int)               # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho)) 
     parser.add_argument('--lagrange_thresh', default=5.0, type=float)         # the value of tau, corresponds to the CQL(lagrange) version
     parser.add_argument('--seed', default=10, type=int)
+    parser.add_argument('--headless', action='store_true')
 
     args = parser.parse_args()
     # enable_gpus(args.gpu)
@@ -221,6 +222,7 @@ if __name__ == "__main__":
     variant['load_buffer'] = True
     variant['env_name'] = args.env
     variant['seed'] = args.seed
+    variant['headless'] = args.headless
 
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
