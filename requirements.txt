@@ -1,5 +1,8 @@
 
 gtimer
+python-dateutil 
+
+matplotlib
 
 torchvision # Cuda 10.2
 
