@@ -3,7 +3,7 @@ from rlkit.torch.pytorch_util import set_gpu_mode
 import argparse
 import torch
 import uuid
-from rlkit.core import logger
+from rlkit.core import logger, eval_util
 
 filename = str(uuid.uuid4())
 
@@ -16,6 +16,7 @@ def simulate_policy(args):
     if args.gpu:
         set_gpu_mode(True)
         policy.cuda()
+    paths = []
     while True:
         path = rollout(
             env,
@@ -23,8 +24,17 @@ def simulate_policy(args):
             max_path_length=args.H,
             render=True,
         )
+        paths.append(path)
         if hasattr(env, "log_diagnostics"):
-            env.log_diagnostics([path])
+            env.log_diagnostics(paths)
+        if hasattr(env, "get_diagnostics"):
+            for k, v in env.get_diagnostics(paths).items():
+                logger.record_tabular(k, v)
+        else:
+            logger.record_dict(
+                eval_util.get_generic_path_information(paths),
+                prefix="evaluation/",
+            )
         logger.dump_tabular()
 
 

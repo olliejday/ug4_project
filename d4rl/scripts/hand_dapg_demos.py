@@ -16,7 +16,7 @@ USAGE:\n
 
 # MAIN =========================================================
 @click.command(help=DESC)
-@click.option('--env_name', type=str, help='environment to load', default='door-v0')
+@click.option('--env_name', type=str, help='environment to load', default='relocate-human-v0')
 def main(env_name):
     if env_name is "":
         print("Unknown env.")

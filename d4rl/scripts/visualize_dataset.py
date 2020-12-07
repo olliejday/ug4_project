@@ -2,14 +2,13 @@ import argparse
 import d4rl
 import gym
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env_name', type=str, default='maze2d-umaze-v0')
+    parser.add_argument('--env_name', type=str, default='relocate-human-v0')
     args = parser.parse_args()
 
     env = gym.make(args.env_name)
-    
+    env.mj_viewer_setup()
     dataset = env.get_dataset()
     if 'infos/qpos' not in dataset:
         raise ValueError('Only MuJoCo-based environments can be visualized')
@@ -22,4 +21,4 @@ if __name__ == "__main__":
     env.set_state(qpos[0], qvel[0])
     for t in range(qpos.shape[0]):
         env.set_state(qpos[t], qvel[t])
-        env.render()
+        env.mj_render()
