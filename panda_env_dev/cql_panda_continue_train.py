@@ -73,6 +73,8 @@ def experiment(variant, data):
     eval_env = data['evaluation/env']
     eval_env.seed(variant['seed'])
     expl_env = eval_env
+    # conenct to pyBullet
+    p.connect(p.GUI)
 
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
@@ -126,7 +128,7 @@ def experiment(variant, data):
         **variant['algorithm_kwargs']
     )
     algorithm.to(ptu.device)
-    algorithm.train()
+    algorithm.train(start_epoch=variant["start_epoch"])
 
 
 def enable_gpus(gpu_str):
@@ -144,25 +146,16 @@ def load_variant(exp_dir):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", type=str, default='panda-v0')
-    parser.add_argument("--gpu", default='0', type=str)
-    parser.add_argument("--max_q_backup", type=str, default="False")          # if we want to try max_{a'} backups, set this to true
-    parser.add_argument("--deterministic_backup", type=str, default="True")   # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
-    parser.add_argument("--policy_eval_start", default=40000, type=int)       # Defaulted to 20000 (40000 or 10000 work similarly)
-    parser.add_argument('--min_q_weight', default=1.0, type=float)            # the value of alpha, set to 5.0 or 10.0 if not using lagrange
-    parser.add_argument('--policy_lr', default=1e-4, type=float)              # Policy learning rate
-    parser.add_argument('--min_q_version', default=3, type=int)               # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho)) 
-    parser.add_argument('--lagrange_thresh', default=5.0, type=float)         # the value of tau, corresponds to the CQL(lagrange) version
-    parser.add_argument('--seed', default=10, type=int)
+    parser.add_argument("exp_dir", type=str, help="Experiment directory to load params and append logs")
+    parser.add_argument('start_epoch', type=int, help="Start epoch for continue training logs")
+    parser.add_argument("--params_fname", default="params.pkl", type=str)
 
     args = parser.parse_args()
 
-    # TODO set
-    exp_dir = "data/CQL-offline-panda-runs/test/CQL_offline_panda_runs/957339_2020_11_21_11_29_12_0000--s-0/"
-    params_fname = "params.pkl"
-
-    variant = load_variant(exp_dir)
-    params_data = load_params(os.path.join(exp_dir, params_fname))
-    setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]), variant=variant, base_log_dir='./data')
+    variant = load_variant(args.exp_dir)
+    variant["start_epoch"] = args.start_epoch
+    params_data = load_params(os.path.join(args.exp_dir, args.params_fname))
+    setup_logger(log_dir=args.exp_dir,
+                 variant=variant)
 
     experiment(variant, params_data)
