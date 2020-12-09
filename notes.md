@@ -133,9 +133,9 @@ Setting policy_eval_start to 0 (in args not dict) then issue raises immediately
 TODO:
     - See https://github.com/aviralkumar2907/CQL/issues/5 my line 182 in cql.py
         think this resolves it because we don't want policy loss to update qs
-        -> Pull request?
+        -> Pull request if works
     - Look into "policy eval start" param later on - 20,000 also said to work well
-    - See: https://github.com/aviralkumar2907/CQL/issues/4 as a potential bug
+    - Potential bug: https://github.com/aviralkumar2907/CQL/issues/4 
     - Train CQL longer - ideally 1M training steps
     - More complex env - randomness, peturbation
     - Human data?
