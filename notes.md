@@ -128,17 +128,26 @@ whereas policy is on v 40000
 40000 comes form the pre-training before "policy eval start"
 So not been fully training up until this point
 Setting policy_eval_start to 0 (in args not dict) then issue raises immediately
+See https://github.com/aviralkumar2907/CQL/issues/5 
 
+Solution: (?)
+X My line 182 in cql.py adding detach on the q fn part
+  No, see the issue, this breaks part of the gradient for the policy
+
+* Tried moving the Q function use for the policy until after the Q function update
+not sure if this is how it should work but seems to match the paper
+* Otherwise revert to torch 1.4
+
+______
 
 TODO:
-    - See https://github.com/aviralkumar2907/CQL/issues/5 my line 182 in cql.py
-        think this resolves it because we don't want policy loss to update qs
-        -> Pull request if works
-    - Look into "policy eval start" param later on - 20,000 also said to work well
-    - Potential bug: https://github.com/aviralkumar2907/CQL/issues/4 
-    - Train CQL longer - ideally 1M training steps
-    - More complex env - randomness, peturbation
-    - Human data?
+- See https://github.com/aviralkumar2907/CQL/issues/5 my line 182 in cql.py
+  think this resolves it because we don't want policy loss to update qs
+  -> Pull request if works
+- Look into "policy eval start" param later on - 20,000 also said to work well
+- Train CQL longer - ideally 1M training steps
+- More complex env - randomness, peturbation
+- Human data?
 
 Keep an eye on:
     - Panda Gym allows intersection of gripper with tray
