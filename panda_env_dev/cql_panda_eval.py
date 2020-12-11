@@ -15,10 +15,10 @@ def simulate_policy(args):
     data = torch.load(args.file)
     policy = data['evaluation/policy']
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    env = gym.make("panda-v0", **{"headless": args["headless"]})
+    env = gym.make("panda-v0", **{"headless": args.headless})
     env.seed(args.seed)
     print("Policy loaded")
-    if args.gpu:
+    if not args.no_gpu:
         set_gpu_mode(True)
         policy.cuda()
     paths = []
@@ -51,7 +51,7 @@ if __name__ == "__main__":
                         help='Max length of rollout')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
-    parser.add_argument('--gpu', type=bool, default=True)
+    parser.add_argument('--no_gpu', action='store_true')
     parser.add_argument('--seed', default=10, type=int)
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()

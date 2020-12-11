@@ -140,12 +140,14 @@ not sure if this is how it should work but seems to match the paper
 
 ______
 
-TODO:
-- See https://github.com/aviralkumar2907/CQL/issues/5 my line 182 in cql.py
-  think this resolves it because we don't want policy loss to update qs
-  -> Pull request if works
-- Look into "policy eval start" param later on - 20,000 also said to work well
+Not training well
+
+- Regather data
 - Train CQL longer - ideally 1M training steps
+
+______
+
+TODO:
 - More complex env - randomness, peturbation
 - Human data?
 

@@ -72,11 +72,7 @@ class PandaEnv(gym.Env):
         self.observation, state_object, state_robot = self.get_obs()
 
         done = False
-        reward = -0.1 * np.linalg.norm(state_robot - state_object)  # take hand to object
-        # task complete reward
-        if state_object[2]>0.45:
-            reward += 10.
-            done = True
+        done, reward = self.get_reward(done, state_object, state_robot)
 
         self.step_counter += 1
 
@@ -86,6 +82,14 @@ class PandaEnv(gym.Env):
 
         info = {'object_position': state_object}
         return self.observation.astype(np.float32), reward, done, info
+
+    def get_reward(self, done, state_object, state_robot):
+        reward = -0.1 * np.linalg.norm(state_robot - state_object)  # take hand to object
+        # task complete reward
+        if state_object[2] > 0.4:
+            reward += 10.
+            done = True
+        return done, reward
 
     def get_obs(self):
         state_robot = np.array(p.getLinkState(self.pandaUid, 11)[0])
@@ -120,8 +124,9 @@ class PandaEnv(gym.Env):
 
         trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"),basePosition=[0.65,0,0])
 
-        state_object= [random.uniform(0.5,0.8),random.uniform(-0.2,0.2),0.05]
-        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=state_object)
+        state_object= [random.uniform(0.5,0.7),random.uniform(-0.2,0.2),0.05]
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=state_object,
+                                    baseOrientation=[0, 0.5, 0, 0.5])
 
         # state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3) * np.random.choice([-1, 1])
         # secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)

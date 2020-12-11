@@ -67,13 +67,14 @@ def main():
     parser.add_argument('--video', action='store_true')
     parser.add_argument('--render', action='store_true')
     parser.add_argument('--noisy', action='store_true', help='Noisy actions')
+    parser.add_argument('--headless', action='store_true', help='Headless ie. no pybullet gui')
     args = parser.parse_args()
 
     exp_name = "gym_panda_pd_agent"
     if not os.path.exists("data"):
         os.makedirs("data")
 
-    env = gym.make("panda-v0")
+    env = gym.make("panda-v0", **{"headless": args.headless})
     s = env.reset()
     done = False
 
@@ -88,6 +89,8 @@ def main():
 
     ts = 0
     num_episodes = 0
+    returns = []
+    cum_rew = 0
     for _ in tqdm(range(args.num_samples)):
         act = pd.get_action(s)
 
@@ -104,10 +107,10 @@ def main():
 
         append_data(data, s, act, r, info["object_position"], done)
 
+        cum_rew += r
         ts += 1
 
         if done:
-            done = False
             ts = 0
             s = env.reset()
             pd.episode_start()
@@ -116,6 +119,8 @@ def main():
                 save_video('./videos/', exp_name, frames, num_episodes)
 
             num_episodes += 1
+            returns.append(cum_rew)
+            cum_rew = 0
             frames = []
         else:
             s = ns
@@ -134,6 +139,14 @@ def main():
     npify(data)
     for k in data:
         dataset.create_dataset(k, data=data[k], compression='gzip')
+
+    print("Created dataset.")
+    print("Saved to {}".format(fname))
+    print("{} Episodes, {} mean return, {} max return, {} min return.".format(num_episodes,
+                                                                              np.mean(returns),
+                                                                              np.max(returns),
+                                                                              np.min(returns)))
+
 
 
 if __name__ == '__main__':
