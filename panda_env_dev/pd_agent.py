@@ -26,7 +26,7 @@ class PDAgent:
         pd_x = self.k_p * dx + self.k_d * dx / self.dt
         pd_y = self.k_p * dy + self.k_d * dy / self.dt
         pd_z = self.k_p * dz + self.k_d * dz / self.dt
-        if abs(dx) > self.error[0] * 2 or abs(dy) > self.error[1] * 2:  # get roughly over the object
+        if abs(dx) > self.error[0] * 3 or abs(dy) > self.error[1] * 3:  # get roughly over the object
             pd_z = 0
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
             self.fingers = 0
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     env.reset()
     pd = PDAgent()
 
-    for i_episode in range(20):
+    for i_episode in range(50):
         done = False
         observation = env.reset()
         cum_reward = 0
