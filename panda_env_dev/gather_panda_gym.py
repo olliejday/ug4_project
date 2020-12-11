@@ -2,7 +2,7 @@ import gym
 import gym_panda
 from tqdm import tqdm
 
-from panda_env_dev.pd_agent import PDAgent
+from pd_agent import PDAgent
 import numpy as np
 import pickle
 import gzip
@@ -67,14 +67,14 @@ def main():
     parser.add_argument('--video', action='store_true')
     parser.add_argument('--render', action='store_true')
     parser.add_argument('--noisy', action='store_true', help='Noisy actions')
-    parser.add_argument('--headless', action='store_true', help='Headless ie. no pybullet gui')
+    parser.add_argument('--gui', action='store_true', help='Pybullet gui')
     args = parser.parse_args()
 
     exp_name = "gym_panda_pd_agent"
     if not os.path.exists("data"):
         os.makedirs("data")
 
-    env = gym.make("panda-v0", **{"headless": args.headless})
+    env = gym.make("panda-v0", **{"headless": not args.gui})
     s = env.reset()
     done = False
 

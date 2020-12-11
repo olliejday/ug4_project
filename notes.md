@@ -142,12 +142,12 @@ ______
 
 Not training well
 
-- Regather data
-- Train CQL longer - ideally 1M training steps
-
 ______
 
 TODO:
+Have regathered data to try again since changed the env.
+If not try torch 1.4
+- Train CQL longer - ideally 1M training steps
 - More complex env - randomness, peturbation
 - Human data?
 
