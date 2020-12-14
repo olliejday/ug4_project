@@ -141,13 +141,20 @@ not sure if this is how it should work but seems to match the paper
 ______
 
 Not training well
+Doing for longer now - 3k epochs
 
+DONE
+Regathered data with a slightly better agent (3M examples)
+Changed params based on CQL paper - adroit task params
 ______
 
 TODO:
-Have regathered data to try again since changed the env.
-If not try torch 1.4
-- Train CQL longer - ideally 1M training steps
+Try with torch 1.4 if no luck
+Episodes too short? -> 1500-2000 max
+less behav cloning? -> 10k polciy eval?
+more behav cloning?
+change reward?
+
 - More complex env - randomness, peturbation
 - Human data?
 

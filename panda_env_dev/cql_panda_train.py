@@ -158,68 +158,51 @@ if __name__ == "__main__":
         sparse_reward=False,
         h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
-            num_epochs=100,
-            num_eval_steps_per_epoch=1000,
-            num_trains_per_train_loop=1000,  
-            num_expl_steps_per_train_loop=1000,
-            min_num_steps_before_training=1000,
-            max_path_length=1000,
+            num_epochs=3000,
+            num_train_loops_per_epoch=1,
+            num_trains_per_train_loop=1000,
+            max_path_length=1500,
+            num_eval_steps_per_epoch=1500,
+            num_expl_steps_per_train_loop=1500,
+            min_num_steps_before_training=1500,
             batch_size=256,
         ),
         trainer_kwargs=dict(
             discount=0.99,
             soft_target_tau=5e-3,
-            policy_lr=1E-4,
-            qf_lr=3E-4,
+            policy_lr=3e-5,
+            qf_lr=3e-4,
             reward_scale=1,
             use_automatic_entropy_tuning=True,
 
             # Target nets/ policy vs Q-function update
-            policy_eval_start=40000,
+            policy_eval_start=20000,  # Defaulted to 20000 (40000 or 10000 work similarly)
             num_qs=2,
 
             # CQL
-            temp=1.0,
-            min_q_version=3,
-            min_q_weight=1.0,
+            temp=5.0,
+            min_q_version=3,  # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho))
+            min_q_weight=1.0,  # the value of alpha, set to 5.0 or 10.0 if not using lagrange
 
             # lagrange
             with_lagrange=True,   # Defaults to true
-            lagrange_thresh=10.0,
-            
+            lagrange_thresh=10.0,  # the value of tau, corresponds to the CQL(lagrange) version
+
             # extra params
             num_random=10,
-            max_q_backup=False,
-            deterministic_backup=False,
+            max_q_backup=False,  # if we want to try max_{a'} backups, set this to true
+            deterministic_backup=True,  # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
         ),
     )
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default='panda-v0')
     parser.add_argument("--gpu", default='0', type=str)
-    parser.add_argument("--max_q_backup", type=str, default="False")          # if we want to try max_{a'} backups, set this to true
-    parser.add_argument("--deterministic_backup", type=str, default="True")   # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
-    parser.add_argument("--policy_eval_start", default=20000, type=int)       # Defaulted to 20000 (40000 or 10000 work similarly)
-    parser.add_argument('--min_q_weight', default=1.0, type=float)            # the value of alpha, set to 5.0 or 10.0 if not using lagrange
-    parser.add_argument('--policy_lr', default=1e-4, type=float)              # Policy learning rate
-    parser.add_argument('--min_q_version', default=3, type=int)               # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho)) 
-    parser.add_argument('--lagrange_thresh', default=5.0, type=float)         # the value of tau, corresponds to the CQL(lagrange) version
     parser.add_argument('--seed', default=10, type=int)
     parser.add_argument('--gui', action='store_true')
 
     args = parser.parse_args()
-    # enable_gpus(args.gpu)
-    variant['trainer_kwargs']['max_q_backup'] = (True if args.max_q_backup == 'True' else False)
-    variant['trainer_kwargs']['deterministic_backup'] = (True if args.deterministic_backup == 'True' else False)
-    variant['trainer_kwargs']['min_q_weight'] = args.min_q_weight
-    variant['trainer_kwargs']['policy_lr'] = args.policy_lr
-    variant['trainer_kwargs']['min_q_version'] = args.min_q_version
-    variant['trainer_kwargs']['temp'] = 1.0
-    variant['trainer_kwargs']['policy_eval_start'] = args.policy_eval_start
-    variant['trainer_kwargs']['lagrange_thresh'] = args.lagrange_thresh
-    if args.lagrange_thresh < 0.0:
-        variant['trainer_kwargs']['with_lagrange'] = False
-    
+
     variant['buffer_filename'] = None
 
     variant['load_buffer'] = True
@@ -230,5 +213,8 @@ if __name__ == "__main__":
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
-    # ptu.set_gpu_mode(True)
+    if args.gpu:
+        enable_gpus(args.gpu)
+        ptu.set_gpu_mode(True)
+
     experiment(variant)
