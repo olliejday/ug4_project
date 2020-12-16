@@ -71,7 +71,7 @@ def get_dataset(h5path, env):
 
 def experiment(variant, data):
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    eval_env = gym.make("panda-v0", **{"headless": args["headless"]})
+    eval_env = gym.make("panda-v0", **{"headless": variant["headless"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
 
