@@ -197,9 +197,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default='panda-v0')
-    parser.add_argument("--gpu", default="True", type=str)
     parser.add_argument('--seed', default=10, type=int)
     parser.add_argument('--gui', action='store_true')
+    parser.add_argument('--no_gpu', action='store_true')
 
     args = parser.parse_args()
 
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
-    if args.gpu == "True":
+    if not args.no_gpu:
         enable_gpus(args.gpu)
         ptu.set_gpu_mode(True)
 
