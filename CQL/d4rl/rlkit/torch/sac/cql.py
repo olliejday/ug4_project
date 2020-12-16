@@ -172,16 +172,6 @@ class CQLTrainer(TorchTrainer):
             alpha_loss = 0
             alpha = 1
 
-        if self.num_qs == 1:
-            q_new_actions = self.qf1(obs, new_obs_actions)
-        else:
-            q_new_actions = torch.min(
-                self.qf1(obs, new_obs_actions),
-                self.qf2(obs, new_obs_actions),
-            )
-
-        policy_loss = (alpha * log_pi - q_new_actions).mean()
-
         if self._current_epoch < self.policy_eval_start:
             """
             For the initial few epochs, try doing behaivoral cloning, if needed
@@ -301,6 +291,16 @@ class CQLTrainer(TorchTrainer):
             self.qf2_optimizer.zero_grad()
             qf2_loss.backward(retain_graph=True)
             self.qf2_optimizer.step()
+
+        if self.num_qs == 1:
+            q_new_actions = self.qf1(obs, new_obs_actions)
+        else:
+            q_new_actions = torch.min(
+                self.qf1(obs, new_obs_actions),
+                self.qf2(obs, new_obs_actions),
+            )
+
+        policy_loss = (alpha * log_pi - q_new_actions).mean()
 
         self._num_policy_update_steps += 1
         self.policy_optimizer.zero_grad()

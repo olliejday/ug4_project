@@ -5,6 +5,7 @@ python-dateutil
 matplotlib
 
 torchvision # Cuda 10.2
+torch
 
 # For human control
 # tkinter
