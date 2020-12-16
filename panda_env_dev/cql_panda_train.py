@@ -139,6 +139,12 @@ def experiment(variant):
         algorithm.train()
 
 
+def enable_gpus(gpu_str):
+    if (gpu_str is not ""):
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_str
+    return
+
+
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
@@ -197,6 +203,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    gpu_str = "0"
+
     variant['buffer_filename'] = None
 
     variant['load_buffer'] = True
@@ -208,6 +216,7 @@ if __name__ == "__main__":
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
     if not args.no_gpu:
+        enable_gpus(gpu_str)
         ptu.set_gpu_mode(True)
 
     experiment(variant)

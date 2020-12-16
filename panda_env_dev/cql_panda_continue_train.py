@@ -149,6 +149,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    gpu_str = "0"
+
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
     variant['headless'] = not args.gui
@@ -158,6 +160,7 @@ if __name__ == "__main__":
                  variant=variant)
 
     if not args.no_gpu:
+        enable_gpus(gpu_str)
         ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
