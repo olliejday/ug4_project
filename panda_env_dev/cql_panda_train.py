@@ -214,7 +214,7 @@ if __name__ == "__main__":
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
     if not args.no_gpu:
-        enable_gpus(args.gpu)
+        enable_gpus(True)
         ptu.set_gpu_mode(True)
 
     experiment(variant)
