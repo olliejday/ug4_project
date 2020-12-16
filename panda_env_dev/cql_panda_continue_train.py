@@ -158,7 +158,6 @@ if __name__ == "__main__":
                  variant=variant)
 
     if not args.no_gpu:
-        enable_gpus(True)
         ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
