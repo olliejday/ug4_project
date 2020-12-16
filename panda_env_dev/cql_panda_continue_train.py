@@ -145,6 +145,7 @@ if __name__ == "__main__":
     parser.add_argument('start_epoch', type=int, help="Start epoch for continue training logs")
     parser.add_argument("--params_fname", default="params.pkl", type=str)
     parser.add_argument('--gui', action='store_true')
+    parser.add_argument("--gpu", default="True", type=str)
 
     args = parser.parse_args()
 
@@ -155,5 +156,9 @@ if __name__ == "__main__":
     params_data = load_params(os.path.join(args.exp_dir, args.params_fname))
     setup_logger(log_dir=args.exp_dir,
                  variant=variant)
+
+    if args.gpu == "True":
+        enable_gpus(args.gpu)
+        ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
