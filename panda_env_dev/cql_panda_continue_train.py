@@ -71,7 +71,7 @@ def get_dataset(h5path, env):
 
 def experiment(variant, data):
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    eval_env = gym.make("panda-v0", **{"headless": args["headless"]})
+    eval_env = gym.make("panda-v0", **{"headless": variant["headless"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
 
@@ -145,9 +145,11 @@ if __name__ == "__main__":
     parser.add_argument('start_epoch', type=int, help="Start epoch for continue training logs")
     parser.add_argument("--params_fname", default="params.pkl", type=str)
     parser.add_argument('--gui', action='store_true')
-    parser.add_argument("--gpu", default="True", type=str)
+    parser.add_argument('--no_gpu', action='store_true')
 
     args = parser.parse_args()
+
+    gpu_str = "0"
 
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
@@ -157,8 +159,10 @@ if __name__ == "__main__":
     setup_logger(log_dir=args.exp_dir,
                  variant=variant)
 
-    if args.gpu == "True":
-        enable_gpus(args.gpu)
-        ptu.set_gpu_mode(True)
+    # Not working atm, seems to use GPU anyway though
+
+    # if not args.no_gpu:
+    #     enable_gpus(gpu_str)
+    #     ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
