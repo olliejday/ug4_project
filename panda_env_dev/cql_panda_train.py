@@ -215,8 +215,10 @@ if __name__ == "__main__":
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
-    if not args.no_gpu:
-        enable_gpus(gpu_str)
-        ptu.set_gpu_mode(True)
+
+    # Not working atm, seems to use GPU anyway though
+    # if not args.no_gpu:
+    #     enable_gpus(gpu_str)
+    #     ptu.set_gpu_mode(True)
 
     experiment(variant)

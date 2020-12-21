@@ -159,8 +159,9 @@ if __name__ == "__main__":
     setup_logger(log_dir=args.exp_dir,
                  variant=variant)
 
-    if not args.no_gpu:
-        enable_gpus(gpu_str)
-        ptu.set_gpu_mode(True)
+    # Not working atm, seems to use GPU anyway though
+    # if not args.no_gpu:
+    #     enable_gpus(gpu_str)
+    #     ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
