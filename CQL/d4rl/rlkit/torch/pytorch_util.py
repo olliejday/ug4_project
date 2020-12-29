@@ -1,4 +1,5 @@
 import torch
+import torch.distributions
 import numpy as np
 import os
 
@@ -125,3 +126,7 @@ def tensor(*args, torch_device=None, **kwargs):
 
 def normal(*args, **kwargs):
     return torch.normal(*args, **kwargs).to(device)
+
+
+def uniform(shape, low=-1, high=1):
+    return torch.distributions.uniform(low, high).sample(shape).to(device)
