@@ -170,7 +170,7 @@ if __name__ == "__main__":
             use_automatic_entropy_tuning=True,
 
             # Target nets/ policy vs Q-function update
-            policy_eval_start=0,  # Defaulted to 20000 (40000 or 10000 work similarly)
+            policy_eval_start=20000,  # Defaulted to 20000 (40000 or 10000 work similarly)
             num_qs=2,
 
             # CQL
