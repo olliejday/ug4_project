@@ -61,6 +61,7 @@ def set_gpu_mode(mode, gpu_id=0):
     _gpu_id = gpu_id
     _use_gpu = mode
     device = torch.device("cuda:" + str(gpu_id) if _use_gpu else "cpu")
+    print(device)
 
 
 def gpu_enabled():
@@ -79,6 +80,7 @@ def FloatTensor(*args, torch_device=None, **kwargs):
 
 
 def from_numpy(*args, **kwargs):
+    print(device)
     return torch.from_numpy(*args, **kwargs).float().to(device)
 
 
