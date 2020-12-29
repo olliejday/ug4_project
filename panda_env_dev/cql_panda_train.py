@@ -1,7 +1,7 @@
 import time
 
-import rlkit.torch.pytorch_util as ptu
 import torch
+import rlkit.torch.pytorch_util as ptu
 from d4rl import get_keys
 from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
 from rlkit.launchers.launcher_util import setup_logger
@@ -139,12 +139,6 @@ def experiment(variant):
         algorithm.train()
 
 
-def enable_gpus(gpu_str):
-    if (gpu_str is not ""):
-        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_str
-    return
-
-
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
@@ -211,15 +205,13 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
 
+    gpu_str = "0"
+    if not args.no_gpu:
+        ptu.enable_gpus(gpu_str)
+        ptu.set_gpu_mode(True)
+
     rnd = np.random.randint(0, 1000000)
     setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
                  variant=variant, base_log_dir='./data')
-
-    gpu_str = "0"
-
-    # Not working atm, seems to use GPU anyway though
-    # if not args.no_gpu:
-    #     enable_gpus(gpu_str)
-    #     ptu.set_gpu_mode(True)
 
     experiment(variant)

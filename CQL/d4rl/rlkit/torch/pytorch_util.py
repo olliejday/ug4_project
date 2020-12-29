@@ -48,6 +48,11 @@ _use_gpu = False
 device = None
 _gpu_id = 0
 
+def enable_gpus(gpu_str):
+    if (gpu_str is not ""):
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_str
+    set_device(int(gpu_str))
+    return
 
 def set_gpu_mode(mode, gpu_id=0):
     global _use_gpu

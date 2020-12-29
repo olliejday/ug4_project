@@ -3,7 +3,7 @@ from collections import OrderedDict
 import numpy as np
 
 from rlkit.data_management.replay_buffer import ReplayBuffer
-
+import rlkit.torch.pytorch_util as ptu
 
 class SimpleReplayBuffer(ReplayBuffer):
 
@@ -61,11 +61,11 @@ class SimpleReplayBuffer(ReplayBuffer):
     def random_batch(self, batch_size):
         indices = np.random.randint(0, self._size, batch_size)
         batch = dict(
-            observations=self._observations[indices],
-            actions=self._actions[indices],
-            rewards=self._rewards[indices],
-            terminals=self._terminals[indices],
-            next_observations=self._next_obs[indices],
+            observations=ptu.from_numpy(self._observations[indices]),
+            actions=ptu.from_numpy(self._actions[indices]),
+            rewards=ptu.from_numpy(self._rewards[indices]),
+            terminals=ptu.from_numpy(self._terminals[indices]),
+            next_observations=ptu.from_numpy(self._next_obs[indices]),
         )
         for key in self._env_info_keys:
             assert key not in batch.keys()
