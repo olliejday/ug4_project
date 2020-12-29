@@ -197,7 +197,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-
     variant['buffer_filename'] = None
 
     variant['load_buffer'] = True
