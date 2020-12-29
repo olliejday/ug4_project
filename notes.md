@@ -148,12 +148,58 @@ Regathered data with a slightly better agent (3M examples)
 Changed params based on CQL paper - adroit task params
 ______
 
+	Running torch 1.4 
+	Much slower bc not using GPU as CUDA version doesn't match
+	Got "killed" at 320 epochs - not sure why
+	Compare results
+	Behaviour wise -does manage to get a grasp on some runs but seems to just be redoing the same initial movement regardless of where the object is placed, though the closing fingers seems to only happen when object close
+	Does seem better esp than other experiment at that stage did also change the parameters
+	Checked the object obsv and it changes each time the object moves to seems ok
+
+torch 1.5 get same autograd in place error
+
+1.7 quicker than 1.4
+	Ran with no_gpu arg bc it complains "RuntimeError: All input tensors must be on the same device. Received cuda:0 and cpu"
+	But since CUDA version is correct for this I think it still uses GPU
+	
+1.4 behaviour qualitatively / visually appears better but could not be as fundamental, since other epochs models not as good
+
+Using conda for cuda 10.1 with torch 1.4
+
+Ran a 1.4 version
+Didn't solve it but looking good and close
+Not sure if I noted but also have changed params to the ones paper quotes for using with adroit
+
+
+GPU
+Average epoch speed on v1.7 is about 150
+Avg epoch speed on v1.4 is about 250
+.
+So v1.4 still much slower
+.
+v1.4 recognises the gpu but while running the gpu is not being used (by looking at memory usage)
+.
+so look at v1.4 gpu pushing to gpu
+want the training and policy on gpu
+https://discuss.pytorch.org/t/pytorch-is-not-using-gpu/57358
+
+Think works on GPU now for train
+Note had to change the uniform sampling so small chance that could be a bug (for future reference) https://github.com/pytorch/pytorch/issues/24162
+Much quicker now :)
+
+Eval and exploration are a small amount of epoch time so could increase?
+
+____
+
+
+1. Try wenbin's reward and obs
+
+
+
+____
+
 TODO:
-Try with torch 1.4 if no luck
-Episodes too short? -> 1500-2000 max
-less behav cloning? -> 10k polciy eval?
-more behav cloning?
-change reward?
+Work on params / reward function / env
 
 - More complex env - randomness, peturbation
 - Human data?
