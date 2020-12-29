@@ -129,4 +129,4 @@ def normal(*args, **kwargs):
 
 
 def uniform(shape, low=-1, high=1):
-    return torch.distributions.uniform(low, high).sample(shape).to(device)
+    return torch.distributions.Uniform(low, high).sample(shape).to(device)
