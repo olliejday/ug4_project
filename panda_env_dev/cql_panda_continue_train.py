@@ -149,20 +149,17 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    gpu_str = "0"
-
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
     variant['headless'] = not args.gui
 
+    gpu_str = "0"
+    if not args.no_gpu:
+        ptu.enable_gpus(gpu_str)
+        ptu.set_gpu_mode(True)
+
     params_data = load_params(os.path.join(args.exp_dir, args.params_fname))
     setup_logger(log_dir=args.exp_dir,
                  variant=variant)
-
-    # Not working atm, seems to use GPU anyway though
-
-    # if not args.no_gpu:
-    #     enable_gpus(gpu_str)
-    #     ptu.set_gpu_mode(True)
 
     experiment(variant, params_data)
