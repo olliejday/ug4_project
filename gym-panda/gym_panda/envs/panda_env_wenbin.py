@@ -256,7 +256,7 @@ def get_reward_tips_divergence(pandaUid, objectUid):
     obj_aa, obj_bb = p.getAABB(objectUid)
     vertex, face_center, edge_center = get_obj_keypoints(obj_aa, obj_bb)
     object_keypoint_pos = np.concatenate([vertex, face_center, edge_center], axis=0)
-    draw_bounding_box(obj_aa, obj_bb)
+    # draw_bounding_box(obj_aa, obj_bb)
     sumDistSquare, sumDivergence = distTipsSquare(handtips_pos, object_keypoint_pos, handtips_mat)
     return sumDistSquare, sumDivergence, object_keypoint_pos
 
@@ -399,7 +399,7 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, v in self.reward_weights.items():
             reward += v * reward_dict[k]
-        plot_reward(reward_dict)
+        # plot_reward(reward_dict)
         return done, reward, reward_dict
 
     def get_obs(self):
