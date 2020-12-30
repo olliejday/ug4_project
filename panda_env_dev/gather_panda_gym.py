@@ -103,7 +103,7 @@ def main():
         if ts >= args.max_episode_steps:
             done = True
 
-        append_data(data, s, act, r, info["object_position"], done)
+        append_data(data, s, act, r, info["obj_pos"], done)
 
         cum_rew += r
         ts += 1
