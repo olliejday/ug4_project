@@ -76,7 +76,7 @@ def main():
 
     env = gym.make("panda-v0", **{"headless": not args.gui})
     s = env.reset()
-    done = False
+    info = None
 
     # Load the policy
     pd = PDAgent()
@@ -92,15 +92,13 @@ def main():
     returns = []
     cum_rew = 0
     for _ in tqdm(range(args.num_samples)):
-        act = pd.get_action(s)
+        act = pd.get_action(info)
 
         if args.noisy:
             act = act + np.random.randn(*act.shape) * 0.2
             act = np.clip(act, -1.0, 1.0)
 
         ns, r, done, info = env.step(act)
-
-        pd.update_info(info)
 
         if ts >= args.max_episode_steps:
             done = True
