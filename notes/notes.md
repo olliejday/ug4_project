@@ -191,10 +191,45 @@ Eval and exploration are a small amount of epoch time so could increase?
 
 ____
 
-
 1. Try wenbin's reward and obs
 
+Obs
 
+relative_obj_pos = obj_pos - hand_pos
+
+hand_yaw
+        hand_mat = self.sim.data.get_geom_xmat('palm2')
+        hand_quat = Rotation.from_dcm(hand_mat)
+        hand_euler = hand_quat.as_euler('zyx', degrees=True)
+        hand_yaw = hand_euler[0] * math.pi / 180
+        hand_yaw = -np.sign(hand_yaw) * (math.pi - abs(hand_yaw))
+
+joint_qpos = np.array([self.sim.data.get_joint_qpos(name) for name in names])
+# fingers only
+
+distance_finger1 = np.sqrt(np.square(obj_pos[0] - finger_pos1[0]) + np.square(obj_pos[1] - finger_pos1[1])
+                           + np.square(obj_pos[2] - finger_pos1[2])) - self.object_radius
+        finger_pos1 = self.sim.data.get_geom_xpos("finger1_dist").copy()
+        finger_pos2 = self.sim.data.get_geom_xpos("finger2_dist").copy()
+        finger_pos3 = self.sim.data.get_geom_xpos("finger3_dist").copy()
+
+
+contactForce = self.sim.data.sensordata[0:7]
+# Torque in pybullet is 6Dof 
+
+!Think matches obs now
+
+Reward
+
+dist tips + divergence + dist centre + contact + penalty collision + topological
+Ignoring penalty obj vel
+
+Handy note
+Assuming the body id is n, the 3D position is at mjData.xpos+3n and the quaternion orientation is at mjData.xquat+4*n. You can also get the orientation as a 3x3 orthonormal matrix at mjData.xmat+9*n.
+
+/home/ollie/.virtualenvs/ug4_project1_4/lib/python3.6/site-packages/pybullet_data/franka_panda/panda.urdf
+
+photo of frames
 
 ____
 

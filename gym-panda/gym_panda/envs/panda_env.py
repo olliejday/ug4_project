@@ -80,7 +80,12 @@ class PandaEnv(gym.Env):
             reward = 0
             done = True
 
-        info = {'object_position': state_object}
+        info = {
+            "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
+            "hand_pos": np.array(p.getLinkState(self.pandaUid, 11)[0]),
+            "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
+                                     p.getJointState(self.pandaUid, 10)[0]])
+        }
         return self.observation.astype(np.float32), reward, done, info
 
     def get_reward(self, done, state_object, state_robot):
