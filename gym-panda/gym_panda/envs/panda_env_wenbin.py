@@ -208,12 +208,12 @@ def get_penalty_collision(pandaUid, objectUid):
         # in xy a collision if finger 1 contact normal is opposite to finger (1 to 2) vector
         if contact[3 + robot_is_B] == pandaJointsDict["panda_finger_joint1"]:
             if angle >= 100 and angle <= 260:
-                print(1, finger_vector12, contact_normal, angle)
+                # print(1, finger_vector12, contact_normal, angle)
                 collisions.append(contact)
         # in xy a collision if finger 2 contact normal is the same to finger (1 to 2) vector
         elif contact[3 + robot_is_B] == pandaJointsDict["panda_finger_joint2"]:
             if angle <= 80 or angle >= 280:
-                print(2, finger_vector12, contact_normal, angle)
+                # print(2, finger_vector12, contact_normal, angle)
                 collisions.append(contact)
     return - len(collisions)
 
