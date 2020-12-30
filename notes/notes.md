@@ -248,7 +248,9 @@ ____
 
 TODO:
 Work on params / reward function / env
-Params - NN params
+    Topology and obj kps    
+    Reward weights
+    Params - NN params
 
 - More complex env - randomness, peturbation
 - Human data?
