@@ -8,7 +8,7 @@ import pybullet_data
 import math
 import numpy as np
 import random
-
+import matplotlib.pyplot as plt
 from scipy.spatial.qhull import Delaunay
 
 """
@@ -83,8 +83,10 @@ def distTipsSquare(handtips, pointcloud, handtipNormal):
     return sumDistSquare, sum_divergence
 
 
-def draw_bounding_box(vertices, lifeTime=0.1):
+def draw_bounding_box(aa, bb, lifeTime=0.1):
     """
+    :param aa: AA min corner from getAABB
+    :param bb: BB max corner from getAABB
     :param vertices as returned from obj keypoints
     """
     # TODO: redo from verts
@@ -105,24 +107,15 @@ def draw_bounding_box(vertices, lifeTime=0.1):
     p.addUserDebugLine((bb[0], bb[1], aa[2]), (bb[0], bb[1], bb[2]), (0, 0, 255), 3, lifeTime)
 
 
-def get_obj_keypoints(aa, bb, cor, rot_mat):
+def get_obj_keypoints(aa, bb):
     """
     :param aa: AA min corner from getAABB
     :param bb: BB max corner from getAABB
-    :param cor: centre of rotation
-    :param rot_mat: rotation matrix of base frame of obj
     :return: keypoints in world x y z
         vertices (all bounding box vertices) (8, 3), face centres (6, 3), edge centres (12, 3)
     """
-    # TODO: change to not axis aligned - assume symmetry and use centre of rot?
+    # TODO: change to not axis aligned?
     # TODO: check / test under rotation
-    obj_av = np.subtract(cor, aa)
-    obj_av_rot = rot_mat.dot(obj_av)
-    obj_aa_ = np.subtract(cor, obj_av_rot)
-    obj_bv = np.subtract(cor, bb)
-    obj_bv_rot = rot_mat.dot(obj_bv)
-    obj_bb_ = np.subtract(cor, obj_bv_rot)
-
     vertices = np.array([
         np.array((aa[0], aa[1], aa[2])),
         np.array((bb[0], aa[1], aa[2])),
@@ -235,7 +228,8 @@ def get_reward_contacts(pandaUid, objectUid):
         if contact[1] == pandaUid and contact[2] == objectUid or \
                 contact[2] == pandaUid and contact[1] == objectUid:  # get robot and object contacts
             contacts.append(contact)
-            if contact[3] == pandaJointsDict["panda_hand_joint"] or contact[4] == pandaJointsDict["panda_hand_joint"]:  # contact with palm
+            if contact[3] == pandaJointsDict["panda_hand_joint"] or contact[4] == pandaJointsDict[
+                "panda_hand_joint"]:  # contact with palm
                 palm_contact = 2
     return len(contacts) + palm_contact
 
@@ -250,20 +244,19 @@ def get_reward_distCenter(pandaUid, objectUid):
 
 def get_reward_tips_divergence(pandaUid, objectUid):
     handtips_pos = np.stack([p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
-                                   p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint2"])[0],
-                                   p.getLinkState(pandaUid, pandaJointsDict["panda_hand_joint"])[0],])
+                             p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint2"])[0],
+                             p.getLinkState(pandaUid, pandaJointsDict["panda_hand_joint"])[0], ])
     handtips_mat = np.stack(
         [np.array(p.getMatrixFromQuaternion(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint1"])[1]))[1::3],
          np.array(p.getMatrixFromQuaternion(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint2"])[1]))[1::3],
-         np.array(p.getMatrixFromQuaternion(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint1"])[1]))[2::3],])
+         np.array(p.getMatrixFromQuaternion(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint1"])[1]))[
+         2::3], ])
     # dist tips and divergence
     # get bounding box of obj
     obj_aa, obj_bb = p.getAABB(objectUid)
-    obj_cor = p.getBasePositionAndOrientation(objectUid)[0]
-    rot_mat = np.array(p.getMatrixFromQuaternion(p.getBasePositionAndOrientation(objectUid)[1])).reshape((3, 3))
-    vertex, face_center, edge_center = get_obj_keypoints(obj_aa, obj_bb, obj_cor, rot_mat)
+    vertex, face_center, edge_center = get_obj_keypoints(obj_aa, obj_bb)
     object_keypoint_pos = np.concatenate([vertex, face_center, edge_center], axis=0)
-    draw_bounding_box(vertex)
+    draw_bounding_box(obj_aa, obj_bb)
     sumDistSquare, sumDivergence = distTipsSquare(handtips_pos, object_keypoint_pos, handtips_mat)
     return sumDistSquare, sumDivergence, object_keypoint_pos
 
@@ -280,6 +273,7 @@ def get_reward_topological(pandaUid, object_keypoint_pos):
     hand_pos = np.array(p.getLinkState(pandaUid, pandaJointsDict["panda_hand_joint"])[0])
     finger_pos1 = np.array(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint1"])[0])
     finger_pos2 = np.array(p.getLinkState(pandaUid, pandaJointsDict["panda_finger_joint2"])[0])
+    # TODO: these points don't work in Delaunay - on a line / plane
     hand_hull = Delaunay(np.stack([fingertip_pos, hand_pos, finger_pos1, finger_pos2]))
     inhull_result = in_hull(
         np.concatenate([object_keypoint_pos, [np.mean(object_keypoint_pos, axis=0)]], axis=0), hand_hull)
@@ -290,10 +284,43 @@ def get_reward_topological(pandaUid, object_keypoint_pos):
     return count
 
 
+def get_reward_completion(objectUid, height_target=0.4):
+    """
+    Completed if object z is high
+    1 if done, 0 else
+    """
+    obj_z = p.getBasePositionAndOrientation(objectUid)[0][2]
+    return int(obj_z >= height_target)
+
+
+rewards = {}
+
+def plot_reward(reward_dict):
+    plt.clf()
+    for k, v in reward_dict.items():
+        if k in rewards:
+            rewards[k].append(v)
+        else:
+            rewards[k] = [v]
+        plt.plot(rewards[k], label=k)
+    plt.legend(loc="best")
+    plt.draw()
+    plt.pause(0.001)
+
+
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     def __init__(self, headless):
+        self.reward_weights = {
+            "reward_distTips": 1,
+            "reward_divergence": 1,
+            "reward_distCenter": 0.1,
+            "reward_contact": 2,
+            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
+            "penalty_collision": 4,
+            "reward_completion": 3,
+        }
         self.step_counter = 0
         if headless:
             p.connect(p.DIRECT)
@@ -350,7 +377,7 @@ class PandaEnv(gym.Env):
             "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
             "hand_pos": np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0]),
             "fingers_joint": np.array([p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
-                                     p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]])
+                                       p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]])
         }
         return self.observation.astype(np.float32), reward, done, info
 
@@ -365,11 +392,14 @@ class PandaEnv(gym.Env):
             "reward_divergence": reward_divergence,
             "reward_distCenter": get_reward_distCenter(self.pandaUid, self.objectUid),
             "reward_contact": get_reward_contacts(self.pandaUid, self.objectUid),
-            # "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
+            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
             "penalty_collision": get_penalty_collision(self.pandaUid, self.objectUid),
+            "reward_completion": get_reward_completion(self.objectUid)
         }
-        reward = sum([v for v in reward_dict.values()])
-        print(reward_dict)
+        reward = 0
+        for k, v in self.reward_weights.items():
+            reward += v * reward_dict[k]
+        plot_reward(reward_dict)
         return done, reward, reward_dict
 
     def get_obs(self):
@@ -473,5 +503,3 @@ class PandaEnv(gym.Env):
         seed = seeding.create_seed(seed)
         random.seed(seed)
         np.random.seed(seed)
-
-

@@ -193,6 +193,13 @@ ____
 
 1. Try wenbin's reward and obs
 
+Handy note for mujoco to pybullet
+Assuming the body id is n, the 3D position is at mjData.xpos+3n and the quaternion orientation is at mjData.xquat+4*n. You can also get the orientation as a 3x3 orthonormal matrix at mjData.xmat+9*n.
+
+/home/ollie/.virtualenvs/ug4_project1_4/lib/python3.6/site-packages/pybullet_data/franka_panda/panda.urdf
+
+photo of frames from rviz
+
 Obs
 
 relative_obj_pos = obj_pos - hand_pos
@@ -222,19 +229,26 @@ contactForce = self.sim.data.sensordata[0:7]
 Reward
 
 dist tips + divergence + dist centre + contact + penalty collision + topological
-Ignoring penalty obj vel
 
-Handy note
-Assuming the body id is n, the 3D position is at mjData.xpos+3n and the quaternion orientation is at mjData.xquat+4*n. You can also get the orientation as a 3x3 orthonormal matrix at mjData.xmat+9*n.
+NOTE
+Ignoring penalty obj vel as was zerod in wenbins original code
+Also ignoring vector reward (to point hand to obj) from paper as not in wenbins original code
+Object keypoints are from axis aligned bounding box may want to change to not axis aligned
+    Don't think can get bounding box from aabb and ctr of rot so revert back to using aabb,
+Not using topological at the moment as not working
+    BC all points are planar or even on a line? so not able to find convex hull
+    But seems like an important part of reward and was highest weighted
+*Figure out way to find hull for gripper and bounding box (not axis aligned) for object to make topological reward
+    and improve object kps
 
-/home/ollie/.virtualenvs/ug4_project1_4/lib/python3.6/site-packages/pybullet_data/franka_panda/panda.urdf
-
-photo of frames
+Initial reward weights taken from wenbin's code
+Added a completion reward and then debug a bit and give it a try
 
 ____
 
 TODO:
 Work on params / reward function / env
+Params - NN params
 
 - More complex env - randomness, peturbation
 - Human data?
