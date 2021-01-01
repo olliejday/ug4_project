@@ -246,6 +246,21 @@ Added a completion reward and then debug a bit and give it a try
 
 ____
 
+Ran the new reward
+It did't work - recorded better performance around 200 iters but on the eval wasnt better
+Most seemed to move upwards away from object
+Think last experiment (old reward) was better it went towards on some eval iters but no good at grasping
+
+* Start with simpler env?
+* Change obs / acs? - old reward better?
+* Change reward weights
+* Debug rewards
+* Msg Wenbin and Li about progress
+* Add other rewards - Topology and obj kps 
+* params? nn params?
+
+____
+
 TODO:
 Work on params / reward function / env
     Topology and obj kps    

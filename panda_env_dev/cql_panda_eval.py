@@ -12,7 +12,7 @@ filename = str(uuid.uuid4())
 
 
 def simulate_policy(args):
-    data = torch.load(args.file)
+    data = torch.load(args.file, map_location=ptu.device)
     policy = data['evaluation/policy']
     policy.to(ptu.device)
     # make new env, reloading with data['evaluation/env'] seems to make bug
