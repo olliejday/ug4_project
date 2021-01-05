@@ -62,7 +62,7 @@ def save_video(save_dir, file_name, frames, episode_id=0):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_samples', type=int, default=int(10000), help='Num samples to collect') # TODO 3e6
+    parser.add_argument('--num_episodes', type=int, default=10000, help='Num samples to collect')  # about 3M steps
     parser.add_argument('--max_episode_steps', default=1000, type=int)
     parser.add_argument('--video', action='store_true')
     parser.add_argument('--render', action='store_true')
@@ -75,60 +75,57 @@ def main():
         os.makedirs("data")
 
     env = gym.make("panda-v0", **{"headless": not args.gui})
-    s = env.reset()
-    info = None
 
     # Load the policy
     pd = PDAgent()
-    pd.episode_start()
 
     data = reset_data()
 
-    if args.video:
-        frames = []
-
-    ts = 0
-    num_episodes = 0
     returns = []
-    cum_rew = 0
-    for _ in tqdm(range(args.num_samples)):
-        act = pd.get_action(info)
+    total_steps = 0
+    completed_eps = 0
+    for i in tqdm(range(args.num_episodes)):
+        s = env.reset()
+        pd.episode_start()
+        done = False
+        info = None
+        ts = 0
+        cum_rew = 0
+        frames = []
+        while not done:
+            act = pd.get_action(info)
 
-        if args.noisy:
-            act = act + np.random.randn(*act.shape) * 0.2
-            act = np.clip(act, -1.0, 1.0)
+            if args.noisy:
+                act = act + np.random.randn(*act.shape) * 0.2
+                act = np.clip(act, -1.0, 1.0)
 
-        ns, r, done, info = env.step(act)
+            ns, r, done, info = env.step(act)
 
-        if ts >= args.max_episode_steps:
-            done = True
+            cum_rew += r
+            ts += 1
 
-        append_data(data, s, act, r, info["obj_pos"], done)
+            if done:  # if done here then it was by env not by args.max_steps
+                completed_eps += 1
 
-        cum_rew += r
-        ts += 1
+            if ts >= args.max_episode_steps:
+                done = True
 
-        if done:
-            print(cum_rew) # TODO: remove
-            ts = 0
-            s = env.reset()
-            pd.episode_start()
+            append_data(data, s, act, r, info["obj_pos"], done)
+
+            if done:
+                total_steps += ts
+                returns.append(cum_rew)
+                if args.video:
+                    frames = np.array(frames)
+                    save_video('./videos/', exp_name, frames, i)
+            else:
+                s = ns
+
             if args.video:
-                frames = np.array(frames)
-                save_video('./videos/', exp_name, frames, num_episodes)
-
-            num_episodes += 1
-            returns.append(cum_rew)
-            cum_rew = 0
-            frames = []
-        else:
-            s = ns
-
-        if args.video:
-            curr_frame = env.render()
-            frames.append(curr_frame)
-        elif args.render:
-            env.render()
+                curr_frame = env.render()
+                frames.append(curr_frame)
+            elif args.render:
+                env.render()
 
     fname = exp_name + '.hdf5'
     if args.noisy:
@@ -141,11 +138,13 @@ def main():
 
     print("Created dataset.")
     print("Saved to {}".format(fname))
-    print("{} Episodes, {} mean return, {} max return, {} min return.".format(num_episodes,
-                                                                              np.mean(returns),
-                                                                              np.max(returns),
-                                                                              np.min(returns)))
-
+    print("{} completed of {} Episodes, {} steps\n mean return {}, max return {}, min return {}".format(
+        completed_eps,
+        args.num_episodes,
+        total_steps,
+        np.mean(returns),
+        np.max(returns),
+        np.min(returns)))
 
 
 if __name__ == '__main__':
