@@ -42,16 +42,17 @@ rp = jointPositions
 
 MAX_EPISODE_LEN = 20*100
 
+reward_weights = {
+            "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
+            "reward_contacts": 0.1,
+            "penalty_collision": 0.1,
+            "reward_z": 3,
+        }
+
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     def __init__(self, headless):
-        self.reward_weights = {
-            "reward_dist": 1,
-            "reward_contacts": 1,
-            "penalty_collision": 1,
-            "reward_z": 3,
-        }
         self.step_counter = 0
         if headless:
             p.connect(p.DIRECT)
@@ -112,7 +113,7 @@ class PandaEnv(gym.Env):
         state_robot = np.array(p.getLinkState(self.pandaUid, 11)[0])
         state_object, _ = p.getBasePositionAndOrientation(self.objectUid)
         state_object = np.array(state_object)
-        reward_dist = -0.1 * np.linalg.norm(state_robot - state_object)  # take hand to object
+        reward_dist = - np.linalg.norm(state_robot - state_object)  # take hand to object
 
         reward_contacts = get_reward_contacts(self.pandaUid, self.objectUid)
         penalty_collision = get_penalty_collision(self.pandaUid, self.objectUid)
@@ -128,9 +129,9 @@ class PandaEnv(gym.Env):
             "reward_z": reward_z
         }
         reward = 0
-        for k, v in self.reward_weights.items():
+        for k, v in reward_weights.items():
             reward += v * reward_dict[k]
-        plot_reward(reward_dict)
+        plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_obs(self):
@@ -288,14 +289,19 @@ def get_reward_contacts(pandaUid, objectUid):
 
 rewards = {}
 
-
-def plot_reward(reward, reward_dict):
+def plot_reward(reward_dict, reward):
     plt.clf()
+    total = "total"
+    if total in rewards:
+        rewards[total].append(reward)
+    else:
+        rewards[total] = [reward]
+    plt.plot(rewards[total], label=total)
     for k, v in reward_dict.items():
         if k in rewards:
-            rewards[k].append(v)
+            rewards[k].append(v * reward_weights[k])
         else:
-            rewards[k] = [v]
+            rewards[k] = [v * reward_weights[k]]
         plt.plot(rewards[k], label=k)
     plt.legend(loc="best")
     plt.draw()
