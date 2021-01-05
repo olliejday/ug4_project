@@ -255,13 +255,18 @@ Think last experiment (old reward) was better it went towards on some eval iters
 
 For next reward iteration
 
-distance
+reward made up of:
+distance to obj
 contact
 - penalty
-z height obj
-*check this has nice graph
+z height obj 
+  
+checked and this has nice graph progressing through going to obj then gripping then lifting
+same obs as wenbin here except hand yaw (83 vector) and acs (x y z and finger)
 
-*what obs & acs?
+#Running new env
+
+____
 
 * Start with simpler env?
 * Change reward weights
@@ -278,9 +283,18 @@ Work on params / reward function / env
     Reward weights
     Params - NN params
 
-- More complex env - randomness, peturbation
+- Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
+    - Both in gathered data and in perturbed after learning
 - Human data?
+- Compare to other methods
 
 Keep an eye on:
     - Panda Gym allows intersection of gripper with tray
     - Check action bounds
+
+________
+
+TIMELINE
+
+- implementation - by week 2/3 sem 2;
+- experimentation and evaluation - by week 6 sem 2;
