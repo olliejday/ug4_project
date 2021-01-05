@@ -109,7 +109,7 @@ def main():
         ts += 1
 
         if done:
-            print(sum(cum_rew)) # TODO: remove
+            print(cum_rew) # TODO: remove
             ts = 0
             s = env.reset()
             pd.episode_start()
