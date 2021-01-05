@@ -41,9 +41,208 @@ ul = [7] * pandaNumDofs
 jr = [7] * pandaNumDofs
 # restposes for null space
 jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
+
 rp = jointPositions
 
+
 MAX_EPISODE_LEN = 20 * 100
+
+
+class PandaEnv(gym.Env):
+    metadata = {'render.modes': ['human']}
+
+    def __init__(self, headless):
+        self.reward_weights = {
+            "reward_distTips": 1,
+            "reward_divergence": 1,
+            "reward_distCenter": 0.1,
+            "reward_contact": 2,
+            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
+            "penalty_collision": 4,
+            "reward_completion": 3,
+        }
+        self.step_counter = 0
+        if headless:
+            p.connect(p.DIRECT)
+        else:
+            p.connect(p.GUI)
+        p.setAdditionalSearchPath(pybullet_data.getDataPath())
+        timeStep = 1. / 60.
+        p.setTimeStep(timeStep)
+        p.setGravity(0, -9.8, 0)
+        # p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=0, cameraPitch=-40, cameraTargetPosition=[0.55,-0.35,0.2])
+        p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40,
+                                     cameraTargetPosition=[.5, 0, .5])
+        # TODO: set these (see notes.md)
+        self.action_space = spaces.Box(np.array([-5] * 4), np.array([5] * 4))
+        self.observation_space = spaces.Box(np.array([-1] * 84), np.array([1] * 84))
+        self._max_episode_steps = MAX_EPISODE_LEN
+
+    def step(self, action):
+        p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
+        orientation = p.getQuaternionFromEuler([0., -math.pi, math.pi / 2.])
+        dv = 0.005
+        dx = action[0] * dv
+        dy = action[1] * dv
+        dz = action[2] * dv
+        fingers = action[3]
+
+        currentPose = p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])
+        currentPosition = currentPose[0]
+        newPosition = [currentPosition[0] + dx,
+                       currentPosition[1] + dy,
+                       currentPosition[2] + dz]
+        jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition,
+                                                  orientation, ll,
+                                                  ul, jr, rp, maxNumIterations=5)[0:7]
+
+        p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
+                                    list(jointPoses) + 2 * [fingers],
+                                    forces=[5 * 240.] * pandaNumDofs)
+
+        p.stepSimulation()
+
+        self.observation, obs_dict = self.get_obs()
+
+        done = False
+        done, reward, rew_info = self.get_reward(done)
+
+        self.step_counter += 1
+
+        if self.step_counter > self._max_episode_steps:
+            reward = 0
+            done = True
+
+        info = {
+            "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
+            "hand_pos": np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0]),
+            "fingers_joint": np.array([p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
+                                       p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]])
+        }
+        return self.observation.astype(np.float32), reward, done, info
+
+    def get_reward(self, done):
+        sumDistSquare, sumDivergence, object_keypoint_pos = get_reward_tips_divergence(self.pandaUid, self.objectUid)
+
+        reward_distTips = np.exp(-sumDistSquare)
+        reward_divergence = sumDivergence
+
+        reward_dict = {
+            "reward_distTips": reward_distTips,
+            "reward_divergence": reward_divergence,
+            "reward_distCenter": get_reward_distCenter(self.pandaUid, self.objectUid),
+            "reward_contact": get_reward_contacts(self.pandaUid, self.objectUid),
+            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
+            "penalty_collision": get_penalty_collision(self.pandaUid, self.objectUid),
+            "reward_completion": get_reward_completion(self.objectUid)
+        }
+        reward = 0
+        for k, v in self.reward_weights.items():
+            reward += v * reward_dict[k]
+        # plot_reward(reward_dict)
+        return done, reward, reward_dict
+
+    def get_obs(self):
+        hand_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
+        obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
+        obj_pos = np.array(obj_pos)
+        rel_pos = obj_pos - hand_pos
+
+        # not controlling hand yaw atm
+        # hand_state = p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])
+        # hand_rot = p.getEulerFromQuaternion(hand_state[1])
+        # hand_yaw = hand_rot[2]
+        # hand_yaw *= math.pi / 180
+        # hand_yaw = -np.sign(hand_yaw) * np.array([math.pi - abs(hand_yaw)])
+
+        fingers_joint_state = np.array((p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
+                                        p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]))
+
+        finger_pos1 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0]
+        finger_pos2 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]
+        finger_pos = np.array([finger_pos1, finger_pos2])
+        dist_fingers = np.sqrt((obj_pos - finger_pos) ** 2).reshape([-1])
+
+        joint_torques = np.concatenate([p.getJointState(self.pandaUid, i)[2] for i in range(len(pandaJointsDict))])
+
+        obs_dict = {
+            "rel_pos": rel_pos,
+            "fingers_joint_state": fingers_joint_state,
+            "dist_fingers": dist_fingers,
+            "joint_torques": joint_torques
+        }
+
+        observation = np.concatenate([v for _, v in sorted(obs_dict.items())])
+        return observation, obs_dict
+
+    def reset(self):
+        self.step_counter = 0
+        # print(p.getPhysicsEngineParameters())
+        # orig_params = {'fixedTimeStep': 0.016666666666666666, 'numSubSteps': 0, 'numSolverIterations': 50,
+        #                'useRealTimeSimulation': 0, 'numNonContactInnerIterations': 1}
+        # params = {'splitImpulsePenetrationThreshold': 1,}
+        # p.setPhysicsEngineParameter(**params)
+        p.resetSimulation()
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)  # we will enable rendering after we loaded everything
+        urdfRootPath = pybullet_data.getDataPath()
+        p.setGravity(0, 0, -10)
+
+        planeUid = p.loadURDF(os.path.join(urdfRootPath, "plane.urdf"), basePosition=[0, 0, -0.65])
+        self.pandaUid = p.loadURDF(os.path.join(urdfRootPath, "franka_panda/panda.urdf"), useFixedBase=True)
+        rest_poses = [0, -0.215, 0, -2.57, 0, 2.356, 2.356, 0.08, 0.08]
+        for i in range(7):
+            p.resetJointState(self.pandaUid, i, rest_poses[i])
+        p.resetJointState(self.pandaUid, 9, 0.08)
+        p.resetJointState(self.pandaUid, 10, 0.08)
+        tableUid = p.loadURDF(os.path.join(urdfRootPath, "table/table.urdf"), basePosition=[0.5, 0, -0.65])
+
+        trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
+
+        state_object = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=state_object,
+                                    baseOrientation=[0, 0.5, 0, 0.5])
+
+        # setup joint torque sensors
+        for i in range(len(pandaJointsDict)):
+            p.enableJointForceTorqueSensor(self.pandaUid, i, True)
+
+        self.observation, _ = self.get_obs()
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
+        return self.observation.astype(np.float32)
+
+    def render(self, mode='human'):
+        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7, 0, 0.05],
+                                                          distance=.7,
+                                                          yaw=90,
+                                                          pitch=-70,
+                                                          roll=0,
+                                                          upAxisIndex=2)
+        proj_matrix = p.computeProjectionMatrixFOV(fov=60,
+                                                   aspect=float(960) / 720,
+                                                   nearVal=0.1,
+                                                   farVal=100.0)
+        (_, _, px, _, _) = p.getCameraImage(width=960,
+                                            height=720,
+                                            viewMatrix=view_matrix,
+                                            projectionMatrix=proj_matrix,
+                                            renderer=p.ER_BULLET_HARDWARE_OPENGL)
+
+        rgb_array = np.array(px, dtype=np.uint8)
+        rgb_array = np.reshape(rgb_array, (720, 960, 4))
+
+        rgb_array = rgb_array[:, :, :3]
+        return rgb_array
+
+    def _get_state(self):
+        return self.observation
+
+    def close(self):
+        p.disconnect()
+
+    def seed(self, seed=None):
+        seed = seeding.create_seed(seed)
+        random.seed(seed)
+        np.random.seed(seed)
 
 
 def distCentroid(hand_pos, obj_pos):
@@ -306,200 +505,3 @@ def plot_reward(reward_dict):
     plt.legend(loc="best")
     plt.draw()
     plt.pause(0.001)
-
-
-class PandaEnv(gym.Env):
-    metadata = {'render.modes': ['human']}
-
-    def __init__(self, headless):
-        self.reward_weights = {
-            "reward_distTips": 1,
-            "reward_divergence": 1,
-            "reward_distCenter": 0.1,
-            "reward_contact": 2,
-            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
-            "penalty_collision": 4,
-            "reward_completion": 3,
-        }
-        self.step_counter = 0
-        if headless:
-            p.connect(p.DIRECT)
-        else:
-            p.connect(p.GUI)
-        p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        timeStep = 1. / 60.
-        p.setTimeStep(timeStep)
-        p.setGravity(0, -9.8, 0)
-        # p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=0, cameraPitch=-40, cameraTargetPosition=[0.55,-0.35,0.2])
-        p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40,
-                                     cameraTargetPosition=[.5, 0, .5])
-        # TODO: set these (see notes.md)
-        self.action_space = spaces.Box(np.array([-5] * 4), np.array([5] * 4))
-        self.observation_space = spaces.Box(np.array([-1] * 84), np.array([1] * 84))
-        self._max_episode_steps = MAX_EPISODE_LEN
-
-    def step(self, action):
-        p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
-        orientation = p.getQuaternionFromEuler([0., -math.pi, math.pi / 2.])
-        dv = 0.005
-        dx = action[0] * dv
-        dy = action[1] * dv
-        dz = action[2] * dv
-        fingers = action[3]
-
-        currentPose = p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])
-        currentPosition = currentPose[0]
-        newPosition = [currentPosition[0] + dx,
-                       currentPosition[1] + dy,
-                       currentPosition[2] + dz]
-        jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition,
-                                                  orientation, ll,
-                                                  ul, jr, rp, maxNumIterations=5)[0:7]
-
-        p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
-                                    list(jointPoses) + 2 * [fingers],
-                                    forces=[5 * 240.] * pandaNumDofs)
-
-        p.stepSimulation()
-
-        self.observation, obs_dict = self.get_obs()
-
-        done = False
-        done, reward, rew_info = self.get_reward(done)
-
-        self.step_counter += 1
-
-        if self.step_counter > self._max_episode_steps:
-            reward = 0
-            done = True
-
-        info = {
-            "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
-            "hand_pos": np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0]),
-            "fingers_joint": np.array([p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
-                                       p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]])
-        }
-        return self.observation.astype(np.float32), reward, done, info
-
-    def get_reward(self, done):
-        sumDistSquare, sumDivergence, object_keypoint_pos = get_reward_tips_divergence(self.pandaUid, self.objectUid)
-
-        reward_distTips = np.exp(-sumDistSquare)
-        reward_divergence = sumDivergence
-
-        reward_dict = {
-            "reward_distTips": reward_distTips,
-            "reward_divergence": reward_divergence,
-            "reward_distCenter": get_reward_distCenter(self.pandaUid, self.objectUid),
-            "reward_contact": get_reward_contacts(self.pandaUid, self.objectUid),
-            # TODO: "reward_topological": get_reward_topological(self.pandaUid, object_keypoint_pos),
-            "penalty_collision": get_penalty_collision(self.pandaUid, self.objectUid),
-            "reward_completion": get_reward_completion(self.objectUid)
-        }
-        reward = 0
-        for k, v in self.reward_weights.items():
-            reward += v * reward_dict[k]
-        # plot_reward(reward_dict)
-        return done, reward, reward_dict
-
-    def get_obs(self):
-        hand_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
-        obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
-        obj_pos = np.array(obj_pos)
-        rel_pos = obj_pos - hand_pos
-
-        hand_state = p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])
-        hand_rot = p.getEulerFromQuaternion(hand_state[1])
-        hand_yaw = hand_rot[2]
-        hand_yaw *= math.pi / 180
-        hand_yaw = -np.sign(hand_yaw) * np.array([math.pi - abs(hand_yaw)])
-
-        fingers_joint_state = np.array((p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
-                                        p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]))
-
-        finger_pos1 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0]
-        finger_pos2 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]
-        finger_pos = np.array([finger_pos1, finger_pos2])
-        dist_fingers = np.sqrt((obj_pos - finger_pos) ** 2).reshape([-1])
-
-        joint_torques = np.concatenate([p.getJointState(self.pandaUid, i)[2] for i in range(len(pandaJointsDict))])
-
-        obs_dict = {
-            "rel_pos": rel_pos,
-            "hand_yaw": hand_yaw,
-            "fingers_joint_state": fingers_joint_state,
-            "dist_fingers": dist_fingers,
-            "joint_torques": joint_torques
-        }
-
-        observation = np.concatenate([v for _, v in sorted(obs_dict.items())])
-        return observation, obs_dict
-
-    def reset(self):
-        self.step_counter = 0
-        # print(p.getPhysicsEngineParameters())
-        # orig_params = {'fixedTimeStep': 0.016666666666666666, 'numSubSteps': 0, 'numSolverIterations': 50,
-        #                'useRealTimeSimulation': 0, 'numNonContactInnerIterations': 1}
-        # params = {'splitImpulsePenetrationThreshold': 1,}
-        # p.setPhysicsEngineParameter(**params)
-        p.resetSimulation()
-        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)  # we will enable rendering after we loaded everything
-        urdfRootPath = pybullet_data.getDataPath()
-        p.setGravity(0, 0, -10)
-
-        planeUid = p.loadURDF(os.path.join(urdfRootPath, "plane.urdf"), basePosition=[0, 0, -0.65])
-        self.pandaUid = p.loadURDF(os.path.join(urdfRootPath, "franka_panda/panda.urdf"), useFixedBase=True)
-        rest_poses = [0, -0.215, 0, -2.57, 0, 2.356, 2.356, 0.08, 0.08]
-        for i in range(7):
-            p.resetJointState(self.pandaUid, i, rest_poses[i])
-        p.resetJointState(self.pandaUid, 9, 0.08)
-        p.resetJointState(self.pandaUid, 10, 0.08)
-        tableUid = p.loadURDF(os.path.join(urdfRootPath, "table/table.urdf"), basePosition=[0.5, 0, -0.65])
-
-        trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
-
-        state_object = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
-        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=state_object,
-                                    baseOrientation=[0, 0.5, 0, 0.5])
-
-        # setup joint torque sensors
-        for i in range(len(pandaJointsDict)):
-            p.enableJointForceTorqueSensor(self.pandaUid, i, True)
-
-        self.observation, _ = self.get_obs()
-        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
-        return self.observation.astype(np.float32)
-
-    def render(self, mode='human'):
-        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7, 0, 0.05],
-                                                          distance=.7,
-                                                          yaw=90,
-                                                          pitch=-70,
-                                                          roll=0,
-                                                          upAxisIndex=2)
-        proj_matrix = p.computeProjectionMatrixFOV(fov=60,
-                                                   aspect=float(960) / 720,
-                                                   nearVal=0.1,
-                                                   farVal=100.0)
-        (_, _, px, _, _) = p.getCameraImage(width=960,
-                                            height=720,
-                                            viewMatrix=view_matrix,
-                                            projectionMatrix=proj_matrix,
-                                            renderer=p.ER_BULLET_HARDWARE_OPENGL)
-
-        rgb_array = np.array(px, dtype=np.uint8)
-        rgb_array = np.reshape(rgb_array, (720, 960, 4))
-
-        rgb_array = rgb_array[:, :, :3]
-        return rgb_array
-
-    def _get_state(self):
-        return self.observation
-
-    def close(self):
-        p.disconnect()
-
-    def seed(self, seed=None):
-        seed = seeding.create_seed(seed)
-        random.seed(seed)
-        np.random.seed(seed)

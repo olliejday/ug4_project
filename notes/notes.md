@@ -251,8 +251,19 @@ It did't work - recorded better performance around 200 iters but on the eval was
 Most seemed to move upwards away from object
 Think last experiment (old reward) was better it went towards on some eval iters but no good at grasping
 
+---
+
+For next reward iteration
+
+distance
+contact
+- penalty
+z height obj
+*check this has nice graph
+
+*what obs & acs?
+
 * Start with simpler env?
-* Change obs / acs? - old reward better?
 * Change reward weights
 * Debug rewards
 * Msg Wenbin and Li about progress
