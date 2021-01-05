@@ -62,7 +62,7 @@ def save_video(save_dir, file_name, frames, episode_id=0):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_samples', type=int, default=int(100), help='Num samples to collect')
+    parser.add_argument('--num_samples', type=int, default=int(10000), help='Num samples to collect') # TODO
     parser.add_argument('--max_episode_steps', default=1000, type=int)
     parser.add_argument('--video', action='store_true')
     parser.add_argument('--render', action='store_true')
