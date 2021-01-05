@@ -131,7 +131,7 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, v in reward_weights.items():
             reward += v * reward_dict[k]
-        plot_reward(reward_dict, reward)
+        # plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_obs(self):
