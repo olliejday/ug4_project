@@ -43,7 +43,7 @@ class PDAgent:
 if __name__ == "__main__":
     seed = 1123
 
-    env = gym.make('panda-v0', **{"headless": False})
+    env = gym.make('panda-v0', **{"headless": True})
     env.seed(seed)
     env.reset()
     pd = PDAgent()
