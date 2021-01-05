@@ -66,7 +66,7 @@ class PandaEnv(gym.Env):
         p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40, cameraTargetPosition=[.5, 0, .5])
         # TODO: set these (see notes.md)
         self.action_space = spaces.Box(np.array([-5]*4), np.array([5]*4))
-        self.observation_space = spaces.Box(np.array([-1]*8), np.array([1]*8))
+        self.observation_space = spaces.Box(np.array([-1]*83), np.array([1]*83))
         self._max_episode_steps = MAX_EPISODE_LEN
 
     def step(self, action):
