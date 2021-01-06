@@ -242,7 +242,7 @@ class PandaEnv(gym.Env):
         return np.array(action) * self.acs_scale + self.acs_offset
 
     def process_observation(self, obs):
-        return (np.array(obs) - self.obs_offset) / self.obs_scale
+        return (np.array(obs, np.float32) - self.obs_offset) / self.obs_scale
 
 
 def vector_angle_2d(x, y):
