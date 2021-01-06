@@ -77,9 +77,6 @@ class PandaEnv(gym.Env):
         self.obs_offset = np.array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
        -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
 
-        self._a = []
-        self._o = []
-
         self._max_episode_steps = MAX_EPISODE_LEN
 
     def step(self, action):
@@ -171,7 +168,6 @@ class PandaEnv(gym.Env):
 
         observation = np.concatenate([v for _, v in sorted(obs_dict.items())])
         observation = self.process_observation(observation)
-        self._o.append(observation)
         return observation, obs_dict
 
     def reset(self):
@@ -243,7 +239,6 @@ class PandaEnv(gym.Env):
         np.random.seed(seed)
 
     def process_action(self, action):
-        self._a.append(action)
         return np.array(action) * self.acs_scale + self.acs_offset
 
     def process_observation(self, obs):

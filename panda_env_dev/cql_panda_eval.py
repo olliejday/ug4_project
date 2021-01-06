@@ -27,7 +27,6 @@ def simulate_policy(args):
             max_path_length=args.H,
             render=False,  # we use p.conenct(p.GUI) to visualise, render makes slower
         )
-        print(path["actions"])
         paths.append(path)
         if hasattr(env, "log_diagnostics"):
             env.log_diagnostics(paths)

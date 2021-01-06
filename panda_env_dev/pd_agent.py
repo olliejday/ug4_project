@@ -62,12 +62,5 @@ if __name__ == "__main__":
             if done:
                 break
         print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
-    ###
-    print("action")
-    print(np.max(env._a, axis=0))
-    print(np.min(env._a, axis=0))
-    print("obs")
-    print(np.max(env._o, axis=0))
-    print(np.min(env._o, axis=0))
-    ###
+
     env.close()
