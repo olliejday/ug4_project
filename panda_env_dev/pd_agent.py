@@ -1,6 +1,6 @@
 import gym
 import gym_panda
-
+import numpy as np
 
 class PDAgent:
     def __init__(self):
@@ -41,24 +41,33 @@ class PDAgent:
 
 
 if __name__ == "__main__":
-    seed = 1123
+    seed = 14123
 
     env = gym.make('panda-v0', **{"headless": True})
     env.seed(seed)
     env.reset()
     pd = PDAgent()
 
-    for i_episode in range(50):
+    for i_episode in range(500):
         done = False
         info = None
         observation = env.reset()
         cum_reward = 0
         pd.episode_start()
         for t in range(500):
-            action = pd.get_action(info)
+            # pd agent outputs full action space so scale to ac input space (0, 1)
+            action = (np.array(pd.get_action(info)) - env.acs_offset) / env.acs_scale
             observation, reward, done, info = env.step(action)
             cum_reward += reward
             if done:
                 break
         print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
+    ###
+    print("action")
+    print(np.max(env._a, axis=0))
+    print(np.min(env._a, axis=0))
+    print("obs")
+    print(np.max(env._o, axis=0))
+    print(np.min(env._o, axis=0))
+    ###
     env.close()

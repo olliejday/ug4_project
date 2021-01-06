@@ -64,12 +64,26 @@ class PandaEnv(gym.Env):
         p.setGravity(0, -9.8, 0)
         # p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=0, cameraPitch=-40, cameraTargetPosition=[0.55,-0.35,0.2])
         p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40, cameraTargetPosition=[.5, 0, .5])
-        # TODO: set these (see notes.md)
-        self.action_space = spaces.Box(np.array([-5]*4), np.array([5]*4))
-        self.observation_space = spaces.Box(np.array([-1]*83), np.array([1]*83))
+
+        # see notes for details of bounds and of acs and obs spaces
+        # takes normalised actions (0, 1)
+        self.action_space = spaces.Box(np.array([0]*4), np.array([1]*4))
+        self.acs_scale = np.array([26., 37., 63.,  2.])
+        self.acs_offset = np.array([ -1., -19., -20.,   0.])
+        # outputs normalised observations (0, 1)
+        self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
+        self.obs_scale = np.array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
+       1., 1., 1., 2., 1., 2., 2., 1.])
+        self.obs_offset = np.array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
+       -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
+
+        self._a = []
+        self._o = []
+
         self._max_episode_steps = MAX_EPISODE_LEN
 
     def step(self, action):
+        action = self.process_action(action)
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
         orientation = p.getQuaternionFromEuler([0.,-math.pi,math.pi/2.])
         dv = 0.005
@@ -107,7 +121,7 @@ class PandaEnv(gym.Env):
             "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
                                      p.getJointState(self.pandaUid, 10)[0]])
         }
-        return self.observation.astype(np.float32), reward, done, info
+        return self.observation, reward, done, info
 
     def get_reward(self, done):
         state_robot = np.array(p.getLinkState(self.pandaUid, 11)[0])
@@ -135,29 +149,29 @@ class PandaEnv(gym.Env):
         return done, reward, reward_dict
 
     def get_obs(self):
-        hand_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
+        palm_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_hand_joint"])[0])
         obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
         obj_pos = np.array(obj_pos)
-        rel_pos = obj_pos - hand_pos
+        rel_pos = palm_pos - obj_pos
 
-        fingers_joint_state = np.array((p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0],
-                                        p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]))
+        qpos_joints = np.array((p.getJointStates(self.pandaUid, range(len(pandaJoints)))), dtype=object)[:, 0]
 
         finger_pos1 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0]
         finger_pos2 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]
         finger_pos = np.array([finger_pos1, finger_pos2])
         dist_fingers = np.sqrt((obj_pos - finger_pos) ** 2).reshape([-1])
 
-        joint_torques = np.concatenate([p.getJointState(self.pandaUid, i)[2] for i in range(len(pandaJointsDict))])
-
         obs_dict = {
-            "rel_pos": rel_pos,
-            "fingers_joint_state": fingers_joint_state,
             "dist_fingers": dist_fingers,
-            "joint_torques": joint_torques
+            "obj_z": [obj_pos[2]],
+            "palm_pos": palm_pos,
+            "qpos_joints": qpos_joints,
+            "rel_pos": rel_pos,
         }
 
         observation = np.concatenate([v for _, v in sorted(obs_dict.items())])
+        observation = self.process_observation(observation)
+        self._o.append(observation)
         return observation, obs_dict
 
     def reset(self):
@@ -192,7 +206,7 @@ class PandaEnv(gym.Env):
         # secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)
         self.observation, _ = self.get_obs()
         p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
-        return self.observation.astype(np.float32)
+        return self.observation
 
     def render(self, mode='human'):
         view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7,0,0.05],
@@ -228,6 +242,12 @@ class PandaEnv(gym.Env):
         random.seed(seed)
         np.random.seed(seed)
 
+    def process_action(self, action):
+        self._a.append(action)
+        return np.array(action) * self.acs_scale + self.acs_offset
+
+    def process_observation(self, obs):
+        return (np.array(obs) - self.obs_offset) / self.obs_scale
 
 
 def vector_angle_2d(x, y):

@@ -264,8 +264,61 @@ z height obj
 checked and this has nice graph progressing through going to obj then gripping then lifting
 same obs as wenbin here except hand yaw (83 vector) and acs (x y z and finger)
 
-#Running new env
+#TODO: results
 
+___
+
+Next env iter
+
+For next acs: affine transf on acs so NN can output 0-1 range (which I believe it does anyway based on SAC anyway)
+For next obs: normalise inputs to 0-1
+    Adroit (qpos for hand, xpos for object, xpos target) = qp[:-6], palm_pos-obj_pos, palm_pos-target_pos, obj_pos-target_pos
+    So trying obs [25]:
+            "dist_fingers": dist_fingers, [6]
+            "obj_z": [obj_pos[2]], [1] 
+            "palm_pos": palm_pos, [3]
+            "qpos_joints": qpos_joints, [12]
+            "rel_pos": rel_pos, [3]
+
+Normalising using fixed bounds that are based on pd agent max and min of obs and acs in 500 episodes (+ 30% leeway)
+
+ACS
+# array of max and min acs found in 500 eps pd agent scaled to 30% leeway
+mx = np.array([18.79076577, 13.78390522, 32.46248846,  1.        ]) * 1.3
+mn = np.array([ -0.70994379, -13.88668208, -15.17208177,   0.        ]) * 1.3  # since all negative
+scale = np.ceil(max) - np.floor(min) # range
+array([26., 37., 63.,  2.])  
+offset = np.floor(min) # min
+array([ -1., -19., -20.,   0.])  
+acs = acs * scale + offset
+
+OBS
+# array of max and min acs found in 500 eps pd agent scaled to 30% leeway
+max = array([ 0.35819622,  0.19836367,  0.45274739,  0.1863834 ,  0.19839868, 0.45282429,
+        0.40217545,  
+        0.7392161 ,  0.18227398,  0.52348188,
+        0.27002175,  1.00071738,  0.1655928 , 
+            -1.24123825,  0.1390429 , 2.82369482,  
+            2.75088341,  0.        ,  0.        ,  
+            0.07600003,  0.07599997,  0.        ,  
+        0.00983092,  0.19838117,  0.4911857 ]) * 1.3
+min = array([ 1.71960650e-04,  8.04060100e-08,  2.81048371e-05,  5.18226627e-08,
+        1.20426205e-07,  8.89086052e-05, -1.47817961e-04,  4.31449456e-01,
+       -1.79290969e-01,  8.28353383e-02, -1.91106306e-01, -2.14915632e-01,
+       -1.72868083e-01, -2.56998225e+00, -1.81334319e-01,  1.60523483e+00,
+        1.94219945e+00,  0.00000000e+00,  0.00000000e+00,  5.13511843e-05,
+       -4.88971220e-06,  0.00000000e+00, -2.68499252e-01, -1.96912932e-01,
+        3.50155939e-02]) - abs(min * 0.3)  # since mixed signs
+scale = np.minimum(np.ceil(max) - np.floor(min), 1) # range, we only scale up and to avoid 0 div use 1 as min scale
+array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
+       0., 0., 1., 2., 0., 2., 2., 1.])
+offset = np.floor(mnn) # min
+array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
+       -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
+
+obs = (obs - offset) / scale
+
+In a test on 500 pd agent episodes with a different seed to one used before it maintains the action and obs range
 ____
 
 * Start with simpler env?
