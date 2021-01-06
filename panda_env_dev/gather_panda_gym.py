@@ -77,7 +77,7 @@ def main():
     env = gym.make("panda-v0", **{"headless": not args.gui})
 
     # Load the policy
-    pd = PDAgent()
+    pd = PDAgent(env.acs_offset, env.acs_scale)
 
     data = reset_data()
 
