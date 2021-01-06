@@ -21,7 +21,7 @@ class PDAgent:
 
     def get_action(self, info):
         if info is None:
-            return [0, 0, 0, 1]
+            return self.process_action([0, 0, 0, 1])
         object_position = info["obj_pos"]
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
