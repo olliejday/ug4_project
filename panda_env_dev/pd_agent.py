@@ -3,13 +3,18 @@ import gym_panda
 import numpy as np
 
 class PDAgent:
-    def __init__(self):
+    def __init__(self, acs_offset, acs_scale):
         self.error = [0.017, 0.01, 0.01, 0.035]
         self.fingers = 1
         self.k_p = 10
         self.k_d = 1
         self.dt = 1. / 60.  # the default timestep in pybullet is 240 Hz
         self.fingers = 1
+        self.acs_offset = acs_offset
+        self.acs_scale = acs_scale
+
+    def process_action(self, ac):
+        return (np.array(ac) - self.acs_offset) / self.acs_scale
 
     def episode_start(self):
         self.fingers = 1
@@ -37,7 +42,7 @@ class PDAgent:
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
             self.fingers = 0
         # print(abs(dx), observation[0], abs(dy), abs(dz))
-        return [pd_x, pd_y, pd_z, self.fingers]
+        return self.process_action([pd_x, pd_y, pd_z, self.fingers])
 
 
 if __name__ == "__main__":
@@ -46,7 +51,7 @@ if __name__ == "__main__":
     env = gym.make('panda-v0', **{"headless": True})
     env.seed(seed)
     env.reset()
-    pd = PDAgent()
+    pd = PDAgent(env.acs_offset, env.acs_scale)
 
     for i_episode in range(500):
         done = False
@@ -56,7 +61,7 @@ if __name__ == "__main__":
         pd.episode_start()
         for t in range(500):
             # pd agent outputs full action space so scale to ac input space (0, 1)
-            action = (np.array(pd.get_action(info)) - env.acs_offset) / env.acs_scale
+            action = pd.get_action(info)
             observation, reward, done, info = env.step(action)
             cum_reward += reward
             if done:
