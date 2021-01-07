@@ -264,7 +264,7 @@ z height obj
 checked and this has nice graph progressing through going to obj then gripping then lifting
 same obs as wenbin here except hand yaw (83 vector) and acs (x y z and finger)
 
-#TODO: results
+Results: Didn't work out
 
 ___
 
@@ -319,15 +319,22 @@ array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
 obs = (obs - offset) / scale
 
 In a test on 500 pd agent episodes with a different seed to one used before it maintains the action and obs range
-____
 
-* Start with simpler env?
-* Change reward weights
-* Debug rewards
-* Msg Wenbin and Li about progress
-* Add other rewards - Topology and obj kps 
-* params? nn params?
+Results on new env good!
+some good progress here seems to be training much better: more clearly goes towards the object now but it tends to stay there and not grip
+x cap the closeness reward as it encourages pushing to tray too much
+x make reward for having fingers closed around object
+x multiply the actions by less -  too extreme movement
+x add completed task to info and print if it happens!
 
+Changed action z min offset to -15 (this was min from 500 pd agent runs) as otherwise it tries to intersect the tray
+    also scaled the scale factor appropriately (still 1.3 x max)
+
+----
+
+Made above changes to env and reward and have changed reward weights
+
+Run again ...TODO
 ____
 
 TODO:

@@ -44,15 +44,16 @@ MAX_EPISODE_LEN = 20*100
 
 reward_weights = {
             "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
-            "reward_contacts": 0.1,
-            "penalty_collision": 0.1,
+            "reward_contacts": 0.07,
+            "penalty_collision": 0.09,
+            "reward_grasp": 1,
             "reward_z": 3,
         }
 
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, headless):
+    def __init__(self, headless, verbose=True):
         self.step_counter = 0
         if headless:
             p.connect(p.DIRECT)
@@ -68,8 +69,8 @@ class PandaEnv(gym.Env):
         # see notes for details of bounds and of acs and obs spaces
         # takes normalised actions (0, 1)
         self.action_space = spaces.Box(np.array([0]*4), np.array([1]*4))
-        self.acs_scale = np.array([26., 37., 63.,  2.])
-        self.acs_offset = np.array([ -1., -19., -20.,   0.])
+        self.acs_scale = np.array([26., 37., 57.,  2.])
+        self.acs_offset = np.array([ -1., -19., -15.,   0.])
         # outputs normalised observations (0, 1)
         self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
         self.obs_scale = np.array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
@@ -78,6 +79,9 @@ class PandaEnv(gym.Env):
        -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
 
         self._max_episode_steps = MAX_EPISODE_LEN
+        # whether to print out eg. if complete task
+        self.verbose = verbose
+        self.completed = False
 
     def step(self, action):
         action = self.process_action(action)
@@ -105,6 +109,8 @@ class PandaEnv(gym.Env):
 
         done = False
         done, reward, _ = self.get_reward(done)
+        # done here is that we completed, if completed we stay completed until env.reset()
+        self.completed = self.completed or done
 
         self.step_counter += 1
 
@@ -116,8 +122,11 @@ class PandaEnv(gym.Env):
             "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
             "hand_pos": np.array(p.getLinkState(self.pandaUid, 11)[0]),
             "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
-                                     p.getJointState(self.pandaUid, 10)[0]])
+                                     p.getJointState(self.pandaUid, 10)[0]]),
+            "completed": self.completed,
         }
+        if self.completed and self.verbose:
+            print("Completed!")
         return self.observation, reward, done, info
 
     def get_reward(self, done):
@@ -126,8 +135,18 @@ class PandaEnv(gym.Env):
         state_object = np.array(state_object)
         reward_dist = - np.linalg.norm(state_robot - state_object)  # take hand to object
 
+        # number of contacts (any contact between robot and object)
         reward_contacts = get_reward_contacts(self.pandaUid, self.objectUid)
+        # number of collisions (contact between outside of hand and object
         penalty_collision = get_penalty_collision(self.pandaUid, self.objectUid)
+
+        # if we have a contact that's not a collision and fingers are closed = likely a good grasp
+        # position of less that 0.02 is roughly closed gripper
+        reward_grasp = 0
+        if reward_contacts - penalty_collision >= 1 and \
+                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0] < 0.02 and \
+                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0] < 0.02:
+                reward_grasp = 1
 
         # task complete reward
         reward_z = state_object[2]
@@ -136,13 +155,14 @@ class PandaEnv(gym.Env):
         reward_dict = {
             "reward_dist": reward_dist,
             "reward_contacts": reward_contacts,
+            "reward_grasp": reward_grasp,
             "penalty_collision": penalty_collision,
             "reward_z": reward_z
         }
         reward = 0
         for k, v in reward_weights.items():
             reward += v * reward_dict[k]
-        # plot_reward(reward_dict, reward)
+        plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_obs(self):
@@ -171,6 +191,7 @@ class PandaEnv(gym.Env):
         return observation, obs_dict
 
     def reset(self):
+        self.completed = False
         self.step_counter = 0
         # print(p.getPhysicsEngineParameters())
         # orig_params = {'fixedTimeStep': 0.016666666666666666, 'numSubSteps': 0, 'numSolverIterations': 50,

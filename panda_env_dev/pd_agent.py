@@ -1,3 +1,5 @@
+import argparse
+
 import gym
 import gym_panda
 import numpy as np
@@ -46,9 +48,14 @@ class PDAgent:
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--headless', action='store_true', help='Pybullet gui')
+    args = parser.parse_args()
+
     seed = 14123
 
-    env = gym.make('panda-v0', **{"headless": True})
+    env = gym.make('panda-v0', **{"headless": args.headless})
     env.seed(seed)
     env.reset()
     pd = PDAgent(env.acs_offset, env.acs_scale)
