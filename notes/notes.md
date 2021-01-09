@@ -339,7 +339,7 @@ Run again
 some really good reaching behaviour - quickly learned as well ~ 30 epochs
 starts to press it up the sloped sides - to get some z?
 but no grasping
-doesn't seem to have completed any times
+think the print of completion was broken
   
 changed ac scale
 changed reward and obs from palm to finger tip (grasp target) to try and prevent overreaching
@@ -354,6 +354,9 @@ array([22., 32., 53.,  2.])
 offset = np.floor(mn) # min
 array([ -1., -16., -14.,   0.]) 
 acs = acs * scale + offset
+
+
+seems to perform better in eval during training than when run at the end?
 ____
 
 TODO:

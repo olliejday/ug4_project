@@ -74,7 +74,7 @@ def main():
     if not os.path.exists("data"):
         os.makedirs("data")
 
-    env = gym.make("panda-v0", **{"headless": not args.gui})
+    env = gym.make("panda-v0", **{"headless": not args.gui, "verbose": False})
 
     # Load the policy
     pd = PDAgent(env.acs_offset, env.acs_scale)
