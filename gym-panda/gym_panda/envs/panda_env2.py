@@ -44,10 +44,10 @@ MAX_EPISODE_LEN = 20*100
 
 reward_weights = {
             "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
-            "reward_contacts": 0.07,
-            "penalty_collision": 0.09,
-            "reward_grasp": 1,
-            "reward_z": 3,
+            "reward_contacts": 0.14,
+            "penalty_collision": 0.15,
+            "reward_grasp": 2.5,
+            "reward_z": 5,
         }
 
 class PandaEnv(gym.Env):
@@ -69,8 +69,8 @@ class PandaEnv(gym.Env):
         # see notes for details of bounds and of acs and obs spaces
         # takes normalised actions (0, 1)
         self.action_space = spaces.Box(np.array([0]*4), np.array([1]*4))
-        self.acs_scale = np.array([26., 37., 57.,  2.])
-        self.acs_offset = np.array([ -1., -19., -15.,   0.])
+        self.acs_scale = np.array([22., 32., 53.,  2.])
+        self.acs_offset = np.array([ -1., -16., -14.,   0.])
         # outputs normalised observations (0, 1)
         self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
         self.obs_scale = np.array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
@@ -130,10 +130,10 @@ class PandaEnv(gym.Env):
         return self.observation, reward, done, info
 
     def get_reward(self, done):
-        state_robot = np.array(p.getLinkState(self.pandaUid, 11)[0])
+        fingertip_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
         state_object, _ = p.getBasePositionAndOrientation(self.objectUid)
         state_object = np.array(state_object)
-        reward_dist = - np.linalg.norm(state_robot - state_object)  # take hand to object
+        reward_dist = - np.linalg.norm(fingertip_pos - state_object)  # take hand to object
 
         # number of contacts (any contact between robot and object)
         reward_contacts = get_reward_contacts(self.pandaUid, self.objectUid)
@@ -162,14 +162,14 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, v in reward_weights.items():
             reward += v * reward_dict[k]
-        plot_reward(reward_dict, reward)
+        # plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_obs(self):
-        palm_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_hand_joint"])[0])
+        fingertip_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
         obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
         obj_pos = np.array(obj_pos)
-        rel_pos = palm_pos - obj_pos
+        rel_pos = fingertip_pos - obj_pos
 
         qpos_joints = np.array((p.getJointStates(self.pandaUid, range(len(pandaJoints)))), dtype=object)[:, 0]
 
@@ -181,7 +181,7 @@ class PandaEnv(gym.Env):
         obs_dict = {
             "dist_fingers": dist_fingers,
             "obj_z": [obj_pos[2]],
-            "palm_pos": palm_pos,
+            "palm_pos": fingertip_pos,
             "qpos_joints": qpos_joints,
             "rel_pos": rel_pos,
         }

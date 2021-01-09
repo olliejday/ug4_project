@@ -334,7 +334,26 @@ Changed action z min offset to -15 (this was min from 500 pd agent runs) as othe
 
 Made above changes to env and reward and have changed reward weights
 
-Run again ...TODO
+Run again 
+* lower action scale a bit - still weird pushing behaviour where the grippers come a bit unattached
+some really good reaching behaviour - quickly learned as well ~ 30 epochs
+starts to press it up the sloped sides - to get some z?
+but no grasping
+doesn't seem to have completed any times
+  
+changed ac scale
+changed reward and obs from palm to finger tip (grasp target) to try and prevent overreaching
+doubled the weight of contact, grasp and z to encourage this behaviour 
+
+keeping obs scale as 1.3
+but changing ac scale to 1.1 (except z offset which kept at -14 to stop it pushing into the tray too much)
+mx = np.array([18.79076577, 13.78390522, 32.46248846,  1.        ]) * 1.1
+mn = np.array([ -0.70994379, -13.88668208, -15.17208177,   0.        ]) * 1.1  # since all negative
+scale = np.ceil(mx) - np.floor(mn) # range
+array([22., 32., 53.,  2.])
+offset = np.floor(mn) # min
+array([ -1., -16., -14.,   0.]) 
+acs = acs * scale + offset
 ____
 
 TODO:
