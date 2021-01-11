@@ -152,13 +152,13 @@ if __name__ == "__main__":
         sparse_reward=False,
         h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
-            num_epochs=2000,
+            num_epochs=1000,
             num_train_loops_per_epoch=1,
             num_trains_per_train_loop=1000,
             max_path_length=2000,
-            num_eval_steps_per_epoch=2500,
-            num_expl_steps_per_train_loop=2500,
-            min_num_steps_before_training=2500,
+            num_eval_steps_per_epoch=4000,
+            num_expl_steps_per_train_loop=4000,
+            min_num_steps_before_training=4000,
             batch_size=256,
         ),
         trainer_kwargs=dict(

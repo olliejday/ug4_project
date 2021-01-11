@@ -44,10 +44,10 @@ MAX_EPISODE_LEN = 20*100
 
 reward_weights = {
             "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
-            "reward_contacts": 0.14,
-            "penalty_collision": 0.15,
-            "reward_grasp": 2.5,
-            "reward_z": 5,
+            "reward_contacts": 0.07,
+            "penalty_collision": 0.09,
+            "reward_grasp": 1,
+            "reward_z": 3,
         }
 
 class PandaEnv(gym.Env):
@@ -101,7 +101,7 @@ class PandaEnv(gym.Env):
         jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition, orientation, ll, ul, jr, rp, maxNumIterations=5)[0:7]
 
         p.setJointMotorControlArray(self.pandaUid, list(range(7))+[9,10], p.POSITION_CONTROL, list(jointPoses)+2*[fingers],
-                                    forces=[5 * 240.]*pandaNumDofs)
+                                    forces=[100]*pandaNumDofs)
 
         p.stepSimulation()
 
