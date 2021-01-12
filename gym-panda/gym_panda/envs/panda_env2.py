@@ -68,15 +68,18 @@ class PandaEnv(gym.Env):
 
         # see notes for details of bounds and of acs and obs spaces
         # takes normalised actions (0, 1)
-        self.action_space = spaces.Box(np.array([0]*4), np.array([1]*4))
-        self.acs_scale = np.array([22., 32., 53.,  2.])
-        self.acs_offset = np.array([ -1., -16., -14.,   0.])
+        self.action_space = spaces.Box(np.array([0] * 4), np.array([1] * 4))
+        self.acs_scale = np.array([21.451, 30.437, 52.398, 0.11])
+        self.acs_offset = np.array([-0.781, -15.275, -16.689, -0.02])
         # outputs normalised observations (0, 1)
         self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
-        self.obs_scale = np.array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
-       1., 1., 1., 2., 1., 2., 2., 1.])
-        self.obs_offset = np.array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
-       -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
+        self.obs_scale = np.array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47 ,
+       0.623, 0.599, 1.   , 0.44 , 1.   , 0.417, 1.   , 1.   , 0.   ,
+       0.   , 0.099, 0.099, 0.   , 0.362, 0.514, 0.614])
+        self.obs_offset = np.array([ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , -0.   ,  0.302,
+       -0.233,  0.058, -0.248, -0.279, -0.225, -3.341, -0.236,  1.124,
+        1.36 ,  0.   ,  0.   ,  0.   , -0.   ,  0.   , -0.349, -0.256,
+        0.025])
 
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task

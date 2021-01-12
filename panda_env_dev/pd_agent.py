@@ -19,7 +19,7 @@ class PDAgent:
         return (np.array(ac) - self.acs_offset) / self.acs_scale
 
     def episode_start(self):
-        self.fingers = 1
+        self.fingers = 0.08
 
     def get_action(self, info):
         if info is None:
@@ -42,7 +42,7 @@ class PDAgent:
         if abs(dx) > self.error[0] * 3 or abs(dy) > self.error[1] * 3:  # get roughly over the object
             pd_z = 0
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
-            self.fingers = 0
+            self.fingers = 0.0
         # print(abs(dx), observation[0], abs(dy), abs(dz))
         return self.process_action([pd_x, pd_y, pd_z, self.fingers])
 
@@ -69,6 +69,7 @@ if __name__ == "__main__":
         for t in range(500):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
+            print(action)
             observation, reward, done, info = env.step(action)
             cum_reward += reward
             if done:

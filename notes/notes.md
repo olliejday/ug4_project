@@ -282,19 +282,26 @@ For next obs: normalise inputs to 0-1
 
 Normalising using fixed bounds that are based on pd agent max and min of obs and acs in 500 episodes (+ 30% leeway)
 
+UPDATE: 
+Acs less leeway bc it scales the NN outputs too much 
+ie. NN [0, 1] if actions scaled to 50% then NN could do an output for 1.5 which may not want
+But kept obs scale high incase we get extreme inputs
+Changed from ceil/floor to round as it makes more sense
+Overridden acs[-1] (fingers) since only part of the space does anything and had issues with grasping behaviour
+
 ACS
-# array of max and min acs found in 500 eps pd agent scaled to 30% leeway
-mx = np.array([18.79076577, 13.78390522, 32.46248846,  1.        ]) * 1.3
-mn = np.array([ -0.70994379, -13.88668208, -15.17208177,   0.        ]) * 1.3  # since all negative
-scale = np.ceil(max) - np.floor(min) # range
-array([26., 37., 63.,  2.])  
-offset = np.floor(min) # min
-array([ -1., -19., -20.,   0.])  
+# array of max and min acs found in 500 eps pd agent scaled to leeway
+mx = np.array([18.79076577, 13.78390522, 32.46248846,  0.11      ]) * 1.1
+mn = np.array([ -0.70994379, -13.88668208, -15.17208177,   -0.02      ]) * 1.1  # since all negative
+scale = np.round(mx, decimals=3) - np.round(mn, decimals=3) # range
+array([21.451, 30.437, 52.398,  0.1  ])
+offset = np.round(mn, decimals=3) # min
+array([ -0.781, -15.275, -16.689,   0.   ])
 acs = acs * scale + offset
 
 OBS
 # array of max and min acs found in 500 eps pd agent scaled to 30% leeway
-max = array([ 0.35819622,  0.19836367,  0.45274739,  0.1863834 ,  0.19839868, 0.45282429,
+mx = np.array([ 0.35819622,  0.19836367,  0.45274739,  0.1863834 ,  0.19839868, 0.45282429,
         0.40217545,  
         0.7392161 ,  0.18227398,  0.52348188,
         0.27002175,  1.00071738,  0.1655928 , 
@@ -302,19 +309,23 @@ max = array([ 0.35819622,  0.19836367,  0.45274739,  0.1863834 ,  0.19839868, 0.
             2.75088341,  0.        ,  0.        ,  
             0.07600003,  0.07599997,  0.        ,  
         0.00983092,  0.19838117,  0.4911857 ]) * 1.3
-min = array([ 1.71960650e-04,  8.04060100e-08,  2.81048371e-05,  5.18226627e-08,
+mnn = np.array([ 1.71960650e-04,  8.04060100e-08,  2.81048371e-05,  5.18226627e-08,
         1.20426205e-07,  8.89086052e-05, -1.47817961e-04,  4.31449456e-01,
        -1.79290969e-01,  8.28353383e-02, -1.91106306e-01, -2.14915632e-01,
        -1.72868083e-01, -2.56998225e+00, -1.81334319e-01,  1.60523483e+00,
         1.94219945e+00,  0.00000000e+00,  0.00000000e+00,  5.13511843e-05,
        -4.88971220e-06,  0.00000000e+00, -2.68499252e-01, -1.96912932e-01,
-        3.50155939e-02]) - abs(min * 0.3)  # since mixed signs
-scale = np.minimum(np.ceil(max) - np.floor(min), 1) # range, we only scale up and to avoid 0 div use 1 as min scale
-array([1., 1., 1., 1., 1., 1., 2., 1., 2., 1., 2., 3., 2., 3., 2., 2., 2.,
-       0., 0., 1., 2., 0., 2., 2., 1.])
-offset = np.floor(mnn) # min
-array([ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0., -1.,  0., -1., -1., -1.,
-       -4., -1.,  1.,  1.,  0.,  0.,  0., -1.,  0., -1., -1.,  0.])
+        3.50155939e-02]) # since mixed signs
+mn = mnn - abs(mnn * 0.3) 
+scale = np.minimum(np.round(mx, decimals=3) - np.round(mn, decimals=3), 1) # range, we only scale up and to avoid 0 div use 1 as min scale
+array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47 ,
+       0.623, 0.599, 1.   , 0.44 , 1.   , 0.417, 1.   , 1.   , 0.   ,
+       0.   , 0.099, 0.099, 0.   , 0.362, 0.514, 0.614])
+offset = np.round(mn, decimals=3) # min
+array([ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , -0.   ,  0.302,
+       -0.233,  0.058, -0.248, -0.279, -0.225, -3.341, -0.236,  1.124,
+        1.36 ,  0.   ,  0.   ,  0.   , -0.   ,  0.   , -0.349, -0.256,
+        0.025])
 
 obs = (obs - offset) / scale
 
@@ -355,6 +366,23 @@ changed (increased) eval steps during training as could just be the random episo
 
 changed ac bounds back to original (see above) it's not these bounds for speed
     changed the forces in the p.setJointMotorControlArray to 100 (from 5 x 240) seemed to improve will see next run
+
+____
+
+Results good reaching again but no grasping, solved the breaking sim with the action forces
+
+x doing 2 eval eps and it doesnt seem like it's just chance that don't get comparable env performance
+x changed ac bounds
+x change grasp action is it 0 or 1? make it treshold
+
+changed eval seed to match training one, also changed code to use the same classes for eval so it should be
+close now
+#SEED HAS A BIG IMPACT
+Though ideally want seed invariant behaviour not chancing it
+
+Changed ac bounds to 10% as otherwise get a scaling effect
+Obs bounds still 30%
+For both I also removed the floor / ceil instead round to a few dp
 ____
 
 TODO:
