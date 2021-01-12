@@ -203,7 +203,7 @@ if __name__ == "__main__":
     variant['env_name'] = args.env
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
-    variant['headless'] = True  # print if complete episode
+    variant['verbose'] = True  # print if complete episode
 
     gpu_str = "0"
     if not args.no_gpu:
