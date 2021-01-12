@@ -47,7 +47,8 @@ reward_weights = {
             "reward_contacts": 0.07,
             "penalty_collision": 0.09,
             "reward_grasp": 1,
-            "reward_z": 3,
+            "reward_z": 15,
+            "reward_completion": 1,
         }
 
 class PandaEnv(gym.Env):
@@ -152,15 +153,20 @@ class PandaEnv(gym.Env):
                 reward_grasp = 1
 
         # task complete reward
-        reward_z = state_object[2]
-        if state_object[2] > 0.4:
+        obj_z = state_object[2]
+        # reward z but filter out slight values
+        reward_z = obj_z if obj_z > 0.05 else 0
+        reward_completion = 0
+        if obj_z > 0.4:
             done = True
+            reward_completion = 100
         reward_dict = {
             "reward_dist": reward_dist,
             "reward_contacts": reward_contacts,
             "reward_grasp": reward_grasp,
             "penalty_collision": penalty_collision,
-            "reward_z": reward_z
+            "reward_z": reward_z,
+            "reward_completion": reward_completion,
         }
         reward = 0
         for k, v in reward_weights.items():

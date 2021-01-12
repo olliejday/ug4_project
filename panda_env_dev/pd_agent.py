@@ -62,7 +62,7 @@ if __name__ == "__main__":
     _a = []
     _o = []
 
-    for i_episode in range(100):
+    for i_episode in range(10):
         done = False
         info = None
         observation = env.reset()
@@ -77,13 +77,13 @@ if __name__ == "__main__":
                 break
             _a.append(action)
             _o.append(observation)
-        # print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
+        print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
     ###
-    print("action")
-    print(np.max(_a, axis=0))
-    print(np.min(_a, axis=0))
-    print("obs")
-    print(np.max(_o, axis=0))
-    print(np.min(_o, axis=0))
+    # print("action")
+    # print(np.max(_a, axis=0))
+    # print(np.min(_a, axis=0))
+    # print("obs")
+    # print(np.max(_o, axis=0))
+    # print(np.min(_o, axis=0))
     ###
     env.close()
