@@ -388,7 +388,7 @@ Added an eps minimum scale for obs to avoid division by 0,
 test new ac and obs bounds for 100 pd agent eps - OK!
 
 Currently gets more reward for staying near object than lifting it - adding a boost to each stage 
-so get near is good, grip/contact is 2 x better and lifting is 2x better than that 
+so get near is good, grip/contact is ~10x better and lifting is ~5x better than that 
 ____
 
 TODO:
