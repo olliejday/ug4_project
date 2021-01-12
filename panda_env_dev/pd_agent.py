@@ -7,11 +7,10 @@ import numpy as np
 class PDAgent:
     def __init__(self, acs_offset, acs_scale):
         self.error = [0.017, 0.01, 0.01, 0.035]
-        self.fingers = 1
         self.k_p = 10
         self.k_d = 1
         self.dt = 1. / 60.  # the default timestep in pybullet is 240 Hz
-        self.fingers = 1
+        self.fingers = 0.08
         self.acs_offset = acs_offset
         self.acs_scale = acs_scale
 
@@ -23,7 +22,7 @@ class PDAgent:
 
     def get_action(self, info):
         if info is None:
-            return self.process_action([0, 0, 0, 1])
+            return self.process_action([0, 0, 0, self.fingers])
         object_position = info["obj_pos"]
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
@@ -60,7 +59,10 @@ if __name__ == "__main__":
     env.reset()
     pd = PDAgent(env.acs_offset, env.acs_scale)
 
-    for i_episode in range(500):
+    _a = []
+    _o = []
+
+    for i_episode in range(100):
         done = False
         info = None
         observation = env.reset()
@@ -69,11 +71,19 @@ if __name__ == "__main__":
         for t in range(500):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
-            print(action)
             observation, reward, done, info = env.step(action)
             cum_reward += reward
             if done:
                 break
-        print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
-
+            _a.append(action)
+            _o.append(observation)
+        # print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
+    ###
+    print("action")
+    print(np.max(_a, axis=0))
+    print(np.min(_a, axis=0))
+    print("obs")
+    print(np.max(_o, axis=0))
+    print(np.min(_o, axis=0))
+    ###
     env.close()

@@ -58,7 +58,7 @@ def get_dataset(h5path, env):
 
 
 def experiment(variant):
-    eval_env = gym.make(variant['env_name'], **{"headless": variant["headless"]})
+    eval_env = gym.make(variant['env_name'], **{"headless": variant["headless"], "verbose": variant["verbose"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
     
@@ -203,6 +203,7 @@ if __name__ == "__main__":
     variant['env_name'] = args.env
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
+    variant['headless'] = True  # print if complete episode
 
     gpu_str = "0"
     if not args.no_gpu:

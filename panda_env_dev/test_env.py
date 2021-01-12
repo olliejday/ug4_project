@@ -14,6 +14,5 @@ if __name__ == "__main__":
         # ac = env.action_space.sample()
         ac = np.ones(4)
         ac[-1] = 0.001 * i
-        print(ac)
         obs, _, done, _ = env.step(ac)
         i += 1

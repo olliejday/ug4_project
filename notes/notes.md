@@ -317,10 +317,10 @@ mnn = np.array([ 1.71960650e-04,  8.04060100e-08,  2.81048371e-05,  5.18226627e-
        -4.88971220e-06,  0.00000000e+00, -2.68499252e-01, -1.96912932e-01,
         3.50155939e-02]) # since mixed signs
 mn = mnn - abs(mnn * 0.3) 
-scale = np.minimum(np.round(mx, decimals=3) - np.round(mn, decimals=3), 1) # range, we only scale up and to avoid 0 div use 1 as min scale
+scale = np.maximum(np.round(mx, decimals=3) - np.round(mn, decimals=3), 0.01) # range, scale up and to avoid 0 div use 1 as min scale
 array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47 ,
-       0.623, 0.599, 1.   , 0.44 , 1.   , 0.417, 1.   , 1.   , 0.   ,
-       0.   , 0.099, 0.099, 0.   , 0.362, 0.514, 0.614])
+       0.623, 0.599, 1.58 , 0.44 , 1.727, 0.417, 2.547, 2.216, 0.01 ,
+       0.01 , 0.099, 0.099, 0.01 , 0.362, 0.514, 0.614])
 offset = np.round(mn, decimals=3) # min
 array([ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , -0.   ,  0.302,
        -0.233,  0.058, -0.248, -0.279, -0.225, -3.341, -0.236,  1.124,
@@ -383,6 +383,9 @@ Though ideally want seed invariant behaviour not chancing it
 Changed ac bounds to 10% as otherwise get a scaling effect
 Obs bounds still 30%
 For both I also removed the floor / ceil instead round to a few dp
+
+Added an eps minimum scale for obs to avoid division by 0,
+test new ac and obs bounds for 100 pd agent eps - OK!
 ____
 
 TODO:

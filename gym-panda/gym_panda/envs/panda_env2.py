@@ -53,7 +53,7 @@ reward_weights = {
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, headless, verbose=True):
+    def __init__(self, headless, verbose=False):
         self.step_counter = 0
         if headless:
             p.connect(p.DIRECT)
@@ -74,8 +74,8 @@ class PandaEnv(gym.Env):
         # outputs normalised observations (0, 1)
         self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
         self.obs_scale = np.array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47 ,
-       0.623, 0.599, 1.   , 0.44 , 1.   , 0.417, 1.   , 1.   , 0.   ,
-       0.   , 0.099, 0.099, 0.   , 0.362, 0.514, 0.614])
+       0.623, 0.599, 1.58 , 0.44 , 1.727, 0.417, 2.547, 2.216, 0.01 ,
+       0.01 , 0.099, 0.099, 0.01 , 0.362, 0.514, 0.614])
         self.obs_offset = np.array([ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , -0.   ,  0.302,
        -0.233,  0.058, -0.248, -0.279, -0.225, -3.341, -0.236,  1.124,
         1.36 ,  0.   ,  0.   ,  0.   , -0.   ,  0.   , -0.349, -0.256,
