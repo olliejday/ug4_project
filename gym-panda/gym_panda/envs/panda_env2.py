@@ -31,25 +31,26 @@ pandaJointsDict = {k: i for i, k in enumerate(pandaJoints)}
 
 pandaNumDofs = 9
 
-ll = [-7]*pandaNumDofs
-#upper limits for null space (todo: set them to proper range)
-ul = [7]*pandaNumDofs
-#joint ranges for null space (todo: set them to proper range)
-jr = [7]*pandaNumDofs
-#restposes for null space
-jointPositions=[0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
+ll = [-7] * pandaNumDofs
+# upper limits for null space (todo: set them to proper range)
+ul = [7] * pandaNumDofs
+# joint ranges for null space (todo: set them to proper range)
+jr = [7] * pandaNumDofs
+# restposes for null space
+jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
 rp = jointPositions
 
-MAX_EPISODE_LEN = 20*100
+MAX_EPISODE_LEN = 20 * 100
 
 reward_weights = {
-            "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
-            "reward_contacts": 0.07,
-            "penalty_collision": 0.09,
-            "reward_grasp": 1,
-            "reward_z": 15,
-            "reward_completion": 1,
-        }
+    "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
+    "reward_contacts": 0.07,
+    "penalty_collision": 0.09,
+    "reward_grasp": 1,
+    "reward_z": 15,
+    "reward_completion": 1,
+}
+
 
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -61,26 +62,27 @@ class PandaEnv(gym.Env):
         else:
             p.connect(p.GUI)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        timeStep = 1. / 60.
-        p.setTimeStep(timeStep)
+        self.timeStep = 1. / 200.
+        p.setTimeStep(self.timeStep)
+
         p.setGravity(0, -9.8, 0)
-        # p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=0, cameraPitch=-40, cameraTargetPosition=[0.55,-0.35,0.2])
-        p.resetDebugVisualizerCamera(cameraDistance=1.5, cameraYaw=-30, cameraPitch=-40, cameraTargetPosition=[.5, 0, .5])
+        p.resetDebugVisualizerCamera(cameraDistance=.6, cameraYaw=15, cameraPitch=-40, cameraTargetPosition=[.7, 0, .1])
 
         # see notes for details of bounds and of acs and obs spaces
         # takes normalised actions (0, 1)
-        self.action_space = spaces.Box(np.array([0] * 4), np.array([1] * 4))
-        self.acs_scale = np.array([21.451, 30.437, 52.398, 0.11])
-        self.acs_offset = np.array([-0.781, -15.275, -16.689, -0.02])
+        self.n_actions = 4
+        self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
+        self.acs_scale = np.array([2, 2, 4, 0.12])
+        self.acs_offset = np.array([-0.5, -1, -1, -0.02])
         # outputs normalised observations (0, 1)
-        self.observation_space = spaces.Box(np.array([0]*25), np.array([1]*25))
-        self.obs_scale = np.array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47 ,
-       0.623, 0.599, 1.58 , 0.44 , 1.727, 0.417, 2.547, 2.216, 0.01 ,
-       0.01 , 0.099, 0.099, 0.01 , 0.362, 0.514, 0.614])
-        self.obs_offset = np.array([ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , -0.   ,  0.302,
-       -0.233,  0.058, -0.248, -0.279, -0.225, -3.341, -0.236,  1.124,
-        1.36 ,  0.   ,  0.   ,  0.   , -0.   ,  0.   , -0.349, -0.256,
-        0.025])
+        self.observation_space = spaces.Box(np.array([0] * 25), np.array([1] * 25))
+        self.obs_scale = np.array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47,
+                                   0.623, 0.599, 1.58, 0.44, 1.727, 0.417, 2.547, 2.216, 0.01,
+                                   0.01, 0.099, 0.099, 0.01, 0.362, 0.514, 0.614])
+        self.obs_offset = np.array([0., 0., 0., 0., 0., 0., -0., 0.302,
+                                    -0.233, 0.058, -0.248, -0.279, -0.225, -3.341, -0.236, 1.124,
+                                    1.36, 0., 0., 0., -0., 0., -0.349, -0.256,
+                                    0.025])
 
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task
@@ -88,10 +90,12 @@ class PandaEnv(gym.Env):
         self.completed = False
 
     def step(self, action):
-        action = self.process_action(action)
+        assert np.shape(action) == (self.n_actions,)
+        action = np.clip(self.process_action(action), self.action_space.low, self.action_space.high)
+
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
         orientation = p.getQuaternionFromEuler([0.,-math.pi,math.pi/2.])
-        dv = 0.005
+        dv = 0.05
         dx = action[0] * dv
         dy = action[1] * dv
         dz = action[2] * dv
@@ -102,10 +106,12 @@ class PandaEnv(gym.Env):
         newPosition = [currentPosition[0] + dx,
                        currentPosition[1] + dy,
                        currentPosition[2] + dz]
-        jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition, orientation, ll, ul, jr, rp, maxNumIterations=5)[0:7]
-
-        p.setJointMotorControlArray(self.pandaUid, list(range(7))+[9,10], p.POSITION_CONTROL, list(jointPoses)+2*[fingers],
-                                    forces=[100]*pandaNumDofs)
+        jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition,
+                                                  orientation, ll, ul, jr, rp, maxNumIterations=5)[0:7]
+        forces = np.array([87, 87, 87, 87, 12, 12, 12, 140, 140])
+        p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
+                                    list(jointPoses) + 2 * [fingers],
+                                    forces=forces)
 
         p.stepSimulation()
 
@@ -126,7 +132,7 @@ class PandaEnv(gym.Env):
             "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
             "hand_pos": np.array(p.getLinkState(self.pandaUid, 11)[0]),
             "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
-                                     p.getJointState(self.pandaUid, 10)[0]]),
+                                       p.getJointState(self.pandaUid, 10)[0]]),
             "completed": self.completed,
         }
         if self.completed and self.verbose:
@@ -150,7 +156,7 @@ class PandaEnv(gym.Env):
         if reward_contacts - penalty_collision >= 1 and \
                 p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0] < 0.02 and \
                 p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0] < 0.02:
-                reward_grasp = 1
+            reward_grasp = 1
 
         # task complete reward
         obj_z = state_object[2]
@@ -202,57 +208,53 @@ class PandaEnv(gym.Env):
     def reset(self):
         self.completed = False
         self.step_counter = 0
-        # print(p.getPhysicsEngineParameters())
-        # orig_params = {'fixedTimeStep': 0.016666666666666666, 'numSubSteps': 0, 'numSolverIterations': 50,
-        #                'useRealTimeSimulation': 0, 'numNonContactInnerIterations': 1}
-        # params = {'splitImpulsePenetrationThreshold': 1,}
-        # p.setPhysicsEngineParameter(**params)
+
         p.resetSimulation()
-        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,0) # we will enable rendering after we loaded everything
-        urdfRootPath=pybullet_data.getDataPath()
-        p.setGravity(0,0,-10)
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)  # we will enable rendering after we loaded everything
+        urdfRootPath = pybullet_data.getDataPath()
+        p.setGravity(0, 0, -10)
 
-        planeUid = p.loadURDF(os.path.join(urdfRootPath,"plane.urdf"), basePosition=[0,0,-0.65])
+        planeUid = p.loadURDF(os.path.join(urdfRootPath, "plane.urdf"), basePosition=[0, 0, -0.65])
 
-        self.pandaUid = p.loadURDF(os.path.join(urdfRootPath, "franka_panda/panda.urdf"),useFixedBase=True)
-        rest_poses = [0,-0.215,0,-2.57,0,2.356,2.356,0.08,0.08]
+        self.pandaUid = p.loadURDF(os.path.join(urdfRootPath, "franka_panda/panda.urdf"), useFixedBase=True)
+        rest_poses = [0, -0.215, 0, -2.57, 0, 2.356, 2.356, 0.08, 0.08]
         for i in range(7):
-            p.resetJointState(self.pandaUid,i, rest_poses[i])
+            p.resetJointState(self.pandaUid, i, rest_poses[i])
         p.resetJointState(self.pandaUid, 9, 0.08)
-        p.resetJointState(self.pandaUid,10, 0.08)
-        tableUid = p.loadURDF(os.path.join(urdfRootPath, "table/table.urdf"),basePosition=[0.5,0,-0.65])
+        p.resetJointState(self.pandaUid, 10, 0.08)
+        tableUid = p.loadURDF(os.path.join(urdfRootPath, "table/table.urdf"), basePosition=[0.5, 0, -0.65])
 
-        trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"),basePosition=[0.65,0,0])
+        trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
 
-        state_object= [random.uniform(0.5,0.7),random.uniform(-0.2,0.2),0.05]
+        state_object = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
         self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=state_object,
                                     baseOrientation=[0, 0.5, 0, 0.5])
 
         # state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3) * np.random.choice([-1, 1])
         # secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)
         self.observation, _ = self.get_obs()
-        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
         return self.observation
 
     def render(self, mode='human'):
-        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7,0,0.05],
-                                                            distance=.7,
-                                                            yaw=90,
-                                                            pitch=-70,
-                                                            roll=0,
-                                                            upAxisIndex=2)
+        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7, 0, 0.05],
+                                                          distance=.7,
+                                                          yaw=90,
+                                                          pitch=-70,
+                                                          roll=0,
+                                                          upAxisIndex=2)
         proj_matrix = p.computeProjectionMatrixFOV(fov=60,
-                                                     aspect=float(960) /720,
-                                                     nearVal=0.1,
-                                                     farVal=100.0)
+                                                   aspect=float(960) / 720,
+                                                   nearVal=0.1,
+                                                   farVal=100.0)
         (_, _, px, _, _) = p.getCameraImage(width=960,
-                                              height=720,
-                                              viewMatrix=view_matrix,
-                                              projectionMatrix=proj_matrix,
-                                              renderer=p.ER_BULLET_HARDWARE_OPENGL)
+                                            height=720,
+                                            viewMatrix=view_matrix,
+                                            projectionMatrix=proj_matrix,
+                                            renderer=p.ER_BULLET_HARDWARE_OPENGL)
 
         rgb_array = np.array(px, dtype=np.uint8)
-        rgb_array = np.reshape(rgb_array, (720,960, 4))
+        rgb_array = np.reshape(rgb_array, (720, 960, 4))
 
         rgb_array = rgb_array[:, :, :3]
         return rgb_array
@@ -333,6 +335,7 @@ def get_reward_contacts(pandaUid, objectUid):
 
 
 rewards = {}
+
 
 def plot_reward(reward_dict, reward):
     plt.clf()

@@ -6,11 +6,11 @@ import numpy as np
 
 class PDAgent:
     def __init__(self, acs_offset, acs_scale):
-        self.error = [0.017, 0.01, 0.01, 0.035]
-        self.k_p = 10
-        self.k_d = 1
-        self.dt = 1. / 60.  # the default timestep in pybullet is 240 Hz
-        self.fingers = 0.08
+        self.error = [0.017, 0.01, 0.01, 0.037]
+        self.k_p = 2
+        self.k_d = 0.01
+        self.dt = 1. / 200.
+        self.fingers = 0.08  # open
         self.acs_offset = acs_offset
         self.acs_scale = acs_scale
 
@@ -18,7 +18,7 @@ class PDAgent:
         return (np.array(ac) - self.acs_offset) / self.acs_scale
 
     def episode_start(self):
-        self.fingers = 0.08
+        self.fingers = 0.08  # open
 
     def get_action(self, info):
         if info is None:
@@ -30,7 +30,7 @@ class PDAgent:
         dx = object_position[0] - hand_position[0]
         dy = object_position[1] - hand_position[1]
         target_z = object_position[2]
-        if (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0:  # if gripped object
+        if (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0.0:  # if gripped object
             target_z = 0.5
         offset_z = 0.01
         dz = target_z - (hand_position[2] + offset_z)  # offset for better grip
@@ -61,6 +61,7 @@ if __name__ == "__main__":
 
     _a = []
     _o = []
+    completed = 0
 
     for i_episode in range(10):
         done = False
@@ -68,22 +69,25 @@ if __name__ == "__main__":
         observation = env.reset()
         cum_reward = 0
         pd.episode_start()
-        for t in range(500):
+        for t in range(600):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
             observation, reward, done, info = env.step(action)
+            if info["completed"]:
+                completed += 1
             cum_reward += reward
             if done:
                 break
             _a.append(action)
             _o.append(observation)
-        print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
+        # print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
     ###
-    # print("action")
-    # print(np.max(_a, axis=0))
-    # print(np.min(_a, axis=0))
-    # print("obs")
-    # print(np.max(_o, axis=0))
-    # print(np.min(_o, axis=0))
+    print("Completed: {}".format(completed))
+    print("action")
+    print(np.max(_a, axis=0))
+    print(np.min(_a, axis=0))
+    print("obs")
+    print(np.max(_o, axis=0))
+    print(np.min(_o, axis=0))
     ###
     env.close()

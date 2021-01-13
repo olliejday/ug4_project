@@ -391,16 +391,60 @@ Currently gets more reward for staying near object than lifting it - adding a bo
 so get near is good, grip/contact is ~10x better and lifting is ~5x better than that 
 ____
 
-TODO:
-Work on params / reward function / env
-    Topology and obj kps    
-    Reward weights
-    Params - NN params
+Itr 50 - recorded video
+IT DID IT!!!!!!!! First pickup!! 
+Needs work but have our first completion :)
+With different seed gets even more pickups - careful tho seed shouldn't be a hparam!
 
-- Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
+Itr 20 - recorded video
+Flipping it up as a hack 
+Gets more reward than picking it up bc object z but doesn't pass threshold for completion!
+
+Still issues with it pushing object through tray (though hand holds together now) - less force still?
+
+xDebug object penetrating tray
+
+Fixed bug in it penetrating tray by lowering the simulation param 'fixedTimeStep' to 0.005 (was 0.01666)
+Now it picks up much more consistently and actually pretty well
+
+x Update li &c
+
+____
+
+x Changed camera to close on Li's feedback
+
+x Changed force params to https://github.com/qgallouedec/panda-gym/blob/master/panda_gym/envs/panda_env.py
+.
+They have pybullet do multiple sim steps per env step but this seemed to go crzy fast then and doesn't seem to have been done
+in other cases eg. https://github.com/bulletphysics/bullet3/blob/master/examples/pybullet/gym/pybullet_robots/panda/loadpanda.py
+so I left it
+.
+x Added action clip in env Limit pd to -1, 1
+
+Adroit centring
+  self.act_mid = np.mean(self.model.actuator_ctrlrange, axis=1)
+        self.act_rng = 0.5*(self.model.actuator_ctrlrange[:,1]-self.model.actuator_ctrlrange[:,0])
+
+#SIGNIFICANT CHANGE TO PD AGENT AND TO ACTION BOUNDS / INPUT SPACE
+x changed pd agent to output 0, 1 then to -1 to 1 after process, most seem ok with current pd agent except scale fingers
+*Trying with IK in the pd agent and the env using joint positions directly
+
+xChange max steps to 1500
+
+xChange to pick and place? -> Li says pick and reach OK atm
+
+____
+
+TODO ...
+*With that can iterate hparams etc to improve performance
+*Try with sparse reward?
+*Add object rotation? - if so change obs - see https://github.com/qgallouedec/panda-gym/blob/master/panda_gym/envs/panda_env.py
+*Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
     - Both in gathered data and in perturbed after learning
-- Human data?
-- Compare to other methods
+*compare to other methods
+*Then train with eg. human data 
+*pick and place task?
+
 
 Keep an eye on:
     - Panda Gym allows intersection of gripper with tray
