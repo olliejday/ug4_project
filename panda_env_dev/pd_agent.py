@@ -1,28 +1,44 @@
 import argparse
+import math
 
+import pybullet as p
 import gym
 import gym_panda
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 class PDAgent:
-    def __init__(self, acs_offset, acs_scale):
-        self.error = [0.017, 0.01, 0.01, 0.037]
-        self.k_p = 2
-        self.k_d = 0.01
+    def __init__(self, pandaNumDofs, end_effector_index, pandaUid, acs_mean, acs_std):
+        self.acs_mean = acs_mean
+        self.acs_std = acs_std
+        self.error = [0.017, 0.01, 0.01, 0.05]
+        self.k_p = 10
+        self.k_d = 1
         self.dt = 1. / 200.
         self.fingers = 0.08  # open
-        self.acs_offset = acs_offset
-        self.acs_scale = acs_scale
+        self.pandaNumDofs = pandaNumDofs
+        self.end_effector_index = end_effector_index
+        self.pandaUid = pandaUid
+        self.ll = [-7] * self.pandaNumDofs
+        # upper limits for null space (todo: set them to proper range)
+        self.ul = [7] * self.pandaNumDofs
+        # joint ranges for null space (todo: set them to proper range)
+        self.jr = [7] * self.pandaNumDofs
+        # restposes for null space
+        jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
+        self.rp = jointPositions
 
     def process_action(self, ac):
-        return (np.array(ac) - self.acs_offset) / self.acs_scale
+        # normalise to mean 0 and std 1
+        return (np.array(ac) - self.acs_mean) / self.acs_std
 
     def episode_start(self):
         self.fingers = 0.08  # open
 
     def get_action(self, info):
         if info is None:
-            return self.process_action([0, 0, 0, self.fingers])
+            return self.rp  # rest pose
         object_position = info["obj_pos"]
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
@@ -42,9 +58,25 @@ class PDAgent:
             pd_z = 0
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
             self.fingers = 0.0
-        # print(abs(dx), observation[0], abs(dy), abs(dz))
-        return self.process_action([pd_x, pd_y, pd_z, self.fingers])
-
+        # pd action
+        action = [pd_x, pd_y, pd_z, self.fingers]
+        action = np.clip(action, -1, 1)
+        # action to delta
+        orientation = p.getQuaternionFromEuler([0., -math.pi, math.pi / 2.])
+        dv = 0.05
+        dx = action[0] * dv
+        dy = action[1] * dv
+        dz = action[2] * dv
+        fingers = action[3]
+        # change current position
+        currentPose = p.getLinkState(self.pandaUid, 11)
+        currentPosition = currentPose[0]
+        newPosition = [currentPosition[0] + dx,
+                       currentPosition[1] + dy,
+                       currentPosition[2] + dz]
+        jointPoses = p.calculateInverseKinematics(self.pandaUid, self.end_effector_index, newPosition,
+                                                  orientation, self.ll, self.ul, self.jr, self.rp, maxNumIterations=5)[0:7]
+        return self.process_action(list(jointPoses) + 2 * [fingers])
 
 if __name__ == "__main__":
 
@@ -52,24 +84,24 @@ if __name__ == "__main__":
     parser.add_argument('--headless', action='store_true', help='Pybullet gui')
     args = parser.parse_args()
 
-    seed = 14123
+    seed = 14124
 
     env = gym.make('panda-v0', **{"headless": args.headless})
     env.seed(seed)
     env.reset()
-    pd = PDAgent(env.acs_offset, env.acs_scale)
+    pd = PDAgent(env.n_actions, env.end_effector_index, env.pandaUid, env.acs_mean, env.acs_std)
 
     _a = []
     _o = []
     completed = 0
 
-    for i_episode in range(10):
+    for i_episode in range(100):
         done = False
         info = None
         observation = env.reset()
         cum_reward = 0
         pd.episode_start()
-        for t in range(600):
+        for t in range(500):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
             observation, reward, done, info = env.step(action)
@@ -84,10 +116,16 @@ if __name__ == "__main__":
     ###
     print("Completed: {}".format(completed))
     print("action")
-    print(np.max(_a, axis=0))
-    print(np.min(_a, axis=0))
+    print("_mean = " + repr(np.mean(_a, axis=0)))
+    print("_std = " + repr(np.std(_a, axis=0)))
+    print("_min = " + repr(np.min(_a, axis=0)))
+    print("_max = " + repr(np.max(_a, axis=0)))
+    print("_range = " + repr(np.max(_a, axis=0) - np.min(_a, axis=0)))
     print("obs")
-    print(np.max(_o, axis=0))
-    print(np.min(_o, axis=0))
+    print("_mean = " + repr(np.mean(_o, axis=0)))
+    print("_std = " + repr(np.std(np.array(_o, np.float), axis=0)))
+    print("_min = " + repr(np.min(_o, axis=0)))
+    print("_max = " + repr(np.max(_o, axis=0)))
+    print("_range = " + repr(np.max(_o, axis=0) - np.min(_o, axis=0)))
     ###
     env.close()

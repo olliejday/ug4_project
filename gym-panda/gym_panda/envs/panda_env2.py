@@ -31,15 +31,6 @@ pandaJointsDict = {k: i for i, k in enumerate(pandaJoints)}
 
 pandaNumDofs = 9
 
-ll = [-7] * pandaNumDofs
-# upper limits for null space (todo: set them to proper range)
-ul = [7] * pandaNumDofs
-# joint ranges for null space (todo: set them to proper range)
-jr = [7] * pandaNumDofs
-# restposes for null space
-jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
-rp = jointPositions
-
 MAX_EPISODE_LEN = 20 * 100
 
 reward_weights = {
@@ -69,20 +60,28 @@ class PandaEnv(gym.Env):
         p.resetDebugVisualizerCamera(cameraDistance=.6, cameraYaw=15, cameraPitch=-40, cameraTargetPosition=[.7, 0, .1])
 
         # see notes for details of bounds and of acs and obs spaces
-        # takes normalised actions (0, 1)
-        self.n_actions = 4
+        self.n_actions = pandaNumDofs
+        self.end_effector_index = pandaJointsDict["panda_grasptarget_hand"]
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
-        self.acs_scale = np.array([2, 2, 4, 0.12])
-        self.acs_offset = np.array([-0.5, -1, -1, -0.02])
-        # outputs normalised observations (0, 1)
-        self.observation_space = spaces.Box(np.array([0] * 25), np.array([1] * 25))
-        self.obs_scale = np.array([0.466, 0.258, 0.589, 0.242, 0.258, 0.589, 0.523, 0.659, 0.47,
-                                   0.623, 0.599, 1.58, 0.44, 1.727, 0.417, 2.547, 2.216, 0.01,
-                                   0.01, 0.099, 0.099, 0.01, 0.362, 0.514, 0.614])
-        self.obs_offset = np.array([0., 0., 0., 0., 0., 0., -0., 0.302,
-                                    -0.233, 0.058, -0.248, -0.279, -0.225, -3.341, -0.236, 1.124,
-                                    1.36, 0., 0., 0., -0., 0., -0.349, -0.256,
-                                    0.025])
+        # normalistion params set empirically (see notes)
+        self.acs_mean = np.array([0.02008761, 0.25486009, -0.01521539, -2.08170228, 0.00326891,
+                                  2.33839231, 2.35234778, 0.0397479, 0.0397479])
+        self.acs_std = np.array([0.1882528, 0.30223908, 0.1093747, 0.26050974, 0.05065062,
+                                 0.21928752, 0.29453576, 0.03993519, 0.03993519])
+        self.observation_space = spaces.Box(np.array([0] * 22), np.array([1] * 22))
+        self.obs_mean = np.array([0.06948607920799513, 0.01064014045877533, 0.09525471551881459,
+                                  0.03932066822522797, 0.010644994960273341, 0.09547623670666466,
+                                  0.11729979856542928, 0.5434034595684055, 0.00044514429090377434,
+                                  0.18606473090696793, 0.015090418513382066, 0.248192467157062,
+                                  -0.015294364772409075, -2.105414401533755, 0.003735502292605632,
+                                  2.355187771295793, 2.3521831777351863, 0.029676513100094094,
+                                  0.027724920054124354, -0.02947791052178796, 0.0003754021206685438,
+                                  0.06876493234153894])
+        self.obs_std = np.array([0.06509164, 0.02973735, 0.09385008, 0.02916187, 0.02982581,
+                                 0.09411771, 0.11683397, 0.07144959, 0.14798064, 0.09347103,
+                                 0.16901112, 0.29806916, 0.10117057, 0.26681981, 0.04518137,
+                                 0.19360735, 0.28129071, 0.0126499, 0.01449605, 0.05605754,
+                                 0.03160347, 0.09398505])
 
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task
@@ -90,27 +89,17 @@ class PandaEnv(gym.Env):
         self.completed = False
 
     def step(self, action):
+        """
+        :param action: joint position controls in action space (action bounds), then scaled to joint space
+        """
         assert np.shape(action) == (self.n_actions,)
-        action = np.clip(self.process_action(action), self.action_space.low, self.action_space.high)
+        # action = np.clip(action, self.action_space.low, self.action_space.high)
+        action = self.process_action(action)
 
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
-        orientation = p.getQuaternionFromEuler([0.,-math.pi,math.pi/2.])
-        dv = 0.05
-        dx = action[0] * dv
-        dy = action[1] * dv
-        dz = action[2] * dv
-        fingers = action[3]
-
-        currentPose = p.getLinkState(self.pandaUid, 11)
-        currentPosition = currentPose[0]
-        newPosition = [currentPosition[0] + dx,
-                       currentPosition[1] + dy,
-                       currentPosition[2] + dz]
-        jointPoses = p.calculateInverseKinematics(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"], newPosition,
-                                                  orientation, ll, ul, jr, rp, maxNumIterations=5)[0:7]
         forces = np.array([87, 87, 87, 87, 12, 12, 12, 140, 140])
         p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
-                                    list(jointPoses) + 2 * [fingers],
+                                    action,
                                     forces=forces)
 
         p.stepSimulation()
@@ -186,7 +175,8 @@ class PandaEnv(gym.Env):
         obj_pos = np.array(obj_pos)
         rel_pos = fingertip_pos - obj_pos
 
-        qpos_joints = np.array((p.getJointStates(self.pandaUid, range(len(pandaJoints)))), dtype=object)[:, 0]
+        # q pos of contollable / dof joints
+        qpos_joints = np.array((p.getJointStates(self.pandaUid, list(range(7)) + [9, 10])), dtype=object)[:, 0]
 
         finger_pos1 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0]
         finger_pos2 = p.getLinkState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0]
@@ -271,10 +261,12 @@ class PandaEnv(gym.Env):
         np.random.seed(seed)
 
     def process_action(self, action):
-        return np.array(action) * self.acs_scale + self.acs_offset
+        # here take normalised actions 0 mean, 1 std and scales to action (joint) space (inverse of normalisation)
+        return np.array(action, np.float) * self.acs_std + self.acs_mean
 
     def process_observation(self, obs):
-        return (np.array(obs, np.float32) - self.obs_offset) / self.obs_scale
+        # from normal obs -> outputs 0 mean, 1 std observations
+        return (np.array(obs, np.float) - self.obs_mean) / self.obs_std
 
 
 def vector_angle_2d(x, y):
