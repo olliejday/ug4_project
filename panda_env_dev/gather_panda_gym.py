@@ -70,11 +70,15 @@ def main():
     parser.add_argument('--gui', action='store_true', help='Pybullet gui')
     args = parser.parse_args()
 
+    seed = 1763
+
     exp_name = "gym_panda_pd_agent"
     if not os.path.exists("data"):
         os.makedirs("data")
 
     env = gym.make("panda-v0", **{"headless": not args.gui, "verbose": False})
+    env.seed(seed)
+    env.reset()
 
     # Load the policy
     pd = PDAgent(env.n_actions, env.end_effector_index, env.pandaUid, env.acs_offset, env.acs_scale)

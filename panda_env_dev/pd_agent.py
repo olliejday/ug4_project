@@ -87,8 +87,7 @@ if __name__ == "__main__":
     seed = 14124
 
     env = gym.make('panda-v0', **{"headless": args.headless})
-    env.seed(seed)
-    env.reset()
+
     pd = PDAgent(env.n_actions, env.end_effector_index, env.pandaUid, env.acs_mean, env.acs_std)
 
     _a = []
