@@ -497,6 +497,35 @@ ___
 
 Next run with new joint control:
 
+it's clear this is harder env 
+behaviour much worse
+
+itr 420 manages to pickup well once it doesn't fully pickup but this seems to give it better reward for object z rather than completion
+but other episodes it doesn't
+
+itr 390 does the same trying to stand the object on end
+
+Lots of the time it stops near the object
+print actions - does seem to be that the policy outputs settle during the episode - why is it learning this?
+
+I suspect it was reward that was making it stay there as it learned that staying near was better than missing and going 
+further away so trying with different reward
+If not can look at changing env / pd agent
+
+xShorten eval max path length -> 1200
+xChanged reward more sparse -> similar to adroit has only distance and then completion
+
+*CHange completion to log not print
+____
+
+Next run (sparse reward):
+
+
+Qs
+adjust env/ pd agent? 
+change reward back? - change arg in panda_env2
+
+
 ____
 
 TODO ...
