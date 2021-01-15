@@ -66,12 +66,14 @@ class PandaEnv(gym.Env):
         self.n_actions = pandaNumDofs
         self.end_effector_index = pandaJointsDict["panda_grasptarget_hand"]
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
-        # normalistion params set empirically (see notes)
+        self.observation_space = spaces.Box(np.array([0] * 22), np.array([1] * 22))
+        # normalistion params set empirically from expert data (see notes)
+        # scale the std deviation to include more data in the -1 to 1 range
+        scale_std = 10
         self.acs_mean = np.array([0.02008761, 0.25486009, -0.01521539, -2.08170228, 0.00326891,
                                   2.33839231, 2.35234778, 0.0397479, 0.0397479])
         self.acs_std = np.array([0.1882528, 0.30223908, 0.1093747, 0.26050974, 0.05065062,
-                                 0.21928752, 0.29453576, 0.03993519, 0.03993519])
-        self.observation_space = spaces.Box(np.array([0] * 22), np.array([1] * 22))
+                                 0.21928752, 0.29453576, 0.03993519, 0.03993519]) * scale_std
         self.obs_mean = np.array([0.06948607920799513, 0.01064014045877533, 0.09525471551881459,
                                   0.03932066822522797, 0.010644994960273341, 0.09547623670666466,
                                   0.11729979856542928, 0.5434034595684055, 0.00044514429090377434,
@@ -84,7 +86,7 @@ class PandaEnv(gym.Env):
                                  0.09411771, 0.11683397, 0.07144959, 0.14798064, 0.09347103,
                                  0.16901112, 0.29806916, 0.10117057, 0.26681981, 0.04518137,
                                  0.19360735, 0.28129071, 0.0126499, 0.01449605, 0.05605754,
-                                 0.03160347, 0.09398505])
+                                 0.03160347, 0.09398505]) * scale_std
 
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task

@@ -8,7 +8,7 @@ import uuid
 from rlkit.core import logger, eval_util
 import pybullet as p
 import gym_panda
-
+import matplotlib.pyplot as plt
 
 def simulate_policy(args):
     data = torch.load(args.file, map_location=ptu.device)
@@ -24,6 +24,8 @@ def simulate_policy(args):
                     args.num_eval_steps,
                     discard_incomplete_paths=True,
                 )
+    # plt.plot(paths[0]["actions"])
+    # plt.show()
     logger.record_dict(
         eval_util.get_generic_path_information(paths),
         prefix="evaluation/",

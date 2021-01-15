@@ -432,9 +432,12 @@ x set to 0, 1 inputs ie calc new scale and offset for joint position control
 
 xtry a test with env.action_space.sample() -> OK
 
-#Current action and obs: Mean and std of 500 pd agent runs, no scaling/leeway
-#also reduced obs to get rid of the ones that output 0s
-Just the most principled and simple approach, may need to look into it
+#Current action and obs: Range of 500 pd agent runs, scaled for 25 % leeway (scale only, offset same)
+#also removed obs that output always 0s
+
+Tried using mean and std and it led to agent getting stuck at 1 or -1 action not moving
+So not using scaled std
+
 These are stats for 500 eps of PD agent with joint position control to use for scaling actions
 action
 _mean = array([ 0.02008761,  0.25486009, -0.01521539, -2.08170228,  0.00326891,
@@ -445,8 +448,6 @@ _min = array([-0.41109789, -1.11157729, -0.32441981, -2.87685238, -0.3       ,
         1.57872595,  1.63177117,  0.        ,  0.        ])
 _max = array([ 0.98      ,  1.00411438,  0.42858269, -1.00333763,  0.26396   ,
         2.94853813,  3.09542839,  0.08      ,  0.08      ])
-_range = array([1.39109789, 2.11569167, 0.75300249, 1.87351476, 0.56396   ,
-       1.36981218, 1.46365722, 0.08      , 0.08      ])
 obs
 _mean = array([0.06948607920799513, 0.01064014045877533, 0.09525471551881459,
        0.03932066822522797, 0.010644994960273341, 0.09547623670666466,
@@ -455,7 +456,7 @@ _mean = array([0.06948607920799513, 0.01064014045877533, 0.09525471551881459,
        -0.015294364772409075, -2.105414401533755, 0.003735502292605632,
        2.355187771295793, 2.3521831777351863, 0.029676513100094094,
        0.027724920054124354, -0.02947791052178796, 0.0003754021206685438,
-       0.06876493234153894], dtype=object)
+       0.06876493234153894])
 _std = array([0.06509164, 0.02973735, 0.09385008, 0.02916187, 0.02982581,
        0.09411771, 0.11683397, 0.07144959, 0.14798064, 0.09347103,
        0.16901112, 0.29806916, 0.10117057, 0.26681981, 0.04518137,
@@ -468,24 +469,14 @@ _min = array([0.02199213036774106, 2.802437896326504e-09, 0.0070921621972258875,
        -1.0546190481233837, -0.31640120747741457, -2.8718891524392007,
        -0.158176452138274, 1.663980899376096, 1.6419835706670085,
        0.009704195538826956, 0.00016580998873661233, -0.26809356175399957,
-       -0.19556410123267962, -0.01965750572605808], dtype=object)
+       -0.19556410123267962, -0.01965750572605808])
 _max = array([0.3581201150473813, 0.19892358616449943, 0.2330780511400498,
        0.19305533592376078, 0.19958718642409035, 0.2334841796629028,
        0.39998960232702613, 0.7007092450142101, 0.3347592996051957,
        0.39064084188968184, 0.4685819506071406, 0.9423653675063055,
        0.4049743490961882, -1.040374840980018, 0.2478303317381189,
        2.975077800832962, 2.9655006823335808, 0.074, 0.07400003525670308,
-       0.0156394452436161, 0.19894109028121762, 0.20668229345009592],
-      dtype=object)
-_range = array([0.3361279846796402, 0.19892358336206153, 0.22598588894282393,
-       0.19305184961651223, 0.1995871839977236, 0.2269984198405094,
-       0.36982836773409, 0.48496173517766544, 0.6972037979021125,
-       0.3713324581488638, 0.875410927553335, 1.9969844156296892,
-       0.7213755565736027, 1.8315143114591828, 0.4060067838763929,
-       1.3110969014568659, 1.3235171116665723, 0.06429580446117304,
-       0.07383422526796647, 0.28373300699761567, 0.39450519151389724,
-       0.226339799176154], dtype=object)
-
+       0.0156394452436161, 0.19894109028121762, 0.20668229345009592])
 
 x Added action scaling above and checked new outputs - OK
 
@@ -515,16 +506,28 @@ If not can look at changing env / pd agent
 xShorten eval max path length -> 1200
 xChanged reward more sparse -> similar to adroit has only distance and then completion
 
-*CHange completion to log not print
+xCHange completion to log not print
 ____
 
 Next run (sparse reward):
+had some completions (few) during training
+couldn't find any completions during eval
+If still stopping short need look into it 
+
+still stops short of the object most times - why?? 
+    plotting actions in eval looks as action bounds making it stop as action outputs saturate to 1 and 0 and it freezes
+x -> changed action bounds to scaled std for more leeway, also added leeway on obs as will go off pd path
 
 
-Qs
-adjust env/ pd agent? 
-change reward back? - change arg in panda_env2
 
+___
+
+Next run - new action bounds
+::::
+
+*try fully sparse?
+adjust env/ pd agent?
+dense reward back? - change arg in panda_env2
 
 ____
 

@@ -81,7 +81,7 @@ def main():
     env.reset()
 
     # Load the policy
-    pd = PDAgent(env.n_actions, env.end_effector_index, env.pandaUid, env.acs_mean, env.acs_std)
+    pd = PDAgent(env)
 
     data = reset_data()
 

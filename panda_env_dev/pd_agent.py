@@ -9,36 +9,36 @@ import matplotlib.pyplot as plt
 
 
 class PDAgent:
-    def __init__(self, pandaNumDofs, end_effector_index, pandaUid, acs_mean, acs_std):
-        self.acs_mean = acs_mean
-        self.acs_std = acs_std
+    def __init__(self, env):
+        assert hasattr(env, "pandaUid"), "Must call env.reset() to setup sim before PDAgent"
+        self.env = env
         self.error = [0.017, 0.01, 0.01, 0.05]
         self.k_p = 10
         self.k_d = 1
         self.dt = 1. / 200.
         self.fingers = 0.08  # open
-        self.pandaNumDofs = pandaNumDofs
-        self.end_effector_index = end_effector_index
-        self.pandaUid = pandaUid
-        self.ll = [-7] * self.pandaNumDofs
+        self.n_actions = env.n_actions
+        self.end_effector_index = env.end_effector_index
+        self.pandaUid = env.pandaUid
+        self.ll = [-7] * self.n_actions
         # upper limits for null space (todo: set them to proper range)
-        self.ul = [7] * self.pandaNumDofs
+        self.ul = [7] * self.n_actions
         # joint ranges for null space (todo: set them to proper range)
-        self.jr = [7] * self.pandaNumDofs
+        self.jr = [7] * self.n_actions
         # restposes for null space
         jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
         self.rp = jointPositions
 
     def process_action(self, ac):
         # normalise to mean 0 and std 1
-        return (np.array(ac) - self.acs_mean) / self.acs_std
+        return (np.array(ac, np.float) - self.env.acs_mean) / self.env.acs_std
 
     def episode_start(self):
         self.fingers = 0.08  # open
 
     def get_action(self, info):
         if info is None:
-            return self.rp  # rest pose
+            return self.process_action(self.rp)  # rest pose
         object_position = info["obj_pos"]
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     env.seed(seed)
     env.reset()
 
-    pd = PDAgent(env.n_actions, env.end_effector_index, env.pandaUid, env.acs_mean, env.acs_std)
+    pd = PDAgent(env)
 
     _a = []
     _o = []
@@ -121,12 +121,12 @@ if __name__ == "__main__":
     print("_std = " + repr(np.std(_a, axis=0)))
     print("_min = " + repr(np.min(_a, axis=0)))
     print("_max = " + repr(np.max(_a, axis=0)))
-    print("_range = " + repr(np.max(_a, axis=0) - np.min(_a, axis=0)))
+    print("max {} min {}".format(np.max(_a), np.min(_a)))
     print("obs")
     print("_mean = " + repr(np.mean(_o, axis=0)))
     print("_std = " + repr(np.std(np.array(_o, np.float), axis=0)))
     print("_min = " + repr(np.min(_o, axis=0)))
     print("_max = " + repr(np.max(_o, axis=0)))
-    print("_range = " + repr(np.max(_o, axis=0) - np.min(_o, axis=0)))
+    print("max {} min {}".format(np.max(_o), np.min(_o)))
     ###
     env.close()
