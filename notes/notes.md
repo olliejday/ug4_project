@@ -523,9 +523,29 @@ x -> changed action bounds to scaled std for more leeway, also added leeway on o
 ___
 
 Next run - new action bounds
+Better - learns to get v close to the object
+and in v few epochs - 10-20!
+But still not grasping just stops by object
+Some completions in logs
+Check actions again
+Now does seem to be a learned thing as it's not saturating to +/- 1 just stopping
+
+---
+
+Trying fully sparse (ie only reward completion) as think the distance might make it stop short?
+Lowered scale_std to 8
+
+Running
 ::::
 
-*try fully sparse?
+Q: Is it still stopping?
+    Why? Bullet dynamics?
+    Learned behaviour?
+    Actions / obs limits?
+    Is it when some obs goes too big / small?
+
+---
+
 adjust env/ pd agent?
 dense reward back? - change arg in panda_env2
 

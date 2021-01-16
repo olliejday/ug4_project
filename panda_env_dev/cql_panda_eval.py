@@ -26,6 +26,8 @@ def simulate_policy(args):
                 )
     # plt.plot(paths[0]["actions"])
     # plt.show()
+    # plt.plot(paths[0]["observations"])
+    # plt.show()
     logger.record_dict(
         eval_util.get_generic_path_information(paths),
         prefix="evaluation/",
@@ -39,7 +41,7 @@ if __name__ == "__main__":
                         help='path to the snapshot file')
     parser.add_argument('--max_path_length', type=int, default=1200,
                         help='Max length of rollout')
-    parser.add_argument('--num_eval_steps', type=int, default=3600,
+    parser.add_argument('--num_eval_steps', type=int, default=1200,
                         help='Total number of eval steps to run')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
