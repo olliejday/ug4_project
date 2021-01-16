@@ -533,7 +533,7 @@ Now does seem to be a learned thing as it's not saturating to +/- 1 just stoppin
 ---
 
 Trying fully sparse (ie only reward completion) as think the distance might make it stop short?
-Lowered scale_std to 8
+Lowered scale_std to 7
 
 Running
 ::::

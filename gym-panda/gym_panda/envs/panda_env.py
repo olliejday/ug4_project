@@ -69,7 +69,7 @@ class PandaEnv(gym.Env):
         self.observation_space = spaces.Box(np.array([0] * 22), np.array([1] * 22))
         # normalistion params set empirically from expert data (see notes)
         # scale the std deviation to include more data in the -1 to 1 range
-        scale_std = 8
+        scale_std = 7
         self.acs_mean = np.array([0.02008761, 0.25486009, -0.01521539, -2.08170228, 0.00326891,
                                   2.33839231, 2.35234778, 0.0397479, 0.0397479])
         self.acs_std = np.array([0.1882528, 0.30223908, 0.1093747, 0.26050974, 0.05065062,
