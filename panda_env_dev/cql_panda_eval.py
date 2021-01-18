@@ -39,9 +39,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('file', type=str,
                         help='path to the snapshot file')
-    parser.add_argument('--max_path_length', type=int, default=1200,
+    parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
-    parser.add_argument('--num_eval_steps', type=int, default=1200,
+    parser.add_argument('--num_eval_steps', type=int, default=2100,
                         help='Total number of eval steps to run')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')

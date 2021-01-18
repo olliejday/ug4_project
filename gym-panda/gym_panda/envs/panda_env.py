@@ -102,7 +102,7 @@ class PandaEnv(gym.Env):
         action = self.process_action(action)
 
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
-        forces = np.array([87, 87, 87, 87, 12, 12, 12, 140, 140])
+        forces = np.array([100] * 9)
         p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
                                     action,
                                     forces=forces)

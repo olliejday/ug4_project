@@ -546,7 +546,29 @@ Doesn't seem to stop as much
 Trying on dense reward with new ac/obs space and new action inputs
 
 Running
+save more models at the start, sometimes completes quite early
+
+actions seem strange sometimes it flops and still pausing
+this could just be early learning behaviour
+
+give it multiple tries!
+
+itr10: messes up 1st and 3rd time but ok on 2nd
+
+xlower max eval path len in _train.py
+
+x increased joint forces -> solved flopping behaviour think some were too low
+think this was also perhaps causing the stopping - could have been an avoidance behaviour for parts where it would flop?
+
+---
+
+Trying on dense reward with new ac/obs space and new action inputs
+Now fixed a bug in joint forces
+
+Running
 ::::
+
+
 
 Q: Is it still stopping?
     Why? Bullet dynamics?
@@ -554,10 +576,10 @@ Q: Is it still stopping?
     Actions / obs limits?
     Is it when some obs goes too big / small?
 
----
+----
 
+try again with sparse once have joint pos working with dense rwd
 adjust env/ pd agent?
-dense reward back? - change arg in panda_env2
 
 ____
 
