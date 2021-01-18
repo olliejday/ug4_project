@@ -48,7 +48,7 @@ reward_weights = {
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, headless, verbose=False, sparse_reward=True):
+    def __init__(self, headless, verbose=False, sparse_reward=False):
         self.sparse_reward = sparse_reward
         self.step_counter = 0
         if headless:
@@ -164,7 +164,7 @@ class PandaEnv(gym.Env):
         reward_completion = 0
         if obj_z > 0.4:
             done = True
-            reward_completion = 100
+            reward_completion = 25
         reward_dict = {
             "reward_dist": reward_dist,
             "reward_contacts": reward_contacts,

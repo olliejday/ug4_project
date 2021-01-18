@@ -536,6 +536,16 @@ Trying fully sparse (ie only reward completion) as think the distance might make
 Lowered scale_std to 7
 
 Running
+Had some completions, 
+But on eval the behavior is a bit janky and didn't see any completions
+Doesn't seem to stop as much 
+
+
+---
+
+Trying on dense reward with new ac/obs space and new action inputs
+
+Running
 ::::
 
 Q: Is it still stopping?

@@ -96,7 +96,7 @@ if __name__ == "__main__":
     _o = []
     completed = 0
 
-    for i_episode in range(100):
+    for i_episode in range(10):
         done = False
         info = None
         observation = env.reset()
