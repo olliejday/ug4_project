@@ -176,7 +176,7 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, r in reward_dict.items():
             reward += r * reward_weights[k]
-        plot_reward(reward_dict, reward)
+        # plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_sparse_reward(self, done):
