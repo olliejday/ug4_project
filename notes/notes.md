@@ -598,7 +598,27 @@ Was worse with the changes
 x Changed LR back 
 Reward weights, changing z to be higher again and higher reward completion so it steps better
 
+* Try again with min / max scaling and offset
 
+Running
+::::
+
+
+* Try back to mean / std acs and obs scaling as have changed eg. reward weights
+_max = _max + abs(_max * 0.3)
+_min = _min - abs(_min * 0.3) 
+scale = np.maximum(np.round(_max, decimals=3) - np.round(_min, decimals=3), 0.01) # range, scale up and to avoid 0 div use 1 as min scale
+    acs array([1.808, 2.75 , 0.979, 3.038, 0.733, 2.728, 2.882, 0.104, 0.104])  
+    obs array([0.451, 0.259, 0.298, 0.251, 0.259, 0.299, 0.499, 0.76 , 0.906,
+           0.494, 1.138, 2.596, 0.937, 3.005, 0.528, 2.703, 2.706, 0.089,
+           0.096, 0.369, 0.513, 0.295])
+offset = np.round(_min, decimals=3) # min
+  acs array([-0.534, -1.445, -0.422, -3.74 , -0.39 ,  1.105,  1.142,  0.   ,
+        0.   ])
+  obs array([ 0.015,  0.   ,  0.005,  0.   ,  0.   ,  0.005,  0.021,  0.151,
+       -0.471,  0.014, -0.529, -1.371, -0.411, -3.733, -0.206,  1.165,
+        1.149,  0.007,  0.   , -0.349, -0.254, -0.026])
+obs = (obs - offset) / scale
 ___
 
 try again with sparse once have joint pos working with dense rwd
