@@ -583,13 +583,23 @@ x Lower learning rate?
     policy_lr=3e-5, -> 1e-5
     qf_lr=3e-4, -> 1e-4
 
+
 Q: Is it still stopping?
     Why? Bullet dynamics?
     Learned behaviour?
     Actions / obs limits?
     Is it when some obs goes too big / small?
 
+
 ----
+
+Was worse with the changes
+
+x Changed LR back 
+Reward weights, changing z to be higher again and higher reward completion so it steps better
+
+
+___
 
 try again with sparse once have joint pos working with dense rwd
 adjust env/ pd agent?

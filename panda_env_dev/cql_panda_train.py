@@ -164,8 +164,8 @@ if __name__ == "__main__":
         trainer_kwargs=dict(
             discount=0.99,
             soft_target_tau=5e-3,
-            policy_lr=1e-5,
-            qf_lr=1e-4,
+            policy_lr=3e-5,
+            qf_lr=3e-4,
             reward_scale=1,
             use_automatic_entropy_tuning=True,
 

@@ -46,7 +46,7 @@ if __name__ == "__main__":
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
     parser.add_argument('--no_gpu', action='store_true')
-    parser.add_argument('--seed', default=10, type=int)
+    parser.add_argument('--seed', default=117, type=int)
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
 

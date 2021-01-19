@@ -39,9 +39,9 @@ reward_weights = {
     "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
     "reward_contacts": 0.07,
     "penalty_collision": 0.09,
-    "reward_grasp": 1,
-    "reward_z": 7.5,
-    "reward_completion": 12.5,
+    "reward_grasp": 2,
+    "reward_z": 20,
+    "reward_completion": 10,
 }
 
 
@@ -176,7 +176,7 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, r in reward_dict.items():
             reward += r * reward_weights[k]
-        # plot_reward(reward_dict, reward)
+        plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_sparse_reward(self, done):
