@@ -164,8 +164,8 @@ if __name__ == "__main__":
         trainer_kwargs=dict(
             discount=0.99,
             soft_target_tau=5e-3,
-            policy_lr=3e-5,
-            qf_lr=3e-4,
+            policy_lr=1e-5,
+            qf_lr=1e-4,
             reward_scale=1,
             use_automatic_entropy_tuning=True,
 
@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default='panda-v0')
-    parser.add_argument('--seed', default=10, type=int)
+    parser.add_argument('--seed', default=117, type=int)
     parser.add_argument('--gui', action='store_true')
     parser.add_argument('--no_gpu', action='store_true')
 
@@ -204,6 +204,7 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
     variant['verbose'] = True  # print if complete episode
+    snapshot_gap = 3
 
     gpu_str = "0"
     if not args.no_gpu:
@@ -211,7 +212,7 @@ if __name__ == "__main__":
         ptu.set_gpu_mode(True)
 
     rnd = np.random.randint(0, 1000000)
-    setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]),
+    setup_logger(os.path.join('CQL_offline_panda_runs', str(time.time()).split(".")[0]), snapshot_gap=snapshot_gap,
                  variant=variant, base_log_dir='./data')
 
     experiment(variant)

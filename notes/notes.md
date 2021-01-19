@@ -566,9 +566,22 @@ Trying on dense reward with new ac/obs space and new action inputs
 Now fixed a bug in joint forces
 
 Running
-::::
+Two pickups (but not completion) and one throw out the tray ! on itr 30
 
-
+x Record iter 30
+x Do action and reward plots on 30 and nearby iters
+x Changed rewards weights
+    30 - reward z too much compared to reward completion, reward grasp not coming in early enough
+    10 and 40 high rwd without pickup - contact etc.
+        Think it's learned as not near action bounds
+        Mostly seems to just be better on the reward dist with a bit of contacts too
+    20 doesnt go near - reward seems sensible
+x increased threshold for grasp
+x More freq saves (at least at start), can do less total iters if need
+    changed to save every 3
+x Lower learning rate? 
+    policy_lr=3e-5, -> 1e-5
+    qf_lr=3e-4, -> 1e-4
 
 Q: Is it still stopping?
     Why? Bullet dynamics?

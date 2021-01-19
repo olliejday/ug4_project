@@ -17,7 +17,7 @@ def simulate_policy(args):
     # make new env, reloading with data['evaluation/env'] seems to make bug
     env = gym.make("panda-v0", **{"headless": args.headless, "verbose": True})
     env.seed(args.seed)
-
+    # input("Waiting to start.")
     path_collector = MdpPathCollector(env, policy)
     paths = path_collector.collect_new_paths(
                     args.max_path_length,
@@ -26,7 +26,7 @@ def simulate_policy(args):
                 )
     # plt.plot(paths[0]["actions"])
     # plt.show()
-    # plt.plot(paths[0]["observations"])
+    # plt.plot(paths[2]["observations"])
     # plt.show()
     logger.record_dict(
         eval_util.get_generic_path_information(paths),

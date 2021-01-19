@@ -40,8 +40,8 @@ reward_weights = {
     "reward_contacts": 0.07,
     "penalty_collision": 0.09,
     "reward_grasp": 1,
-    "reward_z": 15,
-    "reward_completion": 1,
+    "reward_z": 7.5,
+    "reward_completion": 12.5,
 }
 
 
@@ -153,8 +153,8 @@ class PandaEnv(gym.Env):
         # position of less that 0.02 is roughly closed gripper
         reward_grasp = 0
         if reward_contacts - penalty_collision >= 1 and \
-                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0] < 0.02 and \
-                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0] < 0.02:
+                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint1"])[0] < 0.03 and \
+                p.getJointState(self.pandaUid, pandaJointsDict["panda_finger_joint2"])[0] < 0.03:
             reward_grasp = 1
 
         # task complete reward
@@ -176,7 +176,7 @@ class PandaEnv(gym.Env):
         reward = 0
         for k, r in reward_dict.items():
             reward += r * reward_weights[k]
-        # plot_reward(reward_dict, reward)
+        plot_reward(reward_dict, reward)
         return done, reward, reward_dict
 
     def get_sparse_reward(self, done):
