@@ -156,10 +156,10 @@ if __name__ == "__main__":
             num_train_loops_per_epoch=1,
             num_trains_per_train_loop=1000,
             max_path_length=700,
-            num_eval_steps_per_epoch=2100,
-            num_expl_steps_per_train_loop=2100,
-            min_num_steps_before_training=2100,
-            batch_size=256,
+            num_eval_steps_per_epoch=1400,
+            num_expl_steps_per_train_loop=1400,
+            min_num_steps_before_training=1400,
+            batch_size=352,
         ),
         trainer_kwargs=dict(
             discount=0.99,
@@ -170,17 +170,17 @@ if __name__ == "__main__":
             use_automatic_entropy_tuning=True,
 
             # Target nets/ policy vs Q-function update
-            policy_eval_start=20000,  # Defaulted to 20000 (40000 or 10000 work similarly)
+            policy_eval_start=30000,  # Defaulted to 20000 (40000 or 10000 work similarly)
             num_qs=2,
 
             # CQL
-            temp=5.0,
+            temp=1.0,
             min_q_version=3,  # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho))
             min_q_weight=1.0,  # the value of alpha, set to 5.0 or 10.0 if not using lagrange
 
             # lagrange
             with_lagrange=True,   # Defaults to true
-            lagrange_thresh=10.0,  # the value of tau, corresponds to the CQL(lagrange) version
+            lagrange_thresh=5.0,  # the value of tau, corresponds to the CQL(lagrange) version
 
             # extra params
             num_random=10,

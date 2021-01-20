@@ -1,14 +1,14 @@
+import os
+
 import gym
 from rlkit.samplers.data_collector import MdpPathCollector
-from rlkit.samplers.rollout_functions import rollout
 import rlkit.torch.pytorch_util as ptu
 import argparse
 import torch
-import uuid
 from rlkit.core import logger, eval_util
-import pybullet as p
-import gym_panda
 import matplotlib.pyplot as plt
+import pandas as pd
+
 
 def simulate_policy(args):
     data = torch.load(args.file, map_location=ptu.device)
@@ -17,7 +17,8 @@ def simulate_policy(args):
     # make new env, reloading with data['evaluation/env'] seems to make bug
     env = gym.make("panda-v0", **{"headless": args.headless, "verbose": True})
     env.seed(args.seed)
-    # input("Waiting to start.")
+    if args.pause:
+        input("Waiting to start.")
     path_collector = MdpPathCollector(env, policy)
     paths = path_collector.collect_new_paths(
                     args.max_path_length,
@@ -35,6 +36,19 @@ def simulate_policy(args):
     logger.dump_tabular()
 
 
+def plot_training(file):
+    fpath = os.path.join(os.path.curdir, file)
+    if not fpath.endswith("progress.csv"):
+        fpath = os.path.join(os.path.curdir, file, "progress.csv")
+    rtns_cols = ["evaluation/Returns Mean", "evaluation/Returns Min", "evaluation/Returns Max"]
+    epochs_col = "Epoch"
+    df = pd.read_csv(fpath, index_col=epochs_col)
+    print("Top mean returns")
+    print(df.sort_values(rtns_cols, ascending=False)[rtns_cols][:15])
+    df.plot(y=rtns_cols[0])
+    plt.show()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('file', type=str,
@@ -46,13 +60,18 @@ if __name__ == "__main__":
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
     parser.add_argument('--no_gpu', action='store_true')
-    parser.add_argument('--seed', default=117, type=int)
+    parser.add_argument('--seed', default=129, type=int)
     parser.add_argument('--headless', action='store_true')
+    parser.add_argument('--pause', action='store_true')
+    parser.add_argument('--plot', action='store_true')
     args = parser.parse_args()
 
-    gpu_str = "0"
-    if not args.no_gpu:
-        ptu.enable_gpus(gpu_str)
-        ptu.set_gpu_mode(True)
+    if args.plot:
+        plot_training(args.file)
+    else:
+        gpu_str = "0"
+        if not args.no_gpu:
+            ptu.enable_gpus(gpu_str)
+            ptu.set_gpu_mode(True)
 
-    simulate_policy(args)
+        simulate_policy(args)

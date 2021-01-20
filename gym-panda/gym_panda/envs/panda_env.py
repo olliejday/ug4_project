@@ -37,9 +37,9 @@ MAX_EPISODE_LEN = 20 * 100
 
 reward_weights = {
     "reward_dist": 1,  # keep as 1 for base unit (typically -0.4 to 0)
-    "reward_contacts": 0.07,
+    "reward_contacts": 0,
     "penalty_collision": 0.09,
-    "reward_grasp": 2,
+    "reward_grasp": 1,
     "reward_z": 20,
     "reward_completion": 10,
 }

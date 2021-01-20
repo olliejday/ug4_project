@@ -625,6 +625,18 @@ No good, going back to mean, std
 
 x Try back to mean / std acs and obs scaling as have changed eg. reward weights
 
+Running
+
+Best model yet, 3 really good pickups and 2 where it goes near then sort of feints the pickup but doesn't grasp
+
+----
+
+Based on last run:
+x zero weight reward closeness and halved rewards weight for grasp
+x Plot csv to see how mean eval looks over time
+x Change params for better stability
+    Changed Tau to 5, increased policy eval start, temp to 1.0, changed eval and explr steps to be 2 x max path len
+    Increased batch size to 352
 
 ___
 
