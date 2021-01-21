@@ -638,16 +638,28 @@ x Change params for better stability
     Changed Tau to 5, increased policy eval start, temp to 1.0, changed eval and explr steps to be 2 x max path len
     Increased batch size to 352
 
-___
+Running:
+21/01/20
+#epoch 21
+#Really good model :)) learns to pickup VERY well and consistently looks as good as the pd agent 
+#also training much more stable, has a flat area where there's a few good models
 
-try again with sparse once have joint pos working with dense rwd
-adjust env/ pd agent?
+x Use --plot arg to see best epochs and plot training
 
 ____
 
+Trying with sparse reward ie. only reward completion 
+Running
+:::::
+
+____
+
+* Then test dense / sparse models with perturbed physics vs the pd agent  
+* Then try with human data?
+___
+
+
 TODO ...
-*With that can iterate hparams etc to improve performance
-*Try with sparse reward?
 *Add object rotation? - if so change obs - see https://github.com/qgallouedec/panda-gym/blob/master/panda_gym/envs/panda_env.py
 *Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
     - Both in gathered data and in perturbed after learning

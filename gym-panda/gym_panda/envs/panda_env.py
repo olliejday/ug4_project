@@ -48,7 +48,7 @@ reward_weights = {
 class PandaEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, headless, verbose=False, sparse_reward=False):
+    def __init__(self, headless, verbose=False, sparse_reward=True):
         self.sparse_reward = sparse_reward
         self.step_counter = 0
         if headless:
