@@ -673,20 +673,72 @@ x removed EE rel pos obs as captured in the finger rel pos
 
 Running:
 
-* try with moving object and regrasping etc v thoroughly
-
-some notes for next steps from supervisor on paper
-* write up
+Working well, slower than before but good completion rate on eval
+itr 15 good (also 12)
 
 ___
 
+x Add z-rotation of hand to match obj to pd agent
+x Add to obs: hand and obj orientation
+x Redo ac and obs bounds
+
+action
+_mean = array([-0.11200337,  0.47604913, -0.11255514, -1.72322873,  0.05802695,
+        2.20177014,  2.14862945,  0.04538093,  0.04538093])
+_std = array([0.0751389 , 0.28780316, 0.03562647, 0.33271765, 0.04047524,
+       0.18582715, 0.36296299, 0.03957525, 0.03957525])
+_min = array([-0.17262171, -0.13898705, -0.20030639, -2.5081992 , -0.3       ,
+        1.7024556 ,  1.40370972,  0.        ,  0.        ])
+_max = array([ 0.98      ,  0.98307127,  0.31      , -1.34497701,  0.11655295,
+        2.66      ,  2.95723005,  0.08      ,  0.08      ])
+obs
+_mean = array([ 1.09038504e-01,  2.43092468e-02,  1.14092714e-01,  5.87583031e-02,
+        2.59921405e-02,  1.14554145e-01, -3.01276719e-03,  1.07389465e-02,
+       -2.03404409e-02,  9.82628258e-01,  6.94992045e-01, -1.49608278e-01,
+        1.04590331e-01,  3.79365430e-02,  1.73891483e-01,  2.02375957e-04,
+        5.93251903e-04,  6.26668490e-01, -1.33427533e-01,  1.92303545e-01,
+       -1.11894676e-01,  4.53734420e-01, -1.08550465e-01, -1.76779071e+00,
+        5.61063733e-02,  2.22304690e+00,  2.15376396e+00,  3.28458920e-02,
+        2.90117830e-02])
+_std = array([0.09425424, 0.03453499, 0.09675853, 0.05580793, 0.03554957,
+       0.09721908, 0.00554906, 0.02974946, 0.18101611, 0.01486331,
+       0.00686845, 0.00318824, 0.11282189, 0.69398994, 0.69761722,
+       0.00488094, 0.00255604, 0.08149176, 0.0372437 , 0.0881075 ,
+       0.03549766, 0.31418283, 0.02916145, 0.35910005, 0.03699991,
+       0.16163746, 0.3542222 , 0.01205007, 0.01599951])
+_min = array([ 1.92500184e-02,  6.32373424e-08,  1.30999407e-02,  2.15915869e-06,
+        1.14616768e-07,  1.25570414e-02, -2.83966747e-02, -2.97758005e-02,
+       -4.17617907e-01,  9.08572268e-01,  6.70920824e-01, -1.62917261e-01,
+        3.05185746e-02, -7.07103802e-01, -7.07096325e-01, -1.54908202e-02,
+       -1.21148832e-02,  4.31514456e-01, -1.55106014e-01,  2.08437720e-02,
+       -1.52984620e-01, -2.09558345e-01, -1.93352990e-01, -2.56789067e+00,
+       -3.65522370e-02,  1.76241342e+00,  1.45049050e+00,  3.71973469e-05,
+        7.44541225e-04])
+_max = array([ 3.58512098e-01,  1.54126248e-01,  2.31075382e-01,  1.94226004e-01,
+        1.61858430e-01,  2.32605271e-01,  3.40211551e-03,  1.17414884e-01,
+        3.05386805e-01,  9.99999573e-01,  7.10365369e-01, -1.32971311e-01,
+        3.99996360e-01,  8.89163902e-01,  9.34227788e-01,  1.71245804e-02,
+        8.97560622e-03,  7.03969001e-01, -5.49391682e-12,  3.89069215e-01,
+        2.54002901e-02,  9.29571496e-01, -2.41149798e-03, -1.36814082e+00,
+        1.14056369e-01,  2.39719090e+00,  2.93964330e+00,  7.39999915e-02,
+        7.40000473e-02])
+
+Running:
+:::::
+
+* If worked, update diagram and documentation about new observation
+
+Test and look at training with ....
+* try with moving object and regrasping etc v thoroughly
+* gather some human data to try - in base env for now
+
+---
 
 TODO ...
 *Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
     - Both in gathered data and in perturbed after learning
 *compare to other methods eg. SAC, PD agent, for many random seeds
 *Then train with eg. human data 
-* Add rotation control of EE? can't seem to get it to work with pybullet setJointMotorControlArray
 *pick and place task?
 
 

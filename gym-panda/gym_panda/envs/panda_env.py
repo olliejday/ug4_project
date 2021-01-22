@@ -7,9 +7,7 @@ from rlkit.core import logger
 import os
 import pybullet as p
 import pybullet_data
-import math
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 
 """
@@ -66,25 +64,32 @@ class PandaEnv(gym.Env):
         self.n_actions = pandaNumDofs
         self.end_effector_index = pandaJointsDict["panda_grasptarget_hand"]
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
-        self.observation_space = spaces.Box(np.array([0] * 19), np.array([1] * 19))
+        self.observation_space = spaces.Box(np.array([0] * 29), np.array([1] * 29))
         # normalistion params set empirically from expert data (see notes)
         # scale the std deviation to include more data in the -1 to 1 range
         scale_std = 7
-        self.acs_mean = np.array([0.02008761, 0.25486009, -0.01521539, -2.08170228, 0.00326891,
-                                  2.33839231, 2.35234778, 0.0397479, 0.0397479])
-        self.acs_std = np.array([0.1882528, 0.30223908, 0.1093747, 0.26050974, 0.05065062,
-                                 0.21928752, 0.29453576, 0.03993519, 0.03993519]) * scale_std
-        self.obs_mean = np.array([0.06948607920799513, 0.01064014045877533, 0.09525471551881459,
-                                  0.03932066822522797, 0.010644994960273341, 0.09547623670666466,
-                                  0.11729979856542928, 0.5434034595684055, 0.00044514429090377434,
-                                  0.18606473090696793, 0.015090418513382066, 0.248192467157062,
-                                  -0.015294364772409075, -2.105414401533755, 0.003735502292605632,
-                                  2.355187771295793, 2.3521831777351863, 0.029676513100094094,
-                                  0.027724920054124354])
-        self.obs_std = np.array([0.06509164, 0.02973735, 0.09385008, 0.02916187, 0.02982581,
-                                 0.09411771, 0.11683397, 0.07144959, 0.14798064, 0.09347103,
-                                 0.16901112, 0.29806916, 0.10117057, 0.26681981, 0.04518137,
-                                 0.19360735, 0.28129071, 0.0126499, 0.01449605]) * scale_std
+        # self.acs_mean = np.zeros(self.n_actions)
+        # self.acs_std = np.ones(self.n_actions)
+        # self.obs_mean = np.zeros(29)
+        # self.obs_std = np.ones(29)
+        self.ac_mean = np.array([-0.11200337, 0.47604913, -0.11255514, -1.72322873, 0.05802695,
+                                 2.20177014, 2.14862945, 0.04538093, 0.04538093])
+        self.ac_std = np.array([0.0751389, 0.28780316, 0.03562647, 0.33271765, 0.04047524,
+                                0.18582715, 0.36296299, 0.03957525, 0.03957525])
+        self.obs_mean = np.array([1.09038504e-01, 2.43092468e-02, 1.14092714e-01, 5.87583031e-02,
+                                  2.59921405e-02, 1.14554145e-01, -3.01276719e-03, 1.07389465e-02,
+                                  -2.03404409e-02, 9.82628258e-01, 6.94992045e-01, -1.49608278e-01,
+                                  1.04590331e-01, 3.79365430e-02, 1.73891483e-01, 2.02375957e-04,
+                                  5.93251903e-04, 6.26668490e-01, -1.33427533e-01, 1.92303545e-01,
+                                  -1.11894676e-01, 4.53734420e-01, -1.08550465e-01, -1.76779071e+00,
+                                  5.61063733e-02, 2.22304690e+00, 2.15376396e+00, 3.28458920e-02,
+                                  2.90117830e-02])
+        self.obs_std = np.array([0.09425424, 0.03453499, 0.09675853, 0.05580793, 0.03554957,
+                                 0.09721908, 0.00554906, 0.02974946, 0.18101611, 0.01486331,
+                                 0.00686845, 0.00318824, 0.11282189, 0.69398994, 0.69761722,
+                                 0.00488094, 0.00255604, 0.08149176, 0.0372437, 0.0881075,
+                                 0.03549766, 0.31418283, 0.02916145, 0.35910005, 0.03699991,
+                                 0.16163746, 0.3542222, 0.01205007, 0.01599951])
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task
         self.verbose = verbose
@@ -121,6 +126,7 @@ class PandaEnv(gym.Env):
 
         info = {
             "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
+            "obj_ori": np.array(p.getBasePositionAndOrientation(self.objectUid)[1]),
             "hand_pos": np.array(p.getLinkState(self.pandaUid, 11)[0]),
             "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
                                        p.getJointState(self.pandaUid, 10)[0]]),
@@ -200,8 +206,9 @@ class PandaEnv(gym.Env):
         return done, reward, reward_dict
 
     def get_obs(self):
-        fingertip_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
-        obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
+        hand_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
+        hand_ori = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[1])
+        obj_pos, obj_ori = p.getBasePositionAndOrientation(self.objectUid)
         obj_pos = np.array(obj_pos)
         # rel_pos = fingertip_pos - obj_pos
 
@@ -215,8 +222,10 @@ class PandaEnv(gym.Env):
 
         obs_dict = {
             "dist_fingers": dist_fingers,
-            "obj_z": [obj_pos[2]],
-            "palm_pos": fingertip_pos,
+            "obj_ori": obj_ori,
+            "obj_pos": obj_pos,
+            "palm_ori": hand_ori,
+            "palm_pos": hand_pos,
             "qpos_joints": qpos_joints,
         }
 
@@ -245,9 +254,9 @@ class PandaEnv(gym.Env):
 
         trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
 
-        posObj = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
-        orientationObj = p.getQuaternionFromEuler([0, np.pi/2, random.uniform(-np.pi/5, np.pi/5)])
-        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=posObj,
+        posObj = [np.random.uniform(0.7, 0.7), np.random.uniform(-0.15, -0.15), 0.05]
+        orientationObj = p.getQuaternionFromEuler([0, 0, np.random.uniform(-np.pi / 5, np.pi / 5)])
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=posObj,
                                     baseOrientation=orientationObj)
 
         # state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3) * np.random.choice([-1, 1])
@@ -287,7 +296,6 @@ class PandaEnv(gym.Env):
 
     def seed(self, seed=None):
         seed = seeding.create_seed(seed)
-        random.seed(seed)
         np.random.seed(seed)
 
     def process_action(self, action):
@@ -303,11 +311,11 @@ class PandaEnvPerturbed(PandaEnv):
     def step(self, action):
         res = super().step(action)
         # -1 for base frame
-        p.applyExternalForce(self.objectUid, -1, [0, -0.75, 0], [0, 0, 0], p.LINK_FRAME)
+        p.applyExternalForce(self.objectUid, -1, [np.random.uniform(0, 5), np.random.uniform(0, 5), 0], [0, 0, 0],
+                             p.LINK_FRAME)
         # if p.getBasePositionAndOrientation(self.objectUid)[0][2] > 0.2:
         #     p.applyExternalForce(self.objectUid, -1, [0, 0, -50], [0, 0, 0], p.WORLD_FRAME)
         return res
-
 
 
 def vector_angle_2d(x, y):

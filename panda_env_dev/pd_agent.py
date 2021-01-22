@@ -40,22 +40,26 @@ class PDAgent:
         if info is None:
             return self.process_action(self.rp)  # rest pose
         object_position = info["obj_pos"]
+        object_orientation = info["obj_ori"]
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
 
-        y_offset = 0.015  # better grip lower
-        dx = object_position[0] - hand_position[0]
-        dy = object_position[1] - hand_position[1] + y_offset
+        target_x = object_position[0]
+        target_y = object_position[1]
         target_z = object_position[2]
-        if (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0.0:  # if gripped object
+        gripped_obj = (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0.0
+        if gripped_obj:
+            target_x = hand_position[0]
+            target_y = hand_position[1]
             target_z = 0.5
-        offset_z = 0.01
-        dz = target_z - (hand_position[2] + offset_z)  # offset for better grip
+        dx = target_x - hand_position[0]
+        dy = target_y - hand_position[1]
+        dz = target_z - hand_position[2]  # offset for better grip
         pd_x = self.k_p * dx + self.k_d * dx / self.dt
         pd_y = self.k_p * dy + self.k_d * dy / self.dt
         pd_z = self.k_p * dz + self.k_d * dz / self.dt
 
-        if abs(dx) > self.error[0] * 3 or abs(dy) > self.error[1] * 3:  # get roughly over the object
+        if abs(dx) > self.error[0] * 5 or abs(dy) > self.error[1] * 5:  # get roughly over the object
             pd_z = 0
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
             self.fingers = 0.0
@@ -63,7 +67,9 @@ class PDAgent:
         action = [pd_x, pd_y, pd_z, self.fingers]
         action = np.clip(action, -1, 1)
         # action to delta
-        orientation = p.getQuaternionFromEuler([0., -math.pi, math.pi / 2.])
+        object_orientation_euler = p.getEulerFromQuaternion(object_orientation)
+        orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1]])
+        orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1] + math.pi/2.])
         dv = 0.05
         dx = action[0] * dv
         dy = action[1] * dv
@@ -99,7 +105,7 @@ if __name__ == "__main__":
     _o = []
     completed = 0
 
-    for i_episode in range(10):
+    for i_episode in range(500):
         done = False
         info = None
         observation = env.reset()
