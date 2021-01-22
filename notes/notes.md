@@ -665,9 +665,11 @@ set to 60, think pybullet in N presumably(?) and 60N seems reasonable https://ww
 
 ----
 
+#some significant env changes
 Running with sparse for 
 x new force setting
 x Also added some object rotation in the env
+x removed EE rel pos obs as captured in the finger rel pos
 
 Running:
 

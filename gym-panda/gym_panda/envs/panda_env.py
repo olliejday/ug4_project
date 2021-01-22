@@ -66,7 +66,7 @@ class PandaEnv(gym.Env):
         self.n_actions = pandaNumDofs
         self.end_effector_index = pandaJointsDict["panda_grasptarget_hand"]
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
-        self.observation_space = spaces.Box(np.array([0] * 22), np.array([1] * 22))
+        self.observation_space = spaces.Box(np.array([0] * 19), np.array([1] * 19))
         # normalistion params set empirically from expert data (see notes)
         # scale the std deviation to include more data in the -1 to 1 range
         scale_std = 7
@@ -80,13 +80,11 @@ class PandaEnv(gym.Env):
                                   0.18606473090696793, 0.015090418513382066, 0.248192467157062,
                                   -0.015294364772409075, -2.105414401533755, 0.003735502292605632,
                                   2.355187771295793, 2.3521831777351863, 0.029676513100094094,
-                                  0.027724920054124354, -0.02947791052178796, 0.0003754021206685438,
-                                  0.06876493234153894])
+                                  0.027724920054124354])
         self.obs_std = np.array([0.06509164, 0.02973735, 0.09385008, 0.02916187, 0.02982581,
                                  0.09411771, 0.11683397, 0.07144959, 0.14798064, 0.09347103,
                                  0.16901112, 0.29806916, 0.10117057, 0.26681981, 0.04518137,
-                                 0.19360735, 0.28129071, 0.0126499, 0.01449605, 0.05605754,
-                                 0.03160347, 0.09398505]) * scale_std
+                                 0.19360735, 0.28129071, 0.0126499, 0.01449605]) * scale_std
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task
         self.verbose = verbose
@@ -205,7 +203,7 @@ class PandaEnv(gym.Env):
         fingertip_pos = np.array(p.getLinkState(self.pandaUid, pandaJointsDict["panda_grasptarget_hand"])[0])
         obj_pos, _ = p.getBasePositionAndOrientation(self.objectUid)
         obj_pos = np.array(obj_pos)
-        rel_pos = fingertip_pos - obj_pos
+        # rel_pos = fingertip_pos - obj_pos
 
         # q pos of contollable / dof joints
         qpos_joints = np.array((p.getJointStates(self.pandaUid, list(range(7)) + [9, 10])), dtype=object)[:, 0]
@@ -220,7 +218,6 @@ class PandaEnv(gym.Env):
             "obj_z": [obj_pos[2]],
             "palm_pos": fingertip_pos,
             "qpos_joints": qpos_joints,
-            "rel_pos": rel_pos,
         }
 
         observation = np.concatenate([v for _, v in sorted(obs_dict.items())])
