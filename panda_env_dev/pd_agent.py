@@ -43,8 +43,9 @@ class PDAgent:
         hand_position = info["hand_pos"]
         fingers_position = info["fingers_joint"]
 
+        y_offset = 0.015  # better grip lower
         dx = object_position[0] - hand_position[0]
-        dy = object_position[1] - hand_position[1]
+        dy = object_position[1] - hand_position[1] + y_offset
         target_z = object_position[2]
         if (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0.0:  # if gripped object
             target_z = 0.5
@@ -82,11 +83,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--headless', action='store_true', help='Pybullet gui')
+    parser.add_argument('--env', type=str, default="panda-v0",
+                        help='Gym env name')
     args = parser.parse_args()
 
     seed = 14124
 
-    env = gym.make('panda-v0', **{"headless": args.headless})
+    env = gym.make(args.env, **{"headless": args.headless})
     env.seed(seed)
     env.reset()
 

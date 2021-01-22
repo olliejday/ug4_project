@@ -15,7 +15,7 @@ def simulate_policy(args):
     policy = data['evaluation/policy']
     policy.to(ptu.device)
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    env = gym.make("panda-v0", **{"headless": args.headless, "verbose": True})
+    env = gym.make(args.env, **{"headless": args.headless, "verbose": True})
     env.seed(args.seed)
     if args.pause:
         input("Waiting to start.")

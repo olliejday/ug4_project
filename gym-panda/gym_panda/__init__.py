@@ -4,3 +4,8 @@ register(
     id='panda-v0',
     entry_point='gym_panda.envs:PandaEnv',
 )
+
+register(
+    id='pandaPerturbed-v0',
+    entry_point='gym_panda.envs:PandaEnvPerturbed',
+)

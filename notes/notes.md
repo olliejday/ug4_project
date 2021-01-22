@@ -646,25 +646,45 @@ Running:
 
 x Use --plot arg to see best epochs and plot training
 
+moved experiment 4 to "dense_reward"
 ____
 
 Trying with sparse reward ie. only reward completion 
 Running
-:::::
+sparse reward worked v well
+saved as folder "sparse_reward", itrs 21 and 24 v good
+this should outperform SAC now on sparse?
 
-____
+x try with moving object, adding forces to current model
+the model actually looks v good with forces after grapsing for regrasping
+and on moving objects
 
-* Then test dense / sparse models with perturbed physics vs the pd agent  
-* Then try with human data?
+forces for gripper are quite high need to lower to better test regrasping
+set to 60, think pybullet in N presumably(?) and 60N seems reasonable https://www.generationrobots.com/media/panda-franka-emika-datasheet.pdf
+* reload data with new setting
+
+----
+
+Running with sparse for 
+x new force setting
+x Also added some object rotation in the env
+
+Running:
+
+* try with moving object and regrasping etc v thoroughly
+
+some notes for next steps from supervisor on paper
+* write up
+
 ___
 
 
 TODO ...
-*Add object rotation? - if so change obs - see https://github.com/qgallouedec/panda-gym/blob/master/panda_gym/envs/panda_env.py
 *Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
     - Both in gathered data and in perturbed after learning
-*compare to other methods
+*compare to other methods eg. SAC, PD agent, for many random seeds
 *Then train with eg. human data 
+* Add rotation control of EE? can't seem to get it to work with pybullet setJointMotorControlArray
 *pick and place task?
 
 

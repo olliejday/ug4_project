@@ -101,7 +101,7 @@ class PandaEnv(gym.Env):
         action = self.process_action(action)
 
         p.configureDebugVisualizer(p.COV_ENABLE_SINGLE_STEP_RENDERING)
-        forces = np.array([100] * 9)
+        forces = np.array([100] * 7 + [60] * 2)
         p.setJointMotorControlArray(self.pandaUid, list(range(7)) + [9, 10], p.POSITION_CONTROL,
                                     action,
                                     forces=forces)
@@ -248,9 +248,10 @@ class PandaEnv(gym.Env):
 
         trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
 
-        state_object = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
-        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=state_object,
-                                    baseOrientation=[0, 0.5, 0, 0.5])
+        posObj = [random.uniform(0.5, 0.7), random.uniform(-0.2, 0.2), 0.05]
+        orientationObj = p.getQuaternionFromEuler([0, np.pi/2, random.uniform(-np.pi/5, np.pi/5)])
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/021/021.urdf"), basePosition=posObj,
+                                    baseOrientation=orientationObj)
 
         # state_object = np.array(state_object) + np.random.uniform(0.05, 0.1, 3) * np.random.choice([-1, 1])
         # secondObject = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/002/002.urdf"), basePosition=state_object)
@@ -299,6 +300,17 @@ class PandaEnv(gym.Env):
     def process_observation(self, obs):
         # from normal obs -> outputs 0 mean, 1 std observations
         return (np.array(obs, np.float) - self.obs_mean) / self.obs_std
+
+
+class PandaEnvPerturbed(PandaEnv):
+    def step(self, action):
+        res = super().step(action)
+        # -1 for base frame
+        p.applyExternalForce(self.objectUid, -1, [0, -0.75, 0], [0, 0, 0], p.LINK_FRAME)
+        # if p.getBasePositionAndOrientation(self.objectUid)[0][2] > 0.2:
+        #     p.applyExternalForce(self.objectUid, -1, [0, 0, -50], [0, 0, 0], p.WORLD_FRAME)
+        return res
+
 
 
 def vector_angle_2d(x, y):
