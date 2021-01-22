@@ -727,6 +727,7 @@ Running:
 :::::
 
 * If worked, update diagram and documentation about new observation
+* If not, maybe conver to euler for obs
 
 Test and look at training with ....
 * try with moving object and regrasping etc v thoroughly
