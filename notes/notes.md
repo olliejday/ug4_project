@@ -733,6 +733,17 @@ Test and look at training with ....
 * try with moving object and regrasping etc v thoroughly
 * gather some human data to try - in base env for now
 
+Running:
+Ok but stops again
+Forgot to add scale_std - doh!
+
+---
+
+Running again bug fixed
+
+
+* else try again dense reward else revert to prev
+
 ---
 
 TODO ...
@@ -741,6 +752,8 @@ TODO ...
 *compare to other methods eg. SAC, PD agent, for many random seeds
 *Then train with eg. human data 
 *pick and place task?
+
+---------
 
 
 Keep an eye on:
