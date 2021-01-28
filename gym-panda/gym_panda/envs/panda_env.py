@@ -68,28 +68,29 @@ class PandaEnv(gym.Env):
         # normalistion params set empirically from expert data (see notes)
         # scale the std deviation to include more data in the -1 to 1 range
         scale_std = 7
+        self.acs_mean = np.array([0.02806388, 0.30300509, -0.02472393, -2.02323566, 0.00893459,
+                                  2.32934239, 2.39454994, 0.03706155, 0.03706155])
+        self.acs_std = np.array([0.11699859, 0.2507982, 0.07120614, 0.25733758, 0.03952605,
+                                 0.23106606, 0.38370898, 0.0398212, 0.0398212]) * scale_std
+        self.obs_mean = np.array([7.01500698e-02, 1.48965938e-02, 8.78227272e-02, 3.81298514e-02,
+                                  1.69972892e-02, 8.81188941e-02, -3.50820470e-04, 2.73789175e-03,
+                                  -2.36838933e-02, 9.83214924e-01, 5.99429983e-01, -2.00033211e-04,
+                                  1.23243757e-01, 3.04535736e-02, 1.75282018e-01, 5.16394522e-04,
+                                  4.81298620e-04, 5.70159169e-01, -5.37340672e-04, 1.84614199e-01,
+                                  2.21636672e-02, 2.89742493e-01, -2.39614319e-02, -2.05760948e+00,
+                                  8.76474704e-03, 2.34946610e+00, 2.38633066e+00, 3.28678610e-02,
+                                  2.46175433e-02])
+        self.obs_std = np.array([0.06687247, 0.02015878, 0.08868218, 0.03144816, 0.02078771,
+                                 0.08918064, 0.00506174, 0.0256444, 0.17838172, 0.01471636,
+                                 0.05853876, 0.08816896, 0.11898107, 0.69388889, 0.69773689,
+                                 0.00432013, 0.00332711, 0.06590971, 0.08246218, 0.09432814,
+                                 0.09399189, 0.26254034, 0.06454262, 0.2696445, 0.03331196,
+                                 0.20274376, 0.36500204, 0.01071287, 0.01769749]) * scale_std
+        # when setting acs and obs scales we don't scale
         # self.acs_mean = np.zeros(self.n_actions)
         # self.acs_std = np.ones(self.n_actions)
         # self.obs_mean = np.zeros(29)
         # self.obs_std = np.ones(29)
-        self.acs_mean = np.array([-0.11200337, 0.47604913, -0.11255514, -1.72322873, 0.05802695,
-                                  2.20177014, 2.14862945, 0.04538093, 0.04538093])
-        self.acs_std = np.array([0.0751389, 0.28780316, 0.03562647, 0.33271765, 0.04047524,
-                                 0.18582715, 0.36296299, 0.03957525, 0.03957525]) * scale_std
-        self.obs_mean = np.array([1.09038504e-01, 2.43092468e-02, 1.14092714e-01, 5.87583031e-02,
-                                  2.59921405e-02, 1.14554145e-01, -3.01276719e-03, 1.07389465e-02,
-                                  -2.03404409e-02, 9.82628258e-01, 6.94992045e-01, -1.49608278e-01,
-                                  1.04590331e-01, 3.79365430e-02, 1.73891483e-01, 2.02375957e-04,
-                                  5.93251903e-04, 6.26668490e-01, -1.33427533e-01, 1.92303545e-01,
-                                  -1.11894676e-01, 4.53734420e-01, -1.08550465e-01, -1.76779071e+00,
-                                  5.61063733e-02, 2.22304690e+00, 2.15376396e+00, 3.28458920e-02,
-                                  2.90117830e-02])
-        self.obs_std = np.array([0.09425424, 0.03453499, 0.09675853, 0.05580793, 0.03554957,
-                                 0.09721908, 0.00554906, 0.02974946, 0.18101611, 0.01486331,
-                                 0.00686845, 0.00318824, 0.11282189, 0.69398994, 0.69761722,
-                                 0.00488094, 0.00255604, 0.08149176, 0.0372437, 0.0881075,
-                                 0.03549766, 0.31418283, 0.02916145, 0.35910005, 0.03699991,
-                                 0.16163746, 0.3542222, 0.01205007, 0.01599951]) * scale_std
         self._max_episode_steps = MAX_EPISODE_LEN
         # whether to print out eg. if complete task
         self.verbose = verbose
@@ -311,6 +312,7 @@ class PandaEnvForce(PandaEnv):
     """
     Applies an external force to make the object drop
     """
+
     def reset(self):
         self.have_dropped = False
         self.have_lifted = False
@@ -333,6 +335,7 @@ class PandaEnvPerturbed(PandaEnv):
     """
     Perturbed dynamics and physics parameters
     """
+
     def reset(self):
         obs = super().reset()
         # -1 for base
@@ -345,6 +348,7 @@ class PandaEnvObject(PandaEnv):
     """
     Random object different to training one
     """
+
     def reset(self):
         super().reset()
         p.removeBody(self.objectUid)
@@ -352,10 +356,10 @@ class PandaEnvObject(PandaEnv):
         posObj = [np.random.uniform(0.5, 0.7), np.random.uniform(-0.15, 0.15), 0.05]
         orientationObj = p.getQuaternionFromEuler([0, 0, np.random.uniform(-np.pi / 5, np.pi / 5)])
         obj = np.random.randint(1, 100)
-        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/{0:03d}/{0:03d}.urdf".format(obj)), basePosition=posObj,
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/{0:03d}/{0:03d}.urdf".format(obj)),
+                                    basePosition=posObj,
                                     baseOrientation=orientationObj)
         return self.get_obs()[0]
-
 
 
 def vector_angle_2d(x, y):
