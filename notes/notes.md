@@ -724,25 +724,71 @@ _max = array([ 3.58512098e-01,  1.54126248e-01,  2.31075382e-01,  1.94226004e-01
         7.40000473e-02])
 
 Running:
-:::::
-
-* If worked, update diagram and documentation about new observation
-* If not, maybe conver to euler for obs
-
-Test and look at training with ....
-* try with moving object and regrasping etc v thoroughly
-* gather some human data to try - in base env for now
-
-Running:
 Ok but stops again
 Forgot to add scale_std - doh!
 
----
+x added scale
 
-Running again bug fixed
+Running:
+Nails the rotation and good completions now
+itr 15 and 21 of sparse_reward
+save as sparse_reward
+
+----
+
+Evaluating with perturbation
+
+Making perturbed physics / dynamics params env
+        print(p.getDynamicsInfo(self.objectUid, -1))  # -1 for base
+mass 0.1
+lateral friction: 1.0
+local inertia diagonal (0.0004338002836244407, 0.00026767564485615316, 0.0006307959751799897) 
+local inertia pos (0.0, 0.0, 0.0)
+local inertial orn (0.0, 0.0, 0.0, 1.0)
+restitution 0.0
+rolling friction 0.0
+spinning friction 0.0
+contact damping -1.0
+contact stiffness -1.0
+??? 2
+??? 0.001
+
+Findings (itr 24 vs pd):
+- Mass : Both work well within a decent range (tested up to 5kg), 10kg both cant do
+- Lateral friction : 0.01, both mostly ok, pd agent slightly better, 0.0 both cant do
+- Restitution : seemingly no impact
+- Rolling and spinning friction :  increased to 1, seemingly no impact
+- contact damping, contact stiffness : both 3 it melts through the tray which acts like a time constraint
+        pd ok, rl didn't seem to complete, not sure if bc too slow?
+  
+- gravity: 0 to -14 tested all ok on both, 
+    positive eg. 1 or 2 doesn't work as object floats,
+    though smaller eg. 0.2 and 0.4 RL agent grasps, and in larger
+    upward gravity Rl agent does sensible track the object under this new dynamic 
+    which is noteworthy behaviour completely untrained
+
+-> So think best to perturb mass and lateral friction, with maybe a random force too
+
+Also have force env that pushes it out of hand for regrasp
+PD: gets rattled and goes a bit  crazy, doesn't regrasp, but this is cos of the way it's coded, I think this could be improved
+RL: seems much more sensible in going toward object and trying to regrasp, didnt see any regrasps though
 
 
-* else try again dense reward else revert to prev
+Trying with different random object each time
+Both rather struggle, most of the objects are quite different to the training one and they don't really
+model any idea of object shape just location
+A few are similar enough to be picked up by PD agent but RL fared less well
+
+-----
+
+Re-running last, had bug in env random object placement was fixed 
+:::::
+
+
+* make a test script - think basically already have with headless, mean & std reward, # completions
+* update diagrams with new obs and acs spaces
+* ask Li about pd agent for regrasping - show him some current videos
+* gather some human data to try - in base env for now
 
 ---
 

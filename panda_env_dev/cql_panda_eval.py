@@ -55,12 +55,12 @@ if __name__ == "__main__":
                         help='path to the snapshot file')
     parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
-    parser.add_argument('--num_eval_steps', type=int, default=2100,
+    parser.add_argument('--num_eval_steps', type=int, default=700 * 10,
                         help='Total number of eval steps to run')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
     parser.add_argument('--no_gpu', action='store_true')
-    parser.add_argument('--seed', default=129, type=int)
+    parser.add_argument('--seed', default=14124, type=int)
     parser.add_argument('--headless', action='store_true')
     parser.add_argument('--pause', action='store_true')
     parser.add_argument('--plot', action='store_true')

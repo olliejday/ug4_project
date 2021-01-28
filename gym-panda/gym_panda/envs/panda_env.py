@@ -73,9 +73,9 @@ class PandaEnv(gym.Env):
         # self.obs_mean = np.zeros(29)
         # self.obs_std = np.ones(29)
         self.acs_mean = np.array([-0.11200337, 0.47604913, -0.11255514, -1.72322873, 0.05802695,
-                                 2.20177014, 2.14862945, 0.04538093, 0.04538093])
+                                  2.20177014, 2.14862945, 0.04538093, 0.04538093])
         self.acs_std = np.array([0.0751389, 0.28780316, 0.03562647, 0.33271765, 0.04047524,
-                                0.18582715, 0.36296299, 0.03957525, 0.03957525]) * scale_std
+                                 0.18582715, 0.36296299, 0.03957525, 0.03957525]) * scale_std
         self.obs_mean = np.array([1.09038504e-01, 2.43092468e-02, 1.14092714e-01, 5.87583031e-02,
                                   2.59921405e-02, 1.14554145e-01, -3.01276719e-03, 1.07389465e-02,
                                   -2.03404409e-02, 9.82628258e-01, 6.94992045e-01, -1.49608278e-01,
@@ -254,7 +254,7 @@ class PandaEnv(gym.Env):
 
         trayUid = p.loadURDF(os.path.join(urdfRootPath, "tray/traybox.urdf"), basePosition=[0.65, 0, 0])
 
-        posObj = [np.random.uniform(0.7, 0.7), np.random.uniform(-0.15, -0.15), 0.05]
+        posObj = [np.random.uniform(0.5, 0.7), np.random.uniform(-0.15, 0.15), 0.05]
         orientationObj = p.getQuaternionFromEuler([0, 0, np.random.uniform(-np.pi / 5, np.pi / 5)])
         self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/000/000.urdf"), basePosition=posObj,
                                     baseOrientation=orientationObj)
@@ -307,15 +307,55 @@ class PandaEnv(gym.Env):
         return (np.array(obs, np.float) - self.obs_mean) / self.obs_std
 
 
-class PandaEnvPerturbed(PandaEnv):
+class PandaEnvForce(PandaEnv):
+    """
+    Applies an external force to make the object drop
+    """
+    def reset(self):
+        self.have_dropped = False
+        self.have_lifted = False
+        return super().reset()
+
     def step(self, action):
         res = super().step(action)
+        # push out of hand once to test regrasping
         # -1 for base frame
-        p.applyExternalForce(self.objectUid, -1, [np.random.uniform(0, 5), np.random.uniform(0, 5), 0], [0, 0, 0],
-                             p.LINK_FRAME)
-        # if p.getBasePositionAndOrientation(self.objectUid)[0][2] > 0.2:
-        #     p.applyExternalForce(self.objectUid, -1, [0, 0, -50], [0, 0, 0], p.WORLD_FRAME)
+        if p.getBasePositionAndOrientation(self.objectUid)[0][2] > 0.2 and not self.have_dropped:
+            p.applyExternalForce(self.objectUid, -1, [0, 0, -10], [0, 0, 0], p.WORLD_FRAME)
+            self.have_lifted = True
+        # if have lifted and now it's low then have dropped
+        if p.getBasePositionAndOrientation(self.objectUid)[0][2] < 0.1 and self.have_lifted:
+            self.have_dropped = True
         return res
+
+
+class PandaEnvPerturbed(PandaEnv):
+    """
+    Perturbed dynamics and physics parameters
+    """
+    def reset(self):
+        obs = super().reset()
+        # -1 for base
+        # p.changeDynamics(self.objectUid, -1, mass=7)
+        p.setGravity(0, 0, 0.4)
+        return obs
+
+
+class PandaEnvObject(PandaEnv):
+    """
+    Random object different to training one
+    """
+    def reset(self):
+        super().reset()
+        p.removeBody(self.objectUid)
+        urdfRootPath = pybullet_data.getDataPath()
+        posObj = [np.random.uniform(0.5, 0.7), np.random.uniform(-0.15, 0.15), 0.05]
+        orientationObj = p.getQuaternionFromEuler([0, 0, np.random.uniform(-np.pi / 5, np.pi / 5)])
+        obj = np.random.randint(1, 100)
+        self.objectUid = p.loadURDF(os.path.join(urdfRootPath, "random_urdfs/{0:03d}/{0:03d}.urdf".format(obj)), basePosition=posObj,
+                                    baseOrientation=orientationObj)
+        return self.get_obs()[0]
+
 
 
 def vector_angle_2d(x, y):
