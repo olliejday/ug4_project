@@ -89,8 +89,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--headless', action='store_true', help='Pybullet gui')
+    parser.add_argument('--print_ranges', action='store_true', help='Print acs and obs ranges for checking/scaling  ')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
+    parser.add_argument('--n_episodes', type=int, default=50)
+    parser.add_argument('--max_path_length', type=int, default=500,
+                        help='Max length of rollout')
     args = parser.parse_args()
 
     seed = 14124
@@ -103,39 +107,54 @@ if __name__ == "__main__":
 
     _a = []
     _o = []
+    rtns = []
+    ep_lens = []
     completed = 0
 
-    for i_episode in range(500):
+    for i_episode in range(args.n_episodes):
         done = False
         info = None
         observation = env.reset()
         cum_reward = 0
         pd.episode_start()
-        for t in range(500):
+        for t in range(args.max_path_length):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
             observation, reward, done, info = env.step(action)
             if info["completed"]:
                 completed += 1
             cum_reward += reward
-            if done:
+            if done or t == 500 - 1:
+                rtns.append(cum_reward)
+                ep_lens.append(t)
                 break
             _a.append(action)
             _o.append(observation)
         # print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
     ###
-    print("Completed: {}".format(completed))
-    print("action")
-    print("_mean = " + repr(np.mean(_a, axis=0)))
-    print("_std = " + repr(np.std(_a, axis=0)))
-    print("_min = " + repr(np.min(_a, axis=0)))
-    print("_max = " + repr(np.max(_a, axis=0)))
-    print("max {} min {}".format(np.max(_a), np.min(_a)))
-    print("obs")
-    print("_mean = " + repr(np.mean(_o, axis=0)))
-    print("_std = " + repr(np.std(np.array(_o, np.float), axis=0)))
-    print("_min = " + repr(np.min(_o, axis=0)))
-    print("_max = " + repr(np.max(_o, axis=0)))
-    print("max {} min {}".format(np.max(_o), np.min(_o)))
+    print("Completed: {} out of {}".format(completed, args.n_episodes))
+    print("Mean return {}".format(np.mean(rtns)))
+    print("Std return {}".format(np.std(rtns)))
+    print("Max return {}".format(np.max(rtns)))
+    print("Min return {}".format(np.min(rtns)))
+    print("Mean episode length {}".format(np.mean(ep_lens)))
+    print("Std episode length {}".format(np.std(ep_lens)))
+    print("Mean episode length {}".format(np.max(ep_lens)))
+    print("Mean episode length {}".format(np.min(ep_lens)))
+    ###
+    if args.print_ranges:
+        print("\n\nData ranges")
+        print("action")
+        print("_mean = " + repr(np.mean(_a, axis=0)))
+        print("_std = " + repr(np.std(_a, axis=0)))
+        print("_min = " + repr(np.min(_a, axis=0)))
+        print("_max = " + repr(np.max(_a, axis=0)))
+        print("max {} min {}".format(np.max(_a), np.min(_a)))
+        print("obs")
+        print("_mean = " + repr(np.mean(_o, axis=0)))
+        print("_std = " + repr(np.std(np.array(_o, np.float), axis=0)))
+        print("_min = " + repr(np.min(_o, axis=0)))
+        print("_max = " + repr(np.max(_o, axis=0)))
+        print("max {} min {}".format(np.max(_o), np.min(_o)))
     ###
     env.close()

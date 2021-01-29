@@ -15,7 +15,7 @@ def simulate_policy(args):
     policy = data['evaluation/policy']
     policy.to(ptu.device)
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    env = gym.make(args.env, **{"headless": args.headless, "verbose": True})
+    env = gym.make(args.env, **{"headless": args.headless, "verbose": False})
     env.seed(args.seed)
     if args.pause:
         input("Waiting to start.")
@@ -25,6 +25,12 @@ def simulate_policy(args):
                     args.num_eval_steps,
                     discard_incomplete_paths=True,
                 )
+
+    if args.max_eps:
+        paths = paths[:args.max_eps]
+
+    completions = sum([info["completed"] for path in paths for info in path["env_infos"]])
+    print("Completed {} out of {}".format(completions, len(paths)))
     # plt.plot(paths[0]["actions"])
     # plt.show()
     # plt.plot(paths[2]["observations"])
@@ -55,12 +61,13 @@ if __name__ == "__main__":
                         help='path to the snapshot file')
     parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
-    parser.add_argument('--num_eval_steps', type=int, default=700 * 10,
+    parser.add_argument('--num_eval_steps', type=int, default=700 * 25,
                         help='Total number of eval steps to run')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
     parser.add_argument('--no_gpu', action='store_true')
     parser.add_argument('--seed', default=14124, type=int)
+    parser.add_argument('--max_eps', default=0, type=int, help="If limit number of total episodes")
     parser.add_argument('--headless', action='store_true')
     parser.add_argument('--pause', action='store_true')
     parser.add_argument('--plot', action='store_true')

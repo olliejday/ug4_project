@@ -767,7 +767,7 @@ Findings (itr 24 vs pd):
     upward gravity Rl agent does sensible track the object under this new dynamic 
     which is noteworthy behaviour completely untrained
 
--> So think best to perturb mass and lateral friction, with maybe a random force too
+-> So think best to perturb mass and lateral friction, with maybe gravity too
 
 Also have force env that pushes it out of hand for regrasp
 PD: gets rattled and goes a bit  crazy, doesn't regrasp, but this is cos of the way it's coded, I think this could be improved
@@ -831,12 +831,130 @@ _max = array([ 0.35833499,  0.15268328,  0.23109125,  0.19128437,  0.15839742,
 -----
 
 Running (full random drop with rotation and updated bounds)
+:: Not aaas good as when it dropped same spot but pretty good again on itr 27
 
+Running initial tests:
 
-* make a test script - think basically already have with headless, mean & std reward, # completions
-* update diagrams with new obs and acs spaces
-* ask Li about pd agent for regrasping - show him some current videos
-* gather some human data to try - in base env for now
+For 25 episodes with max path length 700
+#Note only one random seed in train and test here so not ideal for reporting
+
+PD
+    Normal
+        Completed: 25 out of 25
+        Mean return 2000.0
+        Std return 0.0
+        Max return 2000
+        Min return 2000
+        Mean episode length 215.6
+        Std episode length 15.84929020492716
+        Mean episode length 244
+        Mean episode length 194
+    Perturbed
+        Completed: 10 out of 25
+        Mean return 800.0
+        Std return 979.7958971132713
+        Max return 2000
+        Min return 0
+        Mean episode length 389.56
+        Std episode length 135.24616963152783
+        Mean episode length 499
+        Mean episode length 194
+    Object
+        Completed: 11 out of 25
+        Mean return 880.0
+        Std return 992.7738916792686
+        Max return 2000
+        Min return 0
+        Mean episode length 395.52
+        Std episode length 133.09338676282906
+        Mean episode length 499
+        Mean episode length 198
+    Force
+        Completed: 0 out of 25
+        Mean return 0.0
+        Std return 0.0
+        Max return 0
+        Min return 0
+        Mean episode length 499.0
+        Std episode length 0.0
+        Mean episode length 499
+        Mean episode length 499
+RL
+    Normal
+        Completed 12 out of 25
+         | --------------------------  ------------
+         | evaluation/Rewards Mean        1.8828
+         | evaluation/Rewards Std        61.3355
+         | evaluation/Rewards Max      2000
+         | evaluation/Rewards Min         0
+         | evaluation/Returns Mean      960
+         | evaluation/Returns Std       999.2
+         | evaluation/Returns Max      2000
+         | evaluation/Returns Min         0
+         | evaluation/Actions Mean        0.0659089
+         | evaluation/Actions Std         0.163724
+         | evaluation/Actions Max         0.658218
+         | evaluation/Actions Min        -0.484057
+         | evaluation/Num Paths          25
+         | evaluation/Average Returns   960
+         | --------------------------  ------------
+    Perturbed
+        Completed 2 out of 25
+         | --------------------------  ------------
+         | evaluation/Rewards Mean        0.236728
+         | evaluation/Rewards Std        21.7578
+         | evaluation/Rewards Max      2000
+         | evaluation/Rewards Min         0
+         | evaluation/Returns Mean      160
+         | evaluation/Returns Std       542.586
+         | evaluation/Returns Max      2000
+         | evaluation/Returns Min         0
+         | evaluation/Actions Mean        0.0575934
+         | evaluation/Actions Std         0.173857
+         | evaluation/Actions Max         0.683536
+         | evaluation/Actions Min        -0.635698
+         | evaluation/Num Paths          25
+         | evaluation/Average Returns   160
+    Object
+        Completed 1 out of 25
+         | --------------------------  ------------
+         | evaluation/Rewards Mean        0.117144
+         | evaluation/Rewards Std        15.306
+         | evaluation/Rewards Max      2000
+         | evaluation/Rewards Min         0
+         | evaluation/Returns Mean       80
+         | evaluation/Returns Std       391.918
+         | evaluation/Returns Max      2000
+         | evaluation/Returns Min         0
+         | evaluation/Actions Mean        0.0239796
+         | evaluation/Actions Std         0.178087
+         | evaluation/Actions Max         0.733802
+         | evaluation/Actions Min        -0.660681
+         | evaluation/Num Paths          25
+         | evaluation/Average Returns    80
+         | --------------------------  ------------
+    Force
+        Completed 0 out of 25
+         | --------------------------  ----------
+         | evaluation/Rewards Mean      0
+         | evaluation/Rewards Std       0
+         | evaluation/Rewards Max       0
+         | evaluation/Rewards Min       0
+         | evaluation/Returns Mean      0
+         | evaluation/Returns Std       0
+         | evaluation/Returns Max       0
+         | evaluation/Returns Min       0
+         | evaluation/Actions Mean      0.0238002
+         | evaluation/Actions Std       0.198284
+         | evaluation/Actions Max       0.736551
+         | evaluation/Actions Min      -0.646731
+         | evaluation/Num Paths        25
+         | evaluation/Average Returns   0
+         | --------------------------  ----------
+----
+* try make a regraps pd else ask Li about pd agent for regrasping - show him some current videos
+* compare to SAC for multiple random seeds
+* gather some human data to try? - in base env for now
 
 ---
 
@@ -855,8 +973,3 @@ Keep an eye on:
     - Check action bounds
 
 ________
-
-TIMELINE
-
-- implementation - by week 2/3 sem 2;
-- experimentation and evaluation - by week 6 sem 2;

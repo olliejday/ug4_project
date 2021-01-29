@@ -339,8 +339,9 @@ class PandaEnvPerturbed(PandaEnv):
     def reset(self):
         obs = super().reset()
         # -1 for base
-        # p.changeDynamics(self.objectUid, -1, mass=7)
-        p.setGravity(0, 0, 0.4)
+        p.changeDynamics(self.objectUid, -1, mass=np.random.uniform(0.01, 10),
+                         lateralFriction=np.random.uniform(0.01, 1))
+        p.setGravity(0, 0, np.random.uniform(-20, 0.5))
         return obs
 
 
