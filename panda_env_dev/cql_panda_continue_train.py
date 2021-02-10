@@ -149,6 +149,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    gpu_str = "0"
+
     variant = load_variant(args.exp_dir)
     variant["start_epoch"] = args.start_epoch
     variant['headless'] = not args.gui

@@ -197,6 +197,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    gpu_str = "0"
+
     variant['buffer_filename'] = None
 
     variant['load_buffer'] = True
