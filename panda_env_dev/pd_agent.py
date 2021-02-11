@@ -12,9 +12,10 @@ class PDAgent:
     def __init__(self, env):
         assert hasattr(env, "pandaUid"), "Must call env.reset() to setup sim before PDAgent"
         self.env = env
-        self.error = [0.017, 0.01, 0.01, 0.05]
+        self.error = [0.017, 0.0125, 0.004, 0.08]
         self.k_p = 10
         self.k_d = 1
+        self.k_ori = 0.25
         self.dt = 1. / 200.
         self.fingers = 0.08  # open
         self.n_actions = env.n_actions
@@ -40,18 +41,23 @@ class PDAgent:
         if info is None:
             return self.process_action(self.rp)  # rest pose
         object_position = info["obj_pos"]
-        object_orientation = info["obj_ori"]
+        object_ori = info["obj_ori"]
         hand_position = info["hand_pos"]
+        hand_ori = info["hand_ori"]
         fingers_position = info["fingers_joint"]
 
         target_x = object_position[0]
         target_y = object_position[1]
         target_z = object_position[2]
-        gripped_obj = (fingers_position[0] + fingers_position[1]) < self.error[3] and self.fingers == 0.0
+        gripped_obj = (fingers_position[0] + fingers_position[1]) < self.error[3] \
+                      and self.fingers == 0.0 \
+                      and np.all(np.subtract(object_position, hand_position) ** 2 < self.error[:3])
         if gripped_obj:
-            target_x = hand_position[0]
-            target_y = hand_position[1]
+            target_x = 1.5
+            target_y = 0.0
             target_z = 0.5
+        else:
+            self.fingers = 0.08
         dx = target_x - hand_position[0]
         dy = target_y - hand_position[1]
         dz = target_z - hand_position[2]  # offset for better grip
@@ -59,22 +65,39 @@ class PDAgent:
         pd_y = self.k_p * dy + self.k_d * dy / self.dt
         pd_z = self.k_p * dz + self.k_d * dz / self.dt
 
-        if abs(dx) > self.error[0] * 5 or abs(dy) > self.error[1] * 5:  # get roughly over the object
-            pd_z = 0
+        object_ori_euler = p.getEulerFromQuaternion(object_ori)
+        hand_ori_euler = p.getEulerFromQuaternion(hand_ori)
+        # return usable orientations
+        # we want to match the object z angle with a 90deg offset for gripping
+        # want to turn the smallest amount within pi to get there
+        smallest_angle = object_ori_euler[2]
+        smallest_angle = smallest_angle % (np.sign(smallest_angle) * math.pi)
+        smallest_angle -= np.sign(smallest_angle) * math.pi / 2
+        d_ori = hand_ori_euler[2] + (smallest_angle - hand_ori_euler[2]) * self.k_ori
+        desired_euler = np.array([hand_ori_euler[0], hand_ori_euler[1], d_ori])
+        ac_ori = np.array(p.getQuaternionFromEuler(desired_euler))
+
+        if (not gripped_obj) and (abs(dx) > self.error[0] * 5.5 or abs(dy) > self.error[1] * 5.5):  # get roughly over the object
+            pd_z = 0.25
         if abs(dx) < self.error[0] and abs(dy) < self.error[1] and abs(dz) < self.error[2]:  # if gripper around object
             self.fingers = 0.0
         # pd action
         action = [pd_x, pd_y, pd_z, self.fingers]
+
+        return self.convert_action(action, ac_ori)
+
+    def convert_action(self, action, ac_ori):
         action = np.clip(action, -1, 1)
         # action to delta
-        object_orientation_euler = p.getEulerFromQuaternion(object_orientation)
-        orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1]])
-        orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1] + math.pi/2.])
+
         dv = 0.05
         dx = action[0] * dv
         dy = action[1] * dv
         dz = action[2] * dv
         fingers = action[3]
+
+        orientation = ac_ori
+
         # change current position
         currentPose = p.getLinkState(self.pandaUid, 11)
         currentPosition = currentPose[0]
@@ -82,8 +105,10 @@ class PDAgent:
                        currentPosition[1] + dy,
                        currentPosition[2] + dz]
         jointPoses = p.calculateInverseKinematics(self.pandaUid, self.end_effector_index, newPosition,
-                                                  orientation, self.ll, self.ul, self.jr, self.rp, maxNumIterations=5)[0:7]
+                                                  orientation, self.ll, self.ul, self.jr, self.rp, maxNumIterations=5)[
+                     0:7]
         return self.process_action(list(jointPoses) + 2 * [fingers])
+
 
 if __name__ == "__main__":
 
@@ -92,8 +117,8 @@ if __name__ == "__main__":
     parser.add_argument('--print_ranges', action='store_true', help='Print acs and obs ranges for checking/scaling  ')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
-    parser.add_argument('--n_episodes', type=int, default=50)
-    parser.add_argument('--max_path_length', type=int, default=500,
+    parser.add_argument('--n_episodes', type=int, default=250)
+    parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
     args = parser.parse_args()
 

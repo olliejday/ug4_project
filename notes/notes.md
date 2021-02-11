@@ -952,18 +952,38 @@ RL
          | evaluation/Average Returns   0
          | --------------------------  ----------
 ----
-* try make a regraps pd else ask Li about pd agent for regrasping - show him some current videos
+
+With some tweaks now get
+
+PD Agent to on pandaForce
+
+Completed: 21 out of 25
+Mean return 1680.0
+Std return 733.2121111929343
+Max return 2000
+Min return 0
+Mean episode length 403.8
+Std episode length 61.6869516186365
+Mean episode length 499
+Mean episode length 313
+
+* work on pd regrasp behaviour
+    * ask Li about pd agent for regrasping - show him some current videos
+* Try training on pandaForce only - see if behaviour carries over to normal cf training on std
+* Retrain with new pd agent on std task since have updated to see if any more is learned on pandaForce
+
+* Make env and data for only regrasp part ie. not like pandaForce
+    * Train on std then on regrasp and see if splices into full regrasp env
+
+----
+
+* update Li 
+* run experiments pd and cql, multiple random seeds, perturbation etc.
 * compare to SAC for multiple random seeds
+  
+If time 
+
 * gather some human data to try? - in base env for now
-
----
-
-TODO ...
-*Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
-    - Both in gathered data and in perturbed after learning
-*compare to other methods eg. SAC, PD agent, for many random seeds
-*Then train with eg. human data 
-*pick and place task?
 
 ---------
 

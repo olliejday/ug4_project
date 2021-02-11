@@ -129,6 +129,7 @@ class PandaEnv(gym.Env):
             "obj_pos": np.array(p.getBasePositionAndOrientation(self.objectUid)[0]),
             "obj_ori": np.array(p.getBasePositionAndOrientation(self.objectUid)[1]),
             "hand_pos": np.array(p.getLinkState(self.pandaUid, 11)[0]),
+            "hand_ori": np.array(p.getLinkState(self.pandaUid, 11)[1]),
             "fingers_joint": np.array([p.getJointState(self.pandaUid, 9)[0],
                                        p.getJointState(self.pandaUid, 10)[0]]),
             "completed": self.completed,
@@ -322,11 +323,14 @@ class PandaEnvForce(PandaEnv):
         res = super().step(action)
         # push out of hand once to test regrasping
         # -1 for base frame
-        if p.getBasePositionAndOrientation(self.objectUid)[0][2] > 0.2 and not self.have_dropped:
-            p.applyExternalForce(self.objectUid, -1, [0, 0, -10], [0, 0, 0], p.WORLD_FRAME)
+        obj_pos = p.getBasePositionAndOrientation(self.objectUid)[0]
+        if obj_pos[2] > 0.2 and not self.have_dropped:
+            self.first_force_step = self.step_counter - 10
+            f = - (self.step_counter - self.first_force_step) # increase force as needed
+            p.applyExternalForce(self.objectUid, -1, [0, 0, f], [0, 0, 0], p.WORLD_FRAME)
             self.have_lifted = True
         # if have lifted and now it's low then have dropped
-        if p.getBasePositionAndOrientation(self.objectUid)[0][2] < 0.1 and self.have_lifted:
+        if obj_pos[2] < 0.1 and self.have_lifted:
             self.have_dropped = True
         return res
 

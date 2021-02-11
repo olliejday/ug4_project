@@ -150,7 +150,6 @@ if __name__ == "__main__":
         load_buffer=None,
         env_name='panda-v0',
         sparse_reward=False,
-        h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
             num_epochs=1000,
             num_train_loops_per_epoch=1,
@@ -204,6 +203,7 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
     variant['verbose'] = True  # print if complete episode
+    variant['h5path'] = "gym_panda_pd_agent_" + args.env
     snapshot_gap = 3
 
     gpu_str = "0"
