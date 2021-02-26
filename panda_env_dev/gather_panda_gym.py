@@ -62,6 +62,7 @@ def save_video(save_dir, file_name, frames, episode_id=0):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--env", default="panda-v0")
     parser.add_argument('--num_episodes', type=int, default=10000, help='Num samples to collect')  # about 3M steps
     parser.add_argument('--max_episode_steps', default=1000, type=int)
     parser.add_argument('--video', action='store_true')
@@ -72,11 +73,11 @@ def main():
 
     seed = 1763
 
-    exp_name = "gym_panda_pd_agent"
+    exp_name = "gym_panda_pd_agent_" + args.env
     if not os.path.exists("data"):
         os.makedirs("data")
 
-    env = gym.make("panda-v0", **{"headless": not args.gui, "verbose": False})
+    env = gym.make(args.env, **{"headless": not args.gui, "verbose": False})
     env.seed(seed)
     env.reset()
 

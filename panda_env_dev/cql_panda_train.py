@@ -25,10 +25,10 @@ def load_hdf5(dataset, replay_buffer):
     replay_buffer._next_obs = dataset['next_observations']
     replay_buffer._actions = dataset['actions']
     # Center reward for Ant-Maze
-    replay_buffer._rewards = (np.expand_dims(dataset['rewards'], 1) - 0.5)*4.0   
-    replay_buffer._terminals = np.expand_dims(dataset['terminals'], 1)  
+    replay_buffer._rewards = (np.expand_dims(dataset['rewards'], 1) - 0.5) * 4.0
+    replay_buffer._terminals = np.expand_dims(dataset['terminals'], 1)
     replay_buffer._size = dataset['terminals'].shape[0]
-    print ('Number of terminals on: ', replay_buffer._terminals.sum())
+    print('Number of terminals on: ', replay_buffer._terminals.sum())
     replay_buffer._top = replay_buffer._size
 
 
@@ -45,15 +45,17 @@ def get_dataset(h5path, env):
     N_samples = data_dict['observations'].shape[0]
     if observation_space.shape is not None:
         assert data_dict['observations'].shape[1:] == observation_space.shape, \
-                'Observation shape does not match env: %s vs %s' % (str(data_dict['observations'].shape[1:]), str(observation_space.shape))
+            'Observation shape does not match env: %s vs %s' % (
+            str(data_dict['observations'].shape[1:]), str(observation_space.shape))
     assert data_dict['actions'].shape[1:] == action_space.shape, \
-                'Action shape does not match env: %s vs %s' % (str(data_dict['actions'].shape[1:]), str(action_space.shape))
+        'Action shape does not match env: %s vs %s' % (str(data_dict['actions'].shape[1:]), str(action_space.shape))
     if data_dict['rewards'].shape == (N_samples, 1):
-        data_dict['rewards'] = data_dict['rewards'][:,0]
+        data_dict['rewards'] = data_dict['rewards'][:, 0]
     assert data_dict['rewards'].shape == (N_samples,), 'Reward has wrong shape: %s' % (str(data_dict['rewards'].shape))
     if data_dict['terminals'].shape == (N_samples, 1):
-        data_dict['terminals'] = data_dict['terminals'][:,0]
-    assert data_dict['terminals'].shape == (N_samples,), 'Terminals has wrong shape: %s' % (str(data_dict['rewards'].shape))
+        data_dict['terminals'] = data_dict['terminals'][:, 0]
+    assert data_dict['terminals'].shape == (N_samples,), 'Terminals has wrong shape: %s' % (
+        str(data_dict['rewards'].shape))
     return data_dict
 
 
@@ -61,7 +63,7 @@ def experiment(variant):
     eval_env = gym.make(variant['env_name'], **{"headless": variant["headless"], "verbose": variant["verbose"]})
     eval_env.seed(variant['seed'])
     expl_env = eval_env
-    
+
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
 
@@ -89,7 +91,7 @@ def experiment(variant):
     policy = TanhGaussianPolicy(
         obs_dim=obs_dim,
         action_dim=action_dim,
-        hidden_sizes=[M, M, M], 
+        hidden_sizes=[M, M, M],
     )
     eval_policy = MakeDeterministic(policy)
     eval_path_collector = MdpPathCollector(
@@ -102,7 +104,7 @@ def experiment(variant):
     buffer_filename = None
     if variant['buffer_filename'] is not None:
         buffer_filename = variant['buffer_filename']
-    
+
     replay_buffer = EnvReplayBuffer(
         variant['replay_buffer_size'],
         expl_env,
@@ -112,7 +114,7 @@ def experiment(variant):
     else:
         dataset = get_dataset(variant["h5path"], eval_env)
         load_hdf5(d4rl.qlearning_dataset(eval_env, dataset), replay_buffer)
-       
+
     trainer = CQLTrainer(
         env=eval_env,
         policy=policy,
@@ -150,7 +152,6 @@ if __name__ == "__main__":
         load_buffer=None,
         env_name='panda-v0',
         sparse_reward=False,
-        h5path="data/gym_panda_pd_agent.hdf5",
         algorithm_kwargs=dict(
             num_epochs=1000,
             num_train_loops_per_epoch=1,
@@ -179,13 +180,14 @@ if __name__ == "__main__":
             min_q_weight=1.0,  # the value of alpha, set to 5.0 or 10.0 if not using lagrange
 
             # lagrange
-            with_lagrange=True,   # Defaults to true
+            with_lagrange=True,  # Defaults to true
             lagrange_thresh=5.0,  # the value of tau, corresponds to the CQL(lagrange) version
 
             # extra params
             num_random=10,
             max_q_backup=False,  # if we want to try max_{a'} backups, set this to true
-            deterministic_backup=True,  # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
+            deterministic_backup=True,
+            # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
         ),
     )
 
@@ -197,6 +199,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    gpu_str = "0"
+
     variant['buffer_filename'] = None
 
     variant['load_buffer'] = True
@@ -204,9 +208,9 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
     variant['verbose'] = True  # print if complete episode
+    variant['h5path'] = "data/gym_panda_pd_agent_{}.hdf5".format(args.env)
     snapshot_gap = 3
 
-    gpu_str = "0"
     if not args.no_gpu:
         ptu.enable_gpus(gpu_str)
         ptu.set_gpu_mode(True)

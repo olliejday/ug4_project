@@ -952,24 +952,248 @@ RL
          | evaluation/Average Returns   0
          | --------------------------  ----------
 ----
-* try make a regraps pd else ask Li about pd agent for regrasping - show him some current videos
-* compare to SAC for multiple random seeds
-* gather some human data to try? - in base env for now
+
+With some tweaks now get
+
+PD Agent to on pandaForce
+
+Completed: 21 out of 25
+Mean return 1680.0
+Std return 733.2121111929343
+Max return 2000
+Min return 0
+Mean episode length 403.8
+Std episode length 61.6869516186365
+Mean episode length 499
+Mean episode length 313
+
+----
+
+Since new PD agent wasn't working with RL after merging branches etc, I reverted to 
+
+FROM
+Commits on Feb 15, 2021
+97d3c3616c4f2a1f2be6d739afc51654cbd2c16f
+updated ac bounds, notes for another run
+
+TO
+Commits on Jan 29, 2021
+6a294759763e7b0dd34cd9e08734f165e5570cb8 
+evaluating current model
 
 ---
 
-TODO ...
+x Try reintegrating PD agent to make it work with RL (see github commits)
+x Running
+Works now and gets some completions but seems the rotation EE to match the object
+is v hard to learn.
+But need rotation in the PD regrasp
+Some ideas
+-> have less rotation in the object drop?
+OR use separate PD agents for normal and regrasp
+
+---
+
+One issue was that the breakpoint was near the start so if it was slighlty +ve rotated the 
+PD would rotate the EE all the way around to get to that angle
+Have tweaked the code so it no longer does this
+Gets 65/100 completions on pandaForce-v0 which matches performance of before
+But seems more sensible behaviour so may be easier to learn
+
+Updated ac and obs bounds for new pd agent
+
+Data ranges
+action
+_mean = array([ 0.02375603,  0.43158534, -0.01576008, -1.81430351, -0.01987865,
+        2.31259164,  2.39138202,  0.03699802,  0.03699802])
+_std = array([0.08918371, 0.24551347, 0.06217003, 0.40963803, 0.03699512,
+       0.27017929, 0.3119481 , 0.03981999, 0.03981999])
+_min = array([-0.17270465, -0.15191363, -0.17637853, -2.52307641, -0.3       ,
+        1.75827745,  1.56620033,  0.        ,  0.        ])
+_max = array([ 0.98      ,  0.92762658,  0.31      , -0.90382799,  0.09314318,
+        2.91113192,  3.0803401 ,  0.08      ,  0.08      ])
+max 3.080340103171927 min -2.523076409553068
+obs
+_mean = array([ 6.81661063e-02,  1.69559452e-02,  9.05953964e-02,  3.64948460e-02,
+        1.69536628e-02,  9.48007320e-02, -6.80628974e-04,  5.93325256e-03,
+       -1.53475883e-02,  9.83968291e-01,  6.53715835e-01,  5.66967211e-04,
+        1.30326718e-01,  5.37286309e-02,  1.15512157e-01,  2.80328803e-03,
+        3.65818206e-03,  6.22721664e-01,  5.34093075e-04,  1.96366396e-01,
+        1.87000435e-02,  4.00800272e-01, -1.59148788e-02, -1.87210578e+00,
+       -1.94565248e-02,  2.33326391e+00,  2.38916427e+00,  2.67157787e-02,
+        3.00689736e-02])
+_std = array([0.06444425, 0.01921252, 0.09458704, 0.03013393, 0.01919489,
+       0.09534901, 0.00841659, 0.03049017, 0.17414172, 0.0144692 ,
+       0.07282482, 0.06575449, 0.12457435, 0.69967324, 0.70203714,
+       0.03160367, 0.0187445 , 0.09453994, 0.05748417, 0.09949193,
+       0.05852193, 0.27437893, 0.0562487 , 0.40918357, 0.03083807,
+       0.2440567 , 0.30082499, 0.01626229, 0.01353412])
+_min = array([ 1.45713888e-02,  2.01577933e-08,  1.18646123e-02,  5.85616189e-07,
+        1.89041832e-08,  1.41603095e-02, -4.78759787e-02, -6.62406513e-02,
+       -4.17377958e-01,  9.07120772e-01,  4.99203121e-01, -1.49373161e-01,
+        3.05185746e-02, -7.07044443e-01, -7.07088056e-01, -7.58179027e-02,
+       -6.03738066e-02,  4.31514456e-01, -1.53019824e-01,  2.19410784e-02,
+       -1.66572799e-01, -2.09558345e-01, -1.57835754e-01, -2.56789067e+00,
+       -1.37890175e-01,  1.79548625e+00,  1.57403389e+00, -1.16635344e-05,
+       -4.73344713e-06])
+_max = array([ 0.35833499,  0.15268328,  0.28293931,  0.18886651,  0.15252286,
+        0.28898519,  0.06433838,  0.16056216,  0.35455735,  0.99999976,
+        0.79144941,  0.14983867,  0.39999238,  0.89648331,  0.89292554,
+        0.09381397,  0.06986657,  0.78004359,  0.15301469,  0.40104617,
+        0.2165153 ,  0.87685478,  0.14217607, -0.94338807,  0.08231745,
+        2.86370173,  2.96710144,  0.07399999,  0.07400005])
+max 2.9671014401357163 min -2.5678906650756663
+
+
+Running with new PD agent on normal
+
+Goes towards object but then stops short - have had this behaviour 
+before I think it's when the ac/obs bounds are off?
+
+x So try again with larger scale_std?
+No joy
+
+Running with dense reward else revert
+
+---
+
+Reverted PD agent
+
+Gets 100/100 completions on panda-v0
+65/100 on pandaForce and think this one trained ok
+
+But ac & obs ranges for pandaForce are way off 
+For panda-v0 seems ok (maybe a little high on some acs)
+
+x running on panda-v0 to validate reverted
+Better looking training but no completions in eval
+
+Running with dense reward
+Got a few trained models with 2/11 completions
+But not great
+
+____
+
+Have changed action bounds to account for no rotation
+
+action
+_mean = array([ 0.01759628,  0.44644278, -0.01332948, -1.76721219,  0.00689955,
+        2.22169319,  2.35222207,  0.03636888,  0.03636888])
+_std = array([0.08910328, 0.24961502, 0.05902243, 0.42637104, 0.03796177,
+       0.29737726, 0.11606062, 0.03976852, 0.03976852])
+_min = array([-0.18773279, -0.15149321, -0.17361837, -2.52238139, -0.3       ,
+        1.55014257,  1.98497388,  0.        ,  0.        ])
+_max = array([ 0.98      ,  0.96057964,  0.31      , -0.84494189,  0.12294165,
+        2.86849496,  2.71602508,  0.08      ,  0.08      ])
+max 2.868494956884263 min -2.522381387235749
+obs
+_mean = array([ 7.05726294e-02,  1.11063072e-02,  9.03907967e-02,  3.92186416e-02,
+        1.11486849e-02,  9.09569763e-02,  5.73747229e-04,  9.62643615e-03,
+       -1.27009801e-02,  9.88232349e-01,  6.55480897e-01,  5.35728616e-04,
+        1.34567148e-01, -3.04876965e-02,  3.34614101e-02,  2.19435289e-04,
+        1.11297427e-04,  6.19808108e-01,  5.31469275e-04,  1.98568119e-01,
+        1.30319187e-02,  4.15571409e-01, -1.37453773e-02, -1.82622626e+00,
+        6.46600091e-03,  2.24825844e+00,  2.35241086e+00,  2.43670527e-02,
+        3.37543558e-02])
+_std = array([0.06478054, 0.01975523, 0.09470092, 0.02952193, 0.01985626,
+       0.09510141, 0.00729976, 0.04085118, 0.14592017, 0.01130091,
+       0.07178027, 0.0648878 , 0.12652778, 0.70696367, 0.70576696,
+       0.00525459, 0.00430436, 0.09146027, 0.0569693 , 0.0994747 ,
+       0.05882229, 0.27903955, 0.05304272, 0.42876033, 0.0317729 ,
+       0.26973813, 0.11131445, 0.01844993, 0.01123   ])
+_min = array([ 2.35634314e-02,  2.51378378e-08,  1.21206231e-02,  3.19653345e-07,
+        2.26232270e-08,  1.13801358e-02, -2.83363191e-02, -2.24550474e-01,
+       -3.05079850e-01,  9.51017571e-01,  4.96863093e-01, -1.50679429e-01,
+        3.05185746e-02, -7.07106707e-01, -7.07106606e-01, -1.32092636e-02,
+       -1.50177399e-02,  4.31514456e-01, -1.52640907e-01,  2.04077666e-02,
+       -1.77161241e-01, -2.09558345e-01, -1.54571999e-01, -2.56789067e+00,
+       -8.40807204e-02,  1.59200494e+00,  1.99320908e+00, -1.63400331e-04,
+        1.66778772e-03])
+_max = array([ 0.35833499,  0.15268328,  0.27806447,  0.18955161,  0.15172839,
+        0.27895782,  0.05044451,  0.21392182,  0.30515558,  0.99999954,
+        0.78032017,  0.14983458,  0.39999861,  0.71984097,  0.71871467,
+        0.0176924 ,  0.01655006,  0.76027894,  0.15314571,  0.39952235,
+        0.20254016,  0.91731292,  0.12812112, -0.87801445,  0.11187831,
+        2.81732884,  2.69423665,  0.07399999,  0.07400005])
+max 2.817328844166045 min -2.5678906650756663
+
+:::: Running without rotation on pd agent with sparse reward 
+Had one completion in one trained model
+Seems like it might be acs/obs bounds again limiting it
+Another thought is if something I added to the env is limiting it eg. more rotation in object placement or the obj rotation obs?
+
+---
+
+Reverted to a pd agent (still with rotation and got better training)
+
+It gets 100/100 completions on panda-v0
+but 0/100 completions on pandaForce-v0
+
+RL got on panda-v0 
+Completed 44 out of 52
+2021-02-26 11:34:55.139999 GMT | --------------------------  ------------
+2021-02-26 11:34:55.140132 GMT | evaluation/Rewards Mean        5.13209
+2021-02-26 11:34:55.140204 GMT | evaluation/Rewards Std       101.182
+2021-02-26 11:34:55.140283 GMT | evaluation/Rewards Max      2000
+2021-02-26 11:34:55.140354 GMT | evaluation/Rewards Min         0
+2021-02-26 11:34:55.140423 GMT | evaluation/Returns Mean     1692.31
+2021-02-26 11:34:55.140492 GMT | evaluation/Returns Std       721.602
+2021-02-26 11:34:55.140560 GMT | evaluation/Returns Max      2000
+2021-02-26 11:34:55.140628 GMT | evaluation/Returns Min         0
+2021-02-26 11:34:55.140697 GMT | evaluation/Actions Mean        0.0332776
+2021-02-26 11:34:55.140765 GMT | evaluation/Actions Std         0.158182
+2021-02-26 11:34:55.140834 GMT | evaluation/Actions Max         0.620397
+2021-02-26 11:34:55.140902 GMT | evaluation/Actions Min        -0.500996
+2021-02-26 11:34:55.140970 GMT | evaluation/Num Paths          52
+2021-02-26 11:34:55.141038 GMT | evaluation/Average Returns  1692.31
+2021-02-26 11:34:55.141106 GMT | --------------------------  ------------
+
+And on pandaForce-v0
+Completed 1 out of 25
+2021-02-26 11:44:04.845347 GMT | --------------------------  ------------
+2021-02-26 11:44:04.845490 GMT | evaluation/Rewards Mean        0.1155
+2021-02-26 11:44:04.845565 GMT | evaluation/Rewards Std        15.1983
+2021-02-26 11:44:04.845635 GMT | evaluation/Rewards Max      2000
+2021-02-26 11:44:04.845703 GMT | evaluation/Rewards Min         0
+2021-02-26 11:44:04.845770 GMT | evaluation/Returns Mean       80
+2021-02-26 11:44:04.845837 GMT | evaluation/Returns Std       391.918
+2021-02-26 11:44:04.845903 GMT | evaluation/Returns Max      2000
+2021-02-26 11:44:04.845983 GMT | evaluation/Returns Min         0
+2021-02-26 11:44:04.846049 GMT | evaluation/Actions Mean       -0.0329539
+2021-02-26 11:44:04.846115 GMT | evaluation/Actions Std         0.22997
+2021-02-26 11:44:04.846181 GMT | evaluation/Actions Max         0.664788
+2021-02-26 11:44:04.846247 GMT | evaluation/Actions Min        -0.670215
+2021-02-26 11:44:04.846313 GMT | evaluation/Num Paths          25
+2021-02-26 11:44:04.846379 GMT | evaluation/Average Returns    80
+2021-02-26 11:44:04.846444 GMT | --------------------------  ------------
+
+
+
+---
+
+TODO 
+
+* Set different acs and obs bounds for pandaForce env if gathering data 
+* Train a force and a normal model to compare
+    * Compare on different benchmarks how robust? how does training carry over?
+
 *Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
     - Both in gathered data and in perturbed after learning
-*compare to other methods eg. SAC, PD agent, for many random seeds
-*Then train with eg. human data 
-*pick and place task?
+* Make env and data for only regrasp part ie. not like pandaForce
+    * Train on std then on regrasp and see if splices into full regrasp env
+
+* run experiments pd and cql, multiple random seeds, perturbation etc.
+* compare to SAC for multiple random seeds
+  
+If time 
+
+* gather some human data to try? - in base env for now
 
 ---------
-
 
 Keep an eye on:
     - Panda Gym allows intersection of gripper with tray
     - Check action bounds
 
 ________
+

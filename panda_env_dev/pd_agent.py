@@ -92,8 +92,8 @@ if __name__ == "__main__":
     parser.add_argument('--print_ranges', action='store_true', help='Print acs and obs ranges for checking/scaling  ')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
-    parser.add_argument('--n_episodes', type=int, default=50)
-    parser.add_argument('--max_path_length', type=int, default=500,
+    parser.add_argument('--n_episodes', type=int, default=100)
+    parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
     args = parser.parse_args()
 

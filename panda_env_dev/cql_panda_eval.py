@@ -44,7 +44,10 @@ def simulate_policy(args):
 
 def plot_training(file):
     fpath = os.path.join(os.path.curdir, file)
+    dir_path = os.path.dirname(fpath)
     if not fpath.endswith("progress.csv"):
+        # then we have a directory path
+        dir_path = fpath
         fpath = os.path.join(os.path.curdir, file, "progress.csv")
     rtns_cols = ["evaluation/Returns Mean", "evaluation/Returns Min", "evaluation/Returns Max"]
     epochs_col = "Epoch"
@@ -53,6 +56,8 @@ def plot_training(file):
     print(df.sort_values(rtns_cols, ascending=False)[rtns_cols][:15])
     df.plot(y=rtns_cols[0])
     plt.show()
+    with open(os.path.join(dir_path, "best_models.txt"), "w") as f:
+        f.write(str(df.sort_values(rtns_cols, ascending=False)[rtns_cols][:15]))
 
 
 if __name__ == "__main__":
