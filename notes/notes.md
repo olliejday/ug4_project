@@ -1217,22 +1217,31 @@ Didn't work so reverting all other files (except this) to last push
 
 ---
 
+Final experiments
+
+Seeds = [117, 12321, 7456, 3426, 573]
+
+x 1. Gathering PD agent
+2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
+   Running: Gather 117
+   Done: CQL: []
+3. Evaluating all on all environments as well as PD
+4. Train 5 random seeds onf SAC on same env
+
+---
+
 TODO 
 
-* FINAL EXPERIMENTS! Update order of below
-  
+* run experiments pd and cql, multiple random seeds test in all envs perturbation etc.
+* compare to SAC for multiple random seeds
 
+* Train a perturbed to comapre (new obs/acs bounds)
+* Set different acs and obs bounds for pandaForce env if gathering data
 * Train a force and a normal model to compare
-    * Compare on different benchmarks how robust? how does training carry over?
-* Set different acs and obs bounds for pandaForce env if gathering data 
-
-*Work on robustness under perturbed params eg. gravity, robot shape, object etc. (2nd marker)
-    - Both in gathered data and in perturbed after learning
+      * Compare on different benchmarks how robust? how does training carry over?
+  
 * Make env and data for only regrasp part ie. not like pandaForce
     * Train on std then on regrasp and see if splices into full regrasp env
-
-* run experiments pd and cql, multiple random seeds, perturbation etc.
-* compare to SAC for multiple random seeds
   
 If time 
 

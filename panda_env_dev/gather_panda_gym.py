@@ -66,19 +66,18 @@ def main():
     parser.add_argument('--num_episodes', type=int, default=10000, help='Num samples to collect')  # about 3M steps
     parser.add_argument('--max_episode_steps', default=1000, type=int)
     parser.add_argument('--video', action='store_true')
+    parser.add_argument('--seed', type=int, default=117)
     parser.add_argument('--render', action='store_true')
     parser.add_argument('--noisy', action='store_true', help='Noisy actions')
     parser.add_argument('--gui', action='store_true', help='Pybullet gui')
     args = parser.parse_args()
-
-    seed = 1763
 
     exp_name = "gym_panda_pd_agent_" + args.env
     if not os.path.exists("data"):
         os.makedirs("data")
 
     env = gym.make(args.env, **{"headless": not args.gui, "verbose": False})
-    env.seed(seed)
+    env.seed(args.seed)
     env.reset()
 
     # Load the policy
