@@ -31,3 +31,4 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+/panda_env_dev/data/CQL-offline-panda-runs/

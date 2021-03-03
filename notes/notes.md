@@ -1217,6 +1217,15 @@ Didn't work so reverting all other files (except this) to last push
 
 ---
 
+Ran final experiments for CQL and PD agent
+Made plotting code
+
+Setting up for SAC now
+Going to try using same initial replay buffer as CQL ie. loaded with PD agent data
+
+---
+
+
 Final experiments
 
 Seeds = [117, 12321, 7456, 3426, 573]
