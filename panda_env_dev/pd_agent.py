@@ -85,46 +85,31 @@ class PDAgent:
                                                   orientation, self.ll, self.ul, self.jr, self.rp, maxNumIterations=5)[0:7]
         return self.process_action(list(jointPoses) + 2 * [fingers])
 
-if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--headless', action='store_true', help='Pybullet gui')
-    parser.add_argument('--print_ranges', action='store_true', help='Print acs and obs ranges for checking/scaling  ')
-    parser.add_argument('--env', type=str, default="panda-v0",
-                        help='Gym env name')
-    parser.add_argument('--n_episodes', type=int, default=100)
-    parser.add_argument('--max_path_length', type=int, default=700,
-                        help='Max length of rollout')
-    args = parser.parse_args()
-
-    seed = 14124
-
-    env = gym.make(args.env, **{"headless": args.headless})
+def run_pd_agent(env_name, seed, n_episodes, max_path_length, print_ranges=False, headless=True):
+    env = gym.make(env_name, **{"headless": headless})
     env.seed(seed)
     env.reset()
-
     pd = PDAgent(env)
-
     _a = []
     _o = []
     rtns = []
     ep_lens = []
     completed = 0
-
-    for i_episode in range(args.n_episodes):
+    for i_episode in range(n_episodes):
         done = False
         info = None
         observation = env.reset()
         cum_reward = 0
         pd.episode_start()
-        for t in range(args.max_path_length):
+        for t in range(max_path_length):
             # pd agent outputs full action space so scale to ac input space (0, 1)
             action = pd.get_action(info)
             observation, reward, done, info = env.step(action)
             if info["completed"]:
                 completed += 1
             cum_reward += reward
-            if done or t == 500 - 1:
+            if done or t == max_path_length - 1:
                 rtns.append(cum_reward)
                 ep_lens.append(t)
                 break
@@ -132,7 +117,7 @@ if __name__ == "__main__":
             _o.append(observation)
         # print("Episode finished. timesteps: {}, reward: {}".format(t + 1, cum_reward))
     ###
-    print("Completed: {} out of {}".format(completed, args.n_episodes))
+    print("Completed: {} out of {}".format(completed, n_episodes))
     print("Mean return {}".format(np.mean(rtns)))
     print("Std return {}".format(np.std(rtns)))
     print("Max return {}".format(np.max(rtns)))
@@ -142,7 +127,7 @@ if __name__ == "__main__":
     print("Mean episode length {}".format(np.max(ep_lens)))
     print("Mean episode length {}".format(np.min(ep_lens)))
     ###
-    if args.print_ranges:
+    if print_ranges:
         print("\n\nData ranges")
         print("action")
         print("_mean = " + repr(np.mean(_a, axis=0)))
@@ -158,3 +143,22 @@ if __name__ == "__main__":
         print("max {} min {}".format(np.max(_o), np.min(_o)))
     ###
     env.close()
+
+    return rtns
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--headless', action='store_true', help='Pybullet gui')
+    parser.add_argument('--print_ranges', action='store_true', help='Print acs and obs ranges for checking/scaling  ')
+    parser.add_argument('--env', type=str, default="panda-v0",
+                        help='Gym env name')
+    parser.add_argument('--seed', type=int, default=141)
+    parser.add_argument('--n_episodes', type=int, default=100)
+    parser.add_argument('--max_path_length', type=int, default=700,
+                        help='Max length of rollout')
+    args = parser.parse_args()
+
+    run_pd_agent(args.env, args.seed, args.n_episodes, args.max_path_length,
+                 args.print_ranges, args.headless)

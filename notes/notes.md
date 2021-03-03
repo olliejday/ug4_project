@@ -1222,10 +1222,14 @@ Final experiments
 Seeds = [117, 12321, 7456, 3426, 573]
 
 x 1. Gathering PD agent
-2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
-   Running: Gather 117
-   Done: CQL: []
+x 2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
+   Done: CQL: [117, 12321, 7456, 3426, 573]
 3. Evaluating all on all environments as well as PD
+    1. Write a plot that does error bars across random seeds
+    2. Run PD for 5 random seeds and report mean and std in 100 episodes
+    3. Run all CQL trained models and report mean and std in 100 episodes
+        Run all seeds in all or each in own seed?
+        Pick best based on training logs
 4. Train 5 random seeds onf SAC on same env
 
 ---
