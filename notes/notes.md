@@ -1220,8 +1220,12 @@ Didn't work so reverting all other files (except this) to last push
 Ran final experiments for CQL and PD agent
 Made plotting code
 
-Setting up for SAC now
+Set up for SAC to run now as a comparison
 Going to try using same initial replay buffer as CQL ie. loaded with PD agent data
+
+* Will need debug it a few times
+*  and then do some hparam tweaks 
+*   then run on all 5 seeds
 
 ---
 
@@ -1234,12 +1238,14 @@ x 1. Gathering PD agent
 x 2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
    Done: CQL: [117, 12321, 7456, 3426, 573]
 3. Evaluating all on all environments as well as PD
-    1. Write a plot that does error bars across random seeds
+    x 1. Write a plot that does error bars across random seeds
     2. Run PD for 5 random seeds and report mean and std in 100 episodes
-    3. Run all CQL trained models and report mean and std in 100 episodes
+       x Wrote code for this, need to run
+    3. Eval all CQL trained models and report mean and std in 100 episodes
         Run all seeds in all or each in own seed?
         Pick best based on training logs
 4. Train 5 random seeds onf SAC on same env
+    * See above TODOs
 
 ---
 

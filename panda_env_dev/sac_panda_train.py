@@ -21,13 +21,13 @@ import gym_panda
 
 
 def load_hdf5(dataset, replay_buffer):
-    replay_buffer._observations = dataset['observations']
-    replay_buffer._next_obs = dataset['next_observations']
-    replay_buffer._actions = dataset['actions']
+    replay_buffer._observations = dataset['observations'][:replay_buffer._max_replay_buffer_size]
+    replay_buffer._next_obs = dataset['next_observations'][:replay_buffer._max_replay_buffer_size]
+    replay_buffer._actions = dataset['actions'][:replay_buffer._max_replay_buffer_size]
     # Center reward for Ant-Maze
-    replay_buffer._rewards = (np.expand_dims(dataset['rewards'], 1) - 0.5) * 4.0
-    replay_buffer._terminals = np.expand_dims(dataset['terminals'], 1)
-    replay_buffer._size = dataset['terminals'].shape[0]
+    replay_buffer._rewards = (np.expand_dims(dataset['rewards'][:replay_buffer._max_replay_buffer_size], 1) - 0.5) * 4.0
+    replay_buffer._terminals = np.expand_dims(dataset['terminals'][:replay_buffer._max_replay_buffer_size], 1)
+    replay_buffer._size = len(replay_buffer._terminals)
     print('Number of terminals on: ', replay_buffer._terminals.sum())
     replay_buffer._top = replay_buffer._size
 
@@ -98,23 +98,16 @@ def experiment(variant):
         eval_env,
         eval_policy,
     )
-    expl_path_collector = CustomMDPPathCollector(
-        eval_env,
+    expl_path_collector = MdpPathCollector(
+        expl_env,
+        policy,
     )
-    buffer_filename = None
-    if variant['buffer_filename'] is not None:
-        buffer_filename = variant['buffer_filename']
-
     replay_buffer = EnvReplayBuffer(
         variant['replay_buffer_size'],
         expl_env,
     )
-    if variant['load_buffer'] and buffer_filename is not None:
-        replay_buffer.load_buffer(buffer_filename)
-    else:
-        dataset = get_dataset(variant["h5path"], eval_env)
-        load_hdf5(d4rl.qlearning_dataset(eval_env, dataset), replay_buffer)
-
+    dataset = get_dataset(variant["h5path"], eval_env)
+    load_hdf5(d4rl.qlearning_dataset(eval_env, dataset), replay_buffer)
     trainer = SACTrainer(
         env=eval_env,
         policy=policy,
@@ -132,7 +125,6 @@ def experiment(variant):
         evaluation_data_collector=eval_path_collector,
         replay_buffer=replay_buffer,
         eval_both=True,
-        batch_rl=variant['load_buffer'],
         **variant['algorithm_kwargs']
     )
     algorithm.to(ptu.device)
@@ -140,7 +132,7 @@ def experiment(variant):
 
 
 if __name__ == "__main__":
-    # noinspection PyTypeChecker
+
     variant = dict(
         algorithm="SAC",
         version="normal",
@@ -167,25 +159,6 @@ if __name__ == "__main__":
             qf_lr=3e-4,
             reward_scale=1,
             use_automatic_entropy_tuning=True,
-
-            # Target nets/ policy vs Q-function update
-            policy_eval_start=30000,  # Defaulted to 20000 (40000 or 10000 work similarly)
-            num_qs=2,
-
-            # CQL
-            temp=1.0,
-            min_q_version=3,  # min_q_version = 3 (CQL(H)), version = 2 (CQL(rho))
-            min_q_weight=1.0,  # the value of alpha, set to 5.0 or 10.0 if not using lagrange
-
-            # lagrange
-            with_lagrange=True,  # Defaults to true
-            lagrange_thresh=5.0,  # the value of tau, corresponds to the CQL(lagrange) version
-
-            # extra params
-            num_random=10,
-            max_q_backup=False,  # if we want to try max_{a'} backups, set this to true
-            deterministic_backup=True,
-            # defaults to true, it does not backup entropy in the Q-function, as per Equation 3
         ),
     )
 
@@ -202,7 +175,6 @@ if __name__ == "__main__":
 
     variant['buffer_filename'] = None
 
-    variant['load_buffer'] = True
     variant['env_name'] = args.env
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
