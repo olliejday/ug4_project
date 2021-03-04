@@ -1223,6 +1223,10 @@ Made plotting code
 Set up for SAC to run now as a comparison
 Going to try using same initial replay buffer as CQL ie. loaded with PD agent data
 
+First SAC run
+Eval curves look sensible and behaviour isn't crazy so def think it's training
+Couldn't see any completions on eval tho it seems to have some in training?
+
 * Will need debug it a few times
 *  and then do some hparam tweaks 
 *   then run on all 5 seeds
@@ -1246,6 +1250,8 @@ x 2. Running 5 random seeds training CQL models (cite "RL that matters" paper) f
         Pick best based on training logs
 4. Train 5 random seeds onf SAC on same env
     * See above TODOs
+    Running: server: gathering [7456], pc: gathering 573
+    Done: seed [117]
 
 ---
 

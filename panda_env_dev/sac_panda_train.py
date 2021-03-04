@@ -21,15 +21,16 @@ import gym_panda
 
 
 def load_hdf5(dataset, replay_buffer):
-    replay_buffer._observations = dataset['observations'][:replay_buffer._max_replay_buffer_size]
-    replay_buffer._next_obs = dataset['next_observations'][:replay_buffer._max_replay_buffer_size]
-    replay_buffer._actions = dataset['actions'][:replay_buffer._max_replay_buffer_size]
+    max_replay_buffer_size = replay_buffer._max_replay_buffer_size
+    replay_buffer._observations = dataset['observations'][:max_replay_buffer_size]
+    replay_buffer._next_obs = dataset['next_observations'][:max_replay_buffer_size]
+    replay_buffer._actions = dataset['actions'][:max_replay_buffer_size]
     # Center reward for Ant-Maze
-    replay_buffer._rewards = (np.expand_dims(dataset['rewards'][:replay_buffer._max_replay_buffer_size], 1) - 0.5) * 4.0
-    replay_buffer._terminals = np.expand_dims(dataset['terminals'][:replay_buffer._max_replay_buffer_size], 1)
+    replay_buffer._rewards = (np.expand_dims(dataset['rewards'][:max_replay_buffer_size], 1) - 0.5) * 4.0
+    replay_buffer._terminals = np.expand_dims(dataset['terminals'][:max_replay_buffer_size], 1)
     replay_buffer._size = len(replay_buffer._terminals)
     print('Number of terminals on: ', replay_buffer._terminals.sum())
-    replay_buffer._top = replay_buffer._size
+    replay_buffer._top = replay_buffer._size - 1
 
 
 def get_dataset(h5path, env):
