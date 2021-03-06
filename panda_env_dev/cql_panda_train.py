@@ -196,6 +196,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed', default=117, type=int)
     parser.add_argument('--gui', action='store_true')
     parser.add_argument('--no_gpu', action='store_true')
+    parser.add_argument("--pd_data", type=str, default='data/gym_panda_pd_agent_panda-v0.hdf5')
 
     args = parser.parse_args()
 
@@ -208,7 +209,7 @@ if __name__ == "__main__":
     variant['seed'] = args.seed
     variant['headless'] = not args.gui
     variant['verbose'] = True  # print if complete episode
-    variant['h5path'] = "data/gym_panda_pd_agent_{}.hdf5".format(args.env)
+    variant['h5path'] = args.pd_data
     snapshot_gap = 3
 
     if not args.no_gpu:

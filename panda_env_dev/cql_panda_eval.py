@@ -10,36 +10,38 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def simulate_policy(args):
-    data = torch.load(args.file, map_location=ptu.device)
+def simulate_policy(fpath, env_name, seed, max_path_length,
+                    num_eval_steps, headless, max_eps, verbose=True, pause=False):
+    data = torch.load(fpath, map_location=ptu.device)
     policy = data['evaluation/policy']
     policy.to(ptu.device)
     # make new env, reloading with data['evaluation/env'] seems to make bug
-    env = gym.make(args.env, **{"headless": args.headless, "verbose": False})
-    env.seed(args.seed)
-    if args.pause:
+    env = gym.make(env_name, **{"headless": headless, "verbose": False})
+    env.seed(seed)
+    if pause:
         input("Waiting to start.")
     path_collector = MdpPathCollector(env, policy)
     paths = path_collector.collect_new_paths(
-                    args.max_path_length,
-                    args.num_eval_steps,
+                    max_path_length,
+                    num_eval_steps,
                     discard_incomplete_paths=True,
                 )
 
-    if args.max_eps:
-        paths = paths[:args.max_eps]
-
-    completions = sum([info["completed"] for path in paths for info in path["env_infos"]])
-    print("Completed {} out of {}".format(completions, len(paths)))
-    # plt.plot(paths[0]["actions"])
-    # plt.show()
-    # plt.plot(paths[2]["observations"])
-    # plt.show()
-    logger.record_dict(
-        eval_util.get_generic_path_information(paths),
-        prefix="evaluation/",
-    )
-    logger.dump_tabular()
+    if max_eps:
+        paths = paths[:max_eps]
+    if verbose:
+        completions = sum([info["completed"] for path in paths for info in path["env_infos"]])
+        print("Completed {} out of {}".format(completions, len(paths)))
+        # plt.plot(paths[0]["actions"])
+        # plt.show()
+        # plt.plot(paths[2]["observations"])
+        # plt.show()
+        logger.record_dict(
+            eval_util.get_generic_path_information(paths),
+            prefix="evaluation/",
+        )
+        logger.dump_tabular()
+    return paths
 
 
 def plot_training(file):
@@ -86,4 +88,5 @@ if __name__ == "__main__":
             ptu.enable_gpus(gpu_str)
             ptu.set_gpu_mode(True)
 
-        simulate_policy(args)
+        simulate_policy(args.fpath, args.env_name, args.seed, args.max_path_length,
+                    args.num_eval_steps, args.headless, args.max_eps, pause=args.pause)

@@ -1227,9 +1227,9 @@ First SAC run
 Eval curves look sensible and behaviour isn't crazy so def think it's training
 Couldn't see any completions on eval tho it seems to have some in training?
 
-* Will need debug it a few times
-*  and then do some hparam tweaks 
-*   then run on all 5 seeds
+x Will need debug it a few times
+x  and then do some hparam tweaks 
+x   then run on all 5 seeds
 
 ---
 
@@ -1240,30 +1240,32 @@ Seeds = [117, 12321, 7456, 3426, 573]
 
 x 1. Gathering PD agent
 x 2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
-   Done: CQL: [117, 12321, 7456, 3426, 573]
-3. Evaluating all on all environments as well as PD
+   Done: CQL: [117, 7456, 3426], running: [12321]
+x 3. Train 5 random seeds onf SAC on same env
+    x Done: seed [117, 12321, 7456, 3426, 573]
+4. Evaluating all on all environments as well as PD
     x 1. Write a plot that does error bars across random seeds
     2. Run PD for 5 random seeds and report mean and std in 100 episodes
-       x Wrote code for this, need to run
+       x Wrote code for this
+       * Run in all envs
     3. Eval all CQL trained models and report mean and std in 100 episodes
-        Run all seeds in all or each in own seed?
-        Pick best based on training logs
-4. Train 5 random seeds onf SAC on same env
-    * See above TODOs
-    Running: server: gathering [7456], pc: gathering 573
-    Done: seed [117]
-
+        x Pick best based on training logs
+        * Rerunning some CQL as not working 
+          * need to pull  from server again:
+            1614596184
+            1614621073
+            1614688363
+        Run each in own seed in all envs
+5. Call and report / discuss final findings with Li, add to overleaf       
 ---
 
 TODO 
 
-* run experiments pd and cql, multiple random seeds test in all envs perturbation etc.
-* compare to SAC for multiple random seeds
-
-* Train a perturbed to comapre (new obs/acs bounds)
-* Set different acs and obs bounds for pandaForce env if gathering data
-* Train a force and a normal model to compare
-      * Compare on different benchmarks how robust? how does training carry over?
+* Perhaps worth giving SAC some hparam etc tuning
+    or try without preloading buffer?
+* Train in perturbed/force to comapre regrasping / robustness (new obs/acs bounds)
+    * Set different acs and obs bounds for pandaForce env if gathering data
+    * Compare on different benchmarks how robust? how does training carry over?
   
 * Make env and data for only regrasp part ie. not like pandaForce
     * Train on std then on regrasp and see if splices into full regrasp env
