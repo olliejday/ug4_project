@@ -96,7 +96,7 @@ def main_eval(dir_path, env, sac_best_itr=72, cql_best_itr=27):
     print("Running all models for ", env)
     run_pd_agent_seeds(dir_path, env, SEEDS)
     run_rl(dir_path, "SAC", sac_best_itr, env)
-    run_rl(dir_path, "CQL", cql_best_itr, env)
+    # TODO run_rl(dir_path, "CQL", cql_best_itr, env)
 
 
 if __name__ == "__main__":
@@ -118,10 +118,11 @@ if __name__ == "__main__":
         ptu.set_gpu_mode(True)
 
     # run_pd_agent_seeds(args.dir_path, args.env, SEEDS)
-    # main_plot(args.dir_path)
+    main_plot(args.dir_path)
 
     # TODO:
     run_rl(args.dir_path, "CQL", 27, "panda-v0")
     run_rl(args.dir_path, "CQL", 27, "pandaForce-v0")
+    run_rl(args.dir_path, "CQL", 27, "pandaPerturbed-v0")
     # for env in ["pandaPerturbed-v0"]:
     #     main_eval(args.dir_path, env)

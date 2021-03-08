@@ -1238,6 +1238,8 @@ Final experiments
 
 Seeds = [117, 12321, 7456, 3426, 573]
 
+* git add the variant.json and the progress.csv for       
+
 x 1. Gathering PD agent
 x 2. Running 5 random seeds training CQL models (cite "RL that matters" paper) for min 150 epochs
    Done: CQL: [117, 7456, 3426], running: [12321]
@@ -1250,11 +1252,6 @@ x 3. Train 5 random seeds onf SAC on same env
        * Run in all envs
     3. Eval all CQL trained models and report mean and std in 100 episodes
         x Pick best based on training logs
-        * Rerunning some CQL as not working 
-          * need to pull  from server again:
-            1614596184
-            1614621073
-            1614688363
         Run each in own seed in all envs
 5. Call and report / discuss final findings with Li, add to overleaf       
 ---
