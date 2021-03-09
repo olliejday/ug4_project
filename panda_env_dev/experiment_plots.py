@@ -32,7 +32,7 @@ def plot_training(dir_path, model_name, color, n_epochs=100, colname="evaluation
     sns.lineplot(x=plot_df.index, y=plot_df, color=color, label=model_name)
 
 
-def main_plot(dir_path, n_epochs=100, colname="evaluation/Returns Mean"):
+def plot_train(dir_path, n_epochs=100, colname="evaluation/Returns Mean"):
     """
     Plots all the models over training
     PD benchmark reward = 2000, run run_pd_agent_seeds to confirm
@@ -42,7 +42,7 @@ def main_plot(dir_path, n_epochs=100, colname="evaluation/Returns Mean"):
     plot_training(dir_path, "SAC", palette[1], n_epochs, colname)
     # add pd benchmark
     plt.hlines(2000, 0, 100, linestyles="dashed", colors=palette[2], label="PD agent")
-    plt.title("Mean and std deviation of episode returns during training")
+    plt.title("Evaluation returns during training (panda-v0)")
     plt.legend(loc="best")
     plt.savefig(os.path.join(dir_path, "training_plot.pdf"))
 
@@ -96,11 +96,48 @@ def main_eval(dir_path, env, sac_best_itr=72, cql_best_itr=27):
     print("Running all models for ", env)
     run_pd_agent_seeds(dir_path, env, SEEDS)
     run_rl(dir_path, "SAC", sac_best_itr, env)
-    # TODO run_rl(dir_path, "CQL", cql_best_itr, env)
+    run_rl(dir_path, "CQL", cql_best_itr, env)
+
+
+def get_eval_df(dir_path, model, env):
+    if model == "PD":
+        f_path = os.path.join(dir_path, "pd_agent_eval-{}.csv".format(env))
+    else:
+        f_path = os.path.join(dir_path, "{}-offline-panda-runs".format(model),
+                              "{}_eval-{}.csv".format(model, env))
+    df = pd.read_csv(f_path, index_col=0)
+    return df
+
+
+def plot_eval(dir_path, env_names):
+    pd_df = get_eval_plot_df(dir_path, "PD", env_names)
+    cql_df = get_eval_plot_df(dir_path, "CQL", env_names)
+    sac_df = get_eval_plot_df(dir_path, "SAC", env_names)
+    plot_df = pd.concat([pd_df, cql_df, sac_df])
+    plot_df.to_csv(os.path.join(dir_path, "eval_results.csv"))
+    sns.catplot(data=plot_df, x="Environment", y="Mean Return", hue="Model", kind="bar")
+    plt.title("100 episode returns of trained models")
+    plt.tight_layout()
+    plt.savefig(os.path.join(dir_path, "eval_plot.pdf"))
+
+
+def get_eval_plot_df(dir_path, model, env_names):
+    plot_means = []
+    for i, env in enumerate(env_names):
+        df = get_eval_df(dir_path, model, env)
+        df = pd.DataFrame(df.mean())
+        df["env"] = env
+        plot_means.append(df)
+    plot_df = pd.concat(plot_means)
+    plot_df.columns = ["Mean Return", "Environment"]
+    # add model col
+    plot_df["Model"] = [model] * len(plot_df)
+    return plot_df
 
 
 if __name__ == "__main__":
     SEEDS = [117, 12321, 7456, 3426, 573]
+    envs = ["panda-v0", "pandaForce-v0", "pandaPerturbed-v0"]
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir_path', type=str, default="data",
@@ -118,11 +155,10 @@ if __name__ == "__main__":
         ptu.set_gpu_mode(True)
 
     # run_pd_agent_seeds(args.dir_path, args.env, SEEDS)
-    main_plot(args.dir_path)
+    plot_train(args.dir_path)
 
     # TODO:
-    run_rl(args.dir_path, "CQL", 27, "panda-v0")
-    run_rl(args.dir_path, "CQL", 27, "pandaForce-v0")
-    run_rl(args.dir_path, "CQL", 27, "pandaPerturbed-v0")
-    # for env in ["pandaPerturbed-v0"]:
+    # for env in envs:
     #     main_eval(args.dir_path, env)
+
+    plot_eval(args.dir_path, envs)

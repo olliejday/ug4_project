@@ -1247,12 +1247,13 @@ x 3. Train 5 random seeds onf SAC on same env
     x Done: seed [117, 12321, 7456, 3426, 573]
 4. Evaluating all on all environments as well as PD
     x 1. Write a plot that does error bars across random seeds
-    2. Run PD for 5 random seeds and report mean and std in 100 episodes
+    x 2. Run PD for 5 random seeds and report mean and std in 100 episodes
        x Wrote code for this
        * Run in all envs
     3. Eval all CQL trained models and report mean and std in 100 episodes
         x Pick best based on training logs
-        Run each in own seed in all envs
+        x Run each in own seed in all envs
+        Plot
 5. Call and report / discuss final findings with Li, add to overleaf       
 ---
 
