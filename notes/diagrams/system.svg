@@ -181,9 +181,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="160.0694"
-     inkscape:cy="340.29792"
+     inkscape:zoom="0.81068078"
+     inkscape:cx="576.14429"
+     inkscape:cy="476.5355"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -220,7 +220,7 @@
        y="135.24413" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87777778px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
        x="186.25447"
        y="166.72939"
        id="text968"><tspan
@@ -228,11 +228,16 @@
          id="tspan966"
          x="186.25447"
          y="166.72939"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87777778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;">Environment (PyBullet)</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485">Environment </tspan><tspan
          sodipodi:role="line"
          x="186.25447"
-         y="173.60364"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87777778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
+         y="178.50771"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         id="tspan1161">(PyBullet)</tspan><tspan
+         sodipodi:role="line"
+         x="186.25447"
+         y="190.28601"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan970" /></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.779447;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1668)"
@@ -246,30 +251,30 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42264937px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="227.59959"
        y="22.939741"
        id="text1890"><tspan
          sodipodi:role="line"
          x="227.59959"
          y="22.939741"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42264937px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan1888">CQL </tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42264937px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="17.081903"
        y="28.631226"
        id="text1896"><tspan
          sodipodi:role="line"
          x="17.081903"
          y="28.631226"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42264937px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan1910">Behaviour </tspan><tspan
          sodipodi:role="line"
          x="17.081903"
          y="40.978447"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42264937px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan3947">data</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.779447;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2037)"
@@ -287,130 +292,130 @@
        id="path2247" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="107.57774"
        y="99.763977"
        id="text2387"><tspan
          sodipodi:role="line"
          x="107.57774"
          y="99.763977"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2389">Actions</tspan><tspan
          sodipodi:role="line"
          x="107.57774"
          y="106.63824"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan3953">(a)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
-       x="49.570255"
-       y="138.75766"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       x="39.105942"
+       y="138.70824"
        id="text2395"><tspan
          sodipodi:role="line"
-         x="49.570255"
-         y="138.75766"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="39.105942"
+         y="138.70824"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan2393">Observations,</tspan><tspan
          sodipodi:role="line"
-         x="49.570255"
-         y="145.63193"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="39.105942"
+         y="146.64574"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan2397">Rewards</tspan><tspan
          sodipodi:role="line"
-         x="49.570255"
-         y="152.50618"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="39.105942"
+         y="154.58324"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan3951">(s, r)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="156.68393"
        y="101.35037"
        id="text2401"><tspan
          sodipodi:role="line"
          x="156.68393"
          y="101.35037"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2399">Actions</tspan><tspan
          sodipodi:role="line"
          x="156.68393"
          y="108.22463"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan3955">(a)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="200.61118"
        y="135.40582"
        id="text2407"><tspan
          sodipodi:role="line"
          x="200.61118"
          y="135.40582"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2403">Observations,</tspan><tspan
          sodipodi:role="line"
          x="200.61118"
          y="142.28009"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2405">Rewards</tspan><tspan
          sodipodi:role="line"
          x="200.61118"
          y="149.15434"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan3963">(s, r)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="87.115845"
        y="120.23342"
        id="text2411"><tspan
          sodipodi:role="line"
          x="87.115845"
          y="120.23342"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2409">Gather </tspan><tspan
          sodipodi:role="line"
          x="87.115845"
          y="127.10768"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2413">data</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485;"
        x="167.26541"
        y="124.4051"
        id="text2419"><tspan
          sodipodi:role="line"
          x="167.26541"
          y="124.4051"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485;"
          id="tspan2423">Evaluation</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
-       x="86.638329"
-       y="31.723314"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       x="80.632362"
+       y="26.648676"
        id="text2429"><tspan
          sodipodi:role="line"
-         x="86.638329"
-         y="31.723314"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="80.632362"
+         y="26.648676"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan2433">Actions, </tspan><tspan
          sodipodi:role="line"
-         x="86.638329"
-         y="38.59758"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="80.632362"
+         y="34.586174"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4057">obersvations, </tspan><tspan
          sodipodi:role="line"
-         x="86.638329"
-         y="45.47184"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="80.632362"
+         y="42.523674"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan3971">rewards</tspan><tspan
          sodipodi:role="line"
-         x="86.638329"
-         y="52.346104"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="80.632362"
+         y="50.461174"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan3949">(s, a, s', r)</tspan></text>
     <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
@@ -484,10 +489,10 @@
     <text
        xml:space="preserve"
        id="text3925"
-       style="fill:black;fill-opacity:1;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:10.58333333px;line-height:1.25;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect3927);" />
+       style="fill:black;fill-opacity:1;stroke:none;font-family:Inter, '@wght=500';font-style:normal;font-weight:normal;font-size:9.42264937px;line-height:1.25;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect3927);-inkscape-font-specification:'Inter, @wght=500';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:21.172px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.5293"
+       style="font-style:normal;font-weight:500;font-size:17.63889023px;line-height:1.25;font-family:Inter;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.5293;-inkscape-font-specification:'Inter, Medium';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
        x="59.441185"
        y="95.838066"
        id="text3933"><tspan
@@ -495,10 +500,10 @@
          id="tspan3931"
          x="59.441185"
          y="95.838066"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.172px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.5293">π</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17.63889023px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.5293;">π</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:13.168px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.329201"
+       style="font-style:normal;font-weight:normal;font-size:9.42264937px;line-height:1.25;font-family:Inter, '@wght=500';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.329201;-inkscape-font-specification:'Inter, @wght=500';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
        x="71.38842"
        y="101.16487"
        id="text3937"><tspan
@@ -506,10 +511,10 @@
          id="tspan3935"
          x="71.38842"
          y="101.16487"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.168px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.329201">B</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.42264937px;font-family:Inter, '@wght=500';-inkscape-font-specification:'Inter, @wght=500';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.329201;">B</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:21.172px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.5293"
+       style="font-style:normal;font-weight:500;font-size:17.63889023px;line-height:1.25;font-family:Inter;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.5293;-inkscape-font-specification:'Inter, Medium';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
        x="202.74602"
        y="101.2467"
        id="text3941"><tspan
@@ -517,10 +522,10 @@
          id="tspan3939"
          x="202.74602"
          y="101.2467"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.172px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.5293">π</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17.63889023px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.5293;">π</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-weight:normal;font-size:9.42264937px;line-height:1.25;font-family:Inter, '@wght=500';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;-inkscape-font-specification:'Inter, @wght=500';font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
        x="224.55504"
        y="143.52013"
        id="text3959"><tspan
@@ -528,11 +533,11 @@
          id="tspan3957"
          x="224.55504"
          y="143.52013"
-         style="stroke-width:0.264583"></tspan><tspan
+         style="stroke-width:0.264583;-inkscape-font-specification:'Inter, @wght=500';font-family:Inter, '@wght=500';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:9.42264937px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;" /><tspan
          sodipodi:role="line"
          x="224.55504"
          y="156.74925"
-         style="stroke-width:0.264583"
+         style="stroke-width:0.264583;-inkscape-font-specification:'Inter, @wght=500';font-family:Inter, '@wght=500';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:9.42264937px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
          id="tspan3961" /></text>
     <rect
        style="fill:#99ccff;stroke:#0066cc;stroke-width:1.38859;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
@@ -578,40 +583,40 @@
        id="path4071" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
-       x="173.86055"
-       y="34.109543"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       x="171.27635"
+       y="29.515995"
        id="text4081"><tspan
          sodipodi:role="line"
-         x="173.86055"
-         y="34.109543"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="171.27635"
+         y="29.515995"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4073">Actions, </tspan><tspan
          sodipodi:role="line"
-         x="173.86055"
-         y="40.983803"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="171.27635"
+         y="37.453495"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4075">obersvations, </tspan><tspan
          sodipodi:role="line"
-         x="173.86055"
-         y="47.858067"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="171.27635"
+         y="45.390995"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4077">rewards</tspan><tspan
          sodipodi:role="line"
-         x="173.86055"
-         y="54.73233"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.49941px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="171.27635"
+         y="53.328495"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4079">(s, a, s', r)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;line-height:1.25;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
-       x="120.99458"
-       y="24.280687"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;line-height:1.25;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.137485"
+       x="118.06234"
+       y="20.838217"
        id="text4199"><tspan
          sodipodi:role="line"
-         x="120.99458"
-         y="24.280687"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:'Apfel Grotezk';-inkscape-font-specification:'Apfel Grotezk, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
+         x="118.06234"
+         y="20.838217"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:9.42265px;font-family:Inter;-inkscape-font-specification:'Inter, Medium';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.137485"
          id="tspan4197">Data buffer</tspan></text>
   </g>
 </svg>

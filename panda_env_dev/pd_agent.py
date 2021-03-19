@@ -68,7 +68,7 @@ class PDAgent:
         action = np.clip(action, -1, 1)
         # action to delta
         object_orientation_euler = p.getEulerFromQuaternion(object_orientation)
-        orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1]])
+        # orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1]])
         orientation = p.getQuaternionFromEuler([0., -math.pi, object_orientation_euler[-1] + math.pi/2.])
         dv = 0.05
         dx = action[0] * dv

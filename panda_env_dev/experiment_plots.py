@@ -17,7 +17,8 @@ def get_training_file_df(fpath):
     return df
 
 
-def plot_training(dir_path, model_name, color, n_epochs=100, colname="evaluation/Returns Mean"):
+def plot_training(dir_path, model_name, color, n_epochs=100, colname="evaluation/Returns Mean",
+                  scale=2000.0):
     dir_path = os.path.join(dir_path, "{}-offline-panda-runs".format(model_name))
     rtns_to_plot = []
     for f in os.listdir(dir_path):
@@ -29,22 +30,68 @@ def plot_training(dir_path, model_name, color, n_epochs=100, colname="evaluation
         rtns_to_plot.append(rtns)
     print(model_name, " Argmax mean return (over seeds): ", np.argsort(-np.mean(rtns_to_plot, axis=0))[:5])
     plot_df = pd.concat(rtns_to_plot)
+    plot_df /= scale
     sns.lineplot(x=plot_df.index, y=plot_df, color=color, label=model_name)
 
 
-def plot_train(dir_path, n_epochs=100, colname="evaluation/Returns Mean"):
+def plot_train_eval(dir_path, n_epochs=100, colname="evaluation/Returns Mean"):
     """
     Plots all the models over training
     PD benchmark reward = 2000, run run_pd_agent_seeds to confirm
     """
+    # palette order to match eval plot
     palette = sns.color_palette()
-    plot_training(dir_path, "CQL", palette[0], n_epochs, colname)
+    plt.hlines(1, 0, 100, linestyles="dashed", colors=palette[0], label="PD agent")
+    plot_training(dir_path, "CQL", palette[4], n_epochs, colname)
     plot_training(dir_path, "SAC", palette[1], n_epochs, colname)
     # add pd benchmark
-    plt.hlines(2000, 0, 100, linestyles="dashed", colors=palette[2], label="PD agent")
     plt.title("Evaluation returns during training (panda-v0)")
     plt.legend(loc="best")
     plt.savefig(os.path.join(dir_path, "training_plot.pdf"))
+
+
+def plot_train_loss(dir_path, n_epochs=100, colnames=["trainer/Policy Loss"]):
+    """
+    trainer/Policy Loss
+    trainer/Log Pis Mean
+    trainer/QF1 Loss
+    trainer/Q1 Predictions Mean
+
+    Plots all the models over training
+    PD benchmark reward = 2000, run run_pd_agent_seeds to confirm
+    """
+    # palette order to match eval plot
+    palette = sns.color_palette()
+    for colname in colnames:
+        plot_training(dir_path, "CQL", palette[4], n_epochs, colname)
+        # plot_training(dir_path, "SAC", palette[1], n_epochs, colname)
+    # add pd benchmark
+    plt.title("Policy Loss")
+    plt.legend(loc="best")
+    # plt.ylim(0, 1e6)
+    plt.savefig(os.path.join(dir_path, "training_loss_plot.pdf"))
+
+
+def plot_train_qf1(dir_path, n_epochs=100, colnames=["trainer/Q1 Predictions Mean"]):
+    """
+    trainer/Policy Loss
+    trainer/Log Pis Mean
+    trainer/QF1 Loss
+    trainer/Q1 Predictions Mean
+
+    Plots all the models over training
+    PD benchmark reward = 2000, run run_pd_agent_seeds to confirm
+    """
+    # palette order to match eval plot
+    palette = sns.color_palette()
+    for colname in colnames:
+        plot_training(dir_path, "CQL", palette[4], n_epochs, colname)
+        # plot_training(dir_path, "SAC", palette[1], n_epochs, colname)
+    # add pd benchmark
+    plt.title("Q-function predictions")
+    plt.legend(loc="best")
+    # plt.ylim(0, 1e6)
+    plt.savefig(os.path.join(dir_path, "training_QF1_plot.pdf"))
 
 
 def run_pd_agent_seeds(dir_path, env_name, seeds, max_path_length=1000, n_eps=100):
@@ -79,7 +126,7 @@ def run_rl(dir_path, flavour, itr, env_name, max_path_length=1000, n_eps=100):
             seed = json.loads(f.read())["seed"]
         model_path = os.path.join(fpath, os.listdir(fpath)[0], "itr_{}.pkl".format(itr))
         paths = simulate_policy(model_path, env_name, seed, max_path_length,
-                    max_path_length * n_eps + 10, True, n_eps, verbose=False, pause=False)
+                                max_path_length * n_eps + 10, True, n_eps, verbose=False, pause=False)
         returns = [sum(path["rewards"]) for path in paths]
         all_rtns[seed] = np.concatenate(returns[:100])
     df = pd.DataFrame(all_rtns)
@@ -110,12 +157,22 @@ def get_eval_df(dir_path, model, env):
 
 
 def plot_eval(dir_path, env_names):
+    palette = sns.color_palette()
     pd_df = get_eval_plot_df(dir_path, "PD", env_names)
     cql_df = get_eval_plot_df(dir_path, "CQL", env_names)
     sac_df = get_eval_plot_df(dir_path, "SAC", env_names)
     plot_df = pd.concat([pd_df, cql_df, sac_df])
+    plot_df.sort_index()
+    mean_df = plot_df.groupby(["Model", "Environment"]).describe().loc[:, (slice(None), ['mean', 'std'])]
+    mean_df = pd.DataFrame(mean_df.to_records())
+    mean_df.columns = ["Model", "Environment", "Mean", "Std"]
+    mean_df = mean_df.pivot("Model", "Environment").swaplevel(0, 1, axis=1)
+    mean_df = mean_df.reindex(sorted(mean_df.columns), axis=1)
+    print(mean_df.round(3).to_latex())
+
     plot_df.to_csv(os.path.join(dir_path, "eval_results.csv"))
-    sns.catplot(data=plot_df, x="Environment", y="Mean Return", hue="Model", kind="bar")
+    sns.catplot(data=plot_df, x="Environment", y="Mean Return", hue="Model", kind="bar",
+                palette=[palette[0], palette[4], palette[1]])
     plt.title("100 episode returns of trained models")
     plt.tight_layout()
     plt.savefig(os.path.join(dir_path, "eval_plot.pdf"))
@@ -125,7 +182,7 @@ def get_eval_plot_df(dir_path, model, env_names):
     plot_means = []
     for i, env in enumerate(env_names):
         df = get_eval_df(dir_path, model, env)
-        df = pd.DataFrame(df.mean())
+        df = pd.DataFrame(df.mean() / 2000.0)
         df["env"] = env
         plot_means.append(df)
     plot_df = pd.concat(plot_means)
@@ -149,13 +206,15 @@ if __name__ == "__main__":
     parser.add_argument('--no_gpu', action='store_true')
     args = parser.parse_args()
 
-    gpu_str = "0"
-    if not args.no_gpu:
-        ptu.enable_gpus(gpu_str)
-        ptu.set_gpu_mode(True)
+    # gpu_str = "0"
+    # if not args.no_gpu:
+    #     ptu.enable_gpus(gpu_str)
+    #     ptu.set_gpu_mode(True)
 
     # run_pd_agent_seeds(args.dir_path, args.env, SEEDS)
-    plot_train(args.dir_path)
+    # plot_train_eval(args.dir_path)
+    # plot_train_loss(args.dir_path)
+    # plot_train_qf1(args.dir_path)
 
     # TODO:
     # for env in envs:
