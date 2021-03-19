@@ -1254,7 +1254,13 @@ x 3. Train 5 random seeds onf SAC on same env
         x Pick best based on training logs
         x Run each in own seed in all envs
         Plot
-5. Call and report / discuss final findings with Li, add to overleaf       
+5. Call and report / discuss final findings with Li, add to overleaf     
+
+
+Generate tile images with 
+
+`montage frame_*{0..999..32}.png -geometry +0+0 -tile 10x tiled_image.jpg`
+
 ---
 
 TODO 
