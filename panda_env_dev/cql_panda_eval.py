@@ -68,7 +68,7 @@ if __name__ == "__main__":
                         help='path to the snapshot file')
     parser.add_argument('--max_path_length', type=int, default=700,
                         help='Max length of rollout')
-    parser.add_argument('--num_eval_steps', type=int, default=700 * 25,
+    parser.add_argument('--num_eval_steps', type=int, default=700 * 19,
                         help='Total number of eval steps to run')
     parser.add_argument('--env', type=str, default="panda-v0",
                         help='Gym env name')
@@ -88,5 +88,5 @@ if __name__ == "__main__":
             ptu.enable_gpus(gpu_str)
             ptu.set_gpu_mode(True)
 
-        simulate_policy(args.fpath, args.env_name, args.seed, args.max_path_length,
+        simulate_policy(args.file, args.env, args.seed, args.max_path_length,
                     args.num_eval_steps, args.headless, args.max_eps, pause=args.pause)

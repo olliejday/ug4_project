@@ -1259,7 +1259,7 @@ x 3. Train 5 random seeds onf SAC on same env
 
 Generate tile images with 
 
-`montage frame_*{0..999..32}.png -geometry +0+0 -tile 10x tiled_image.jpg`
+`montage frame_{0..999..32}.png -geometry +0+0 -tile 10x tiled_image.jpg`
 
 ---
 

@@ -267,11 +267,11 @@ class PandaEnv(gym.Env):
         return self.observation
 
     def render(self, mode='human'):
-        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[0.7, 0, 0.05],
-                                                          distance=.7,
-                                                          yaw=90,
-                                                          pitch=-70,
-                                                          roll=0,
+        view_matrix = p.computeViewMatrixFromYawPitchRoll(cameraTargetPosition=[.7, 0, .1],
+                                                          distance=.8,
+                                                          yaw=15,
+                                                          pitch=-40,
+                                                          roll=180,
                                                           upAxisIndex=2)
         proj_matrix = p.computeProjectionMatrixFOV(fov=60,
                                                    aspect=float(960) / 720,
@@ -284,8 +284,7 @@ class PandaEnv(gym.Env):
                                             renderer=p.ER_BULLET_HARDWARE_OPENGL)
 
         rgb_array = np.array(px, dtype=np.uint8)
-        rgb_array = np.reshape(rgb_array, (720, 960, 4))
-
+        rgb_array = np.flip(rgb_array, 0)
         rgb_array = rgb_array[:, :, :3]
         return rgb_array
 
